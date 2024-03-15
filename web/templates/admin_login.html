@@ -1,0 +1,31 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>管理员登录</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/admin_login.css' %}">
+</head>
+<body>
+    <header>
+        <div class="left">
+            <h1>家校沟通平台</h1>
+        </div>
+    </header>
+
+    <div class="login-container">
+    <h2>管理员登录</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="username">用户名:</label>
+        <input id="username" type="text" name="username" required>
+        <label for="password">密码:</label>
+        <input id="password" type="password" name="password" required>
+        <button type="submit">登录</button>
+    </form>
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

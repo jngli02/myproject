@@ -1,0 +1,103 @@
+﻿body {
+    font-family: Arial, sans-serif;
+    background: url("https://res.cloudinary.com/dci1eujqw/image/upload/v1616769558/Codepen/waldemar-brandt-aThdSdgx0YM-unsplash_cnq4sb.jpg");
+    background-size: cover;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(204, 204, 204, 0.5); /* 半透明背景 */
+    padding: 20px;
+}
+
+header .left h1 {
+    margin: 0;
+    background-color: rgba(255, 255, 255, 0.5); /* 半透明背景 */
+}
+
+header .left nav {
+    margin-top: 10px;
+    background-color: rgba(255, 255, 255, 0.5); /* 半透明背景 */
+    text-align: right; /* 居右 */
+}
+
+header .left nav a {
+    margin-right: 10px;
+    text-decoration: none; /* 移除下划线 */
+}
+
+.login-container {
+    width: 400px;
+    padding: 16px;
+    background-color: white;
+    margin: 0 auto;
+    margin-top: 100px;
+    border-radius: 4px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    transition: all 0.3s ease;
+    box-sizing: border-box; /* 防止输入框超出边界 */
+}
+
+/* 其他样式保持不变... */
+
+
+
+.login-container:hover {
+    box-shadow: 0 0 20px rgba(0, 0, 0, .2);
+}
+
+.login-container h2 {
+    text-align: center;
+    margin-bottom: 24px;
+    color: #333;
+}
+
+.login-container label {
+    color: #555;
+}
+
+.login-container input {
+    border: 1px solid #ddd;
+    padding: 10px;
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.login-container button {
+    background-color: #5C6BC0;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    margin-top: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.login-container button:hover {
+    background-color: #7986CB;
+}
+
+.login-container a {
+    display: block;
+    text-align: center;
+    margin-top: 10px;
+    color: #5C6BC0;
+    transition: all 0.3s ease;
+}
+
+.login-container a:hover {
+    color: #7986CB;
+}
+
+.remember {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 16px;
+}
+
+.option {
+    display: inline-block;
+    margin-right: 10px;
+}

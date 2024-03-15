@@ -1,0 +1,35 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>更新教师信息</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>更新教师信息</h1>
+
+    <!-- 更新教师信息的表单 -->
+    <form method="post" action="{% url 'update_teacher' teacher.id %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="teacher_id">教师编号:</label><br>
+        <input type="text" id="teacher_id" name="teacher_id" value="{{ teacher.teacher_id }}"><br>
+        <label for="name">姓名:</label><br>
+        <input type="text" id="name" name="name" value="{{ teacher.name }}"><br>
+        <label for="gender">性别:</label><br>
+        <input type="text" id="gender" name="gender" value="{{ teacher.gender }}"><br>
+        <label for="class_name">授课班级:</label><br>
+        <input type="text" id="class_name" name="class_name" value="{{ teacher.class_name }}"><br>
+        <label for="subject">授课科目:</label><br>
+        <input type="text" id="subject" name="subject" value="{{ teacher.subject }}"><br>
+        <label for="phone_number">电话号码:</label><br>
+        <input type="text" id="phone_number" name="phone_number" value="{{ teacher.phone_number }}"><br>
+        <label for="email">邮箱:</label><br>
+        <input type="text" id="email" name="email" value="{{ teacher.email }}"><br>
+        <label for="position">职位:</label><br>
+        <input type="text" id="position" name="position" value="{{ teacher.position }}"><br>
+        <label for="photo">照片:</label><br>
+        <input type="file" id="photo" name="photo"><br>
+        <input type="submit" value="提交">
+    </form>
+
+</body>
+</html>

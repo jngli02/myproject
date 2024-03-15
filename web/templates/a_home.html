@@ -1,0 +1,91 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+        <title>学生相关</title>
+        
+        <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+        <script src="{% static 'css/index.js' %}"></script>
+        <script src="http://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+        <style type="text/css">
+        p {
+            font-family: Microsoft YaHei;
+        }
+        .container .page__hd {
+            margin: 20px 10px;
+        }
+        .container .page__hd img {
+            height: 60px;
+        }
+        .container .page__hd p {
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 10px;
+            background-image: url()
+        }
+        .weui-grids div {
+            height: 35px;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+        </style>
+    </head>
+    <body>
+        <div id="container" class="container">
+            <div class="page__hd">
+                <a href="/">
+                <img src="{% static 'images/logo.png' %}">
+                </a>
+                <p class="page__title">
+                    家校信息沟通平台
+                </p>
+            </div>
+            <div class="weui-grids">
+                <a class="weui-grid" href="{% url 'student_info' %}">
+                    <div style="background-image: url('{% static 'images/text3.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">查看所有学生信息</p>
+                </a>
+                <a class="weui-grid" href="{% url 'admin:index' %}">
+                    <div style="background-image: url('{% static 'images/house.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">校园信息管理</p>
+                </a>
+                <a class="weui-grid" href="{% url 'add_student' %}">
+                    <div style="background-image: url('{% static 'images/bag.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">添加学生</p>
+                </a>
+                <a class="weui-grid" href="{% url 'add_batch' %}">
+                    <div style="background-image: url('{% static 'images/text2.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">批量添加师生</p>
+                </a>
+                <a class="weui-grid" href="{% url 'teacher_info' %}">
+                    <div style="background-image: url('{% static 'images/text2.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">查看所有教师信息</p>
+                </a>
+                <a class="weui-grid" >
+                    <div style="background-image: url('{% static 'images/text2.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">批量添加教师</p>
+                </a>
+                <a class="weui-grid" id="scoreCadreRewardPunish">
+                    <div style="background-image: url('{% static 'images/coffe.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">上传成绩、干部任职和奖惩情况</p>
+                </a>
+                <a class="weui-grid" id="calendar">
+                    <div style="background-image: url('{% static 'images/house.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">上传假期时间安排</p>
+                </a>
+            </div>
+        </div>
+        
+    </body>
+</html>

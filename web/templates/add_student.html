@@ -1,0 +1,98 @@
+﻿<!DOCTYPE html>
+<html style="height: 100%;">
+<head>
+    <title>添加学生</title>
+    <style>
+        /* 在这里添加你的CSS代码 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            height: 100%;  /* 添加这行 */
+            margin: 0;  /* 添加这行 */
+        }
+        #nav {
+            width: 200px;
+            float: left;
+            background-color: #3c8dbc;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            color: white;
+            font-family: 'Courier New', Courier, monospace;
+        }
+        #nav ul {
+            list-style-type: none;
+            padding: 0;
+            line-height: 2;  /* 增加行间距 */
+        }
+        #nav > ul > li > a {  /* 一级导航字体加粗 */
+            font-weight: bold;
+        }
+        #nav ul a {
+            text-decoration: none;
+            color: white;
+        }
+        #nav ul ul {
+            padding-left: 20px;
+        }
+        #content {
+            margin-left: 230px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
+            width: 500px;
+            margin: 0 auto;  /* 使添加界面居中 */
+        }
+        form {
+            background-color: #f0f0f0;
+            padding: 20px;
+            max-width: 500px;
+        }
+        form input, form button {
+            width: 100%;
+            margin-bottom: 20px;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+    </style>
+</head>
+<body>
+    <div id="nav">
+        <ul>
+            <li><a href="#">管理员主页</a></li>
+            <li>
+                <a href="#">学生信息管理</a>
+                <ul>
+                    <li><a href="#">二级导航1</a></li>
+                    <li><a href="#">二级导航2</a></li>
+                    <!-- 添加更多的二级导航 -->
+                </ul>
+            </li>
+            <li>
+                <a href="#">教师信息管理</a>
+                <ul>
+                    <li><a href="#">二级导航1</a></li>
+                    <li><a href="#">二级导航2</a></li>
+                    <!-- 添加更多的二级导航 -->
+                </ul>
+            </li>
+            <li><a href="#">网站内容更新</a></li>
+            <li><a href="#">学校动态更新</a></li>
+        </ul>
+    </div>
+    <div id="content">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">添加学生</button>
+        </form>
+    </div>
+    <script>
+        // 在这里添加你的JavaScript代码
+        document.querySelector('form').addEventListener('submit', function(event) {
+            // 在这里添加你的表单验证代码
+        });
+    </script>
+</body>
+</html>

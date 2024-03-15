@@ -1,0 +1,13 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>新闻详情</title>
+</head>
+<body>
+    <h1>{{ news.title }}</h1>
+    <p>提交时间：{{ news.add_time|date:"Y-m-d H:i:s" }}</p>
+    <div>{{ news.content|safe }}</div>
+</body>
+</html>
+
+

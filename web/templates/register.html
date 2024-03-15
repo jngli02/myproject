@@ -1,0 +1,53 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>家长注册</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/register.css' %}">
+</head>
+
+<body>
+    <h1>家长注册</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="username">用户名:</label>
+        <input id="username" type="text" name="username" required>
+        
+        <label for="password">密码:</label>
+        <input id="password" type="password" name="password" required>
+        
+        <label for="confirm_password">确认密码:</label>
+        <input id="confirm_password" type="password" name="confirm_password" required>
+        
+        <label for="parent_name">家长姓名:</label>
+        <input id="parent_name" type="text" name="parent_name" required>
+        
+        <label for="gender">性别:</label>
+        <select id="gender" name="gender" required>
+            <option value="男">男</option>
+            <option value="女">女</option>
+        </select>
+        
+        <label for="phone_number">电话号码:</label>
+        <input id="phone_number" type="tel" name="phone_number" required>
+        
+        <label for="email">邮箱:</label>
+        <input id="email" type="email" name="email" required>
+        
+        <label for="photo">上传本人照片:</label>
+        <input id="photo" type="file" name="photo" required>
+        
+        <label for="children">孩子的学号:</label>
+        <input id="children" type="text" name="children" required>
+        
+        <button type="submit">注册</button>
+    </form>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
+</html>

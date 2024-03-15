@@ -1,0 +1,104 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>学生信息</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>学生信息</h1>
+
+    <!-- 搜索框 -->
+    <form method="get" action="{% url 'student_info' %}">
+        <input type="text" name="student_id" placeholder="输入学号">
+        <button type="submit">搜索</button>
+    </form>
+
+
+    <!-- 学生信息表格 -->
+    <table id="students" class="table">
+        <thead>
+            <tr>
+                <th>学号</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>民族</th>
+                <th>班级</th>
+                <th>评价ID</th>
+                <th>成绩单ID</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+                <tr>
+                    <td>{{ student.student_id }}</td>
+                    <td>{{ student.name }}</td>
+                    <td>{{ student.gender }}</td>
+                    <td>{{ student.ethnicity }}</td>
+                    <td>{{ student.class_name }}</td>                   
+                    <td>{{ student.evaluation_id }}</td>
+                    <td>{{ student.transcript_id }}</td>
+                    <td>
+                        <a href="{% url 'update_student' student.id %}" class="btn btn-primary">修改</a>
+                        <!-- 使用表单来发送POST请求 -->
+                        <form method="post" action="{% url 'delete_student' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="delete_id" value="{{ student.id }}">
+                            <button class="btn btn-primary btn-action delete" data-id="{{ student.id }}">删除</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 分页器 -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if students.has_previous %}
+                <a href="?page=1">&laquo; 第一页</a>
+                <a href="?page={{ students.previous_page_number }}">上一页</a>
+            {% endif %}
+
+            <span class="current">
+                第 {{ students.number }} 页，共 {{ students.paginator.num_pages }} 页
+            </span>
+
+            {% if students.has_next %}
+                <a href="?page={{ students.next_page_number }}">下一页</a>
+                <a href="?page={{ students.paginator.num_pages }}">最后一页 &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+        var deleteButtons = document.querySelectorAll('.delete');
+        deleteButtons.forEach(function(button) {
+            button.addEventListener('click', function(e) {
+                e.preventDefault();
+                if (confirm('确定要删除吗？')) {
+                    var form = this.parentElement;
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', form.action, true);
+                    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                    xhr.setRequestHeader('X-CSRFToken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+                    xhr.onload = function() {
+                        var response = JSON.parse(xhr.responseText);
+                        if (response.status === 'success') {
+                            alert('删除成功！');
+                            location.reload();  // 刷新页面以更新学生列表
+                        } else {
+                            alert('删除失败：' + response.message);
+                        }
+                    };
+                    xhr.send(new URLSearchParams(new FormData(form)).toString());
+                }
+            });
+        });
+    });
+
+
+    </script>
+</body>
+</html>

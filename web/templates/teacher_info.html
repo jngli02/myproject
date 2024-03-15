@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>教师信息</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>教师信息</h1>
+
+    <!-- 搜索框 -->
+    <form method="get" action="{% url 'teacher_info' %}">
+        <input type="text" name="teacher_id" placeholder="输入教师编号">
+        <button type="submit">搜索</button>
+    </form>
+
+    <!-- 教师信息表格 -->
+    <table id="teachers" class="table">
+        <thead>
+            <tr>
+                <th>教师编号</th>
+                <th>默认用户名</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>授课班级</th>
+                <th>授课科目</th>
+                <th>电话号码</th>
+                <th>邮箱</th>
+                <th>职位</th>
+                <th>照片</th>
+                <th>操作</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for teacher in teachers %}
+                <tr>
+                    <td>{{ teacher.teacher_id }}</td>
+                    <td>{{ teacher.user}}</td>
+                    <td>{{ teacher.name }}</td>
+                    <td>{{ teacher.gender }}</td>
+                    <td>{{ teacher.class_name }}</td>
+                    <td>{{ teacher.subject }}</td>
+                    <td>{{ teacher.phone_number }}</td>
+                    <td>{{ teacher.email }}</td>
+                    <td>{{ teacher.position }}</td>
+                    <td>
+                        {% if teacher.photo %}
+                            <img src="{{ teacher.photo.url }}" alt="教师照片" width="50" height="50">
+                        {% else %}
+                            <form method="post" action="{% url 'update_photo' teacher.id %}" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="file" name="photo">
+                                <button type="submit">添加照片</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                    <!-- 操作按钮... -->
+                    <td>
+                        <a href="{% url 'update_teacher' teacher.id %}" class="btn btn-primary">修改</a>
+                        <!-- 使用表单来发送POST请求 -->
+                        <form action="{% url 'teacher_info' %}" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="teacher_id" value="{{ teacher.teacher_id }}">
+                            <button type="submit" class="delete">删除</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- 分页器 -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if teachers.has_previous %}
+                <a href="?page=1">« 第一页</a>
+                <a href="?page={{ teachers.previous_page_number }}">上一页</a>
+            {% endif %}
+
+            <span class="current">
+                第 {{ teachers.number }} 页，共 {{ teachers.paginator.num_pages }} 页
+            </span>
+
+            {% if teachers.has_next %}
+                <a href="?page={{ teachers.next_page_number }}">下一页</a>
+                <a href="?page={{ teachers.paginator.num_pages }}">最后一页 »</a>
+            {% endif %}
+        </span>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var deleteButtons = document.querySelectorAll('.delete');
+            deleteButtons.forEach(function(button) {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (confirm('确定要删除吗？')) {
+                        var form = this.parentElement;
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', form.action, true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.setRequestHeader('X-CSRFToken', form.querySelector('[name=csrfmiddlewaretoken]').value);
+                        xhr.onload = function() {
+                            if (xhr.status === 200) {
+                                alert('删除成功！');
+                                location.reload();  // 刷新页面以更新教师列表
+                            } else {
+                                alert('删除失败：' + xhr.responseText);
+                            }
+                        };
+                        xhr.send(new URLSearchParams(new FormData(form)).toString());
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

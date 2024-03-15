@@ -1,0 +1,50 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>登录</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/login.css' %}">
+</head>
+<body>
+    <header>
+        <div class="left">
+            <h1>家校沟通平台</h1>
+        </div>
+    </header>
+
+        <div class="left">
+            <nav>
+                <a href="#">首页</a>
+                <a href="{% url 'news_list' %}">最新动态</a>
+                <a href="#">网站新闻</a>
+                <a href="{% url 'admin_login' %}" id="admin">管理员登录</a>
+            </nav>
+        </div>
+            
+    <div class="login-container">
+    <h2>登录</h2>
+    <form method="post">
+        {% csrf_token %}
+        <label for="username">用户名:</label>
+        <input id="username" type="text" name="username" required>
+        <label for="password">密码:</label>
+        <input id="password" type="password" name="password" required>
+        <div class="user-type">
+            <label for="user_type">用户类型:</label>
+            <select id="user_type" name="user_type">
+                <option value="parent" selected>家长</option>
+                <option value="teacher">教师</option>
+            </select>
+        </div>
+
+        <button type="submit">登录</button>
+    </form>
+    <a href="{% url 'password_reset' %}">忘记密码?</a>
+    <a href="{% url 'register' %}">注册</a>
+    {% if error %}
+    <p>{{ error }}</p>
+    {% endif %}
+</div>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>新闻列表</title>
+</head>
+<body>
+    <h1>新闻列表</h1>
+    {% if news_added %}
+    <p>新闻已成功提交！</p>
+    {% endif %}
+    {% for new in news %}
+    <div>
+        <h2><a href="{% url 'news_detail' new.id %}">{{ new.title }}</a></h2>
+        <p>提交时间：{{ new.add_time|date:"Y-m-d H:i:s" }}</p>
+    </div>
+    {% endfor %}
+</body>
+</html>

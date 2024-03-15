@@ -1,0 +1,114 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cmn-Hans">
+    <head>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+        <title>学生信息管理系统</title>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}"/>
+        
+        
+       
+        <style type="text/css">
+        p {
+            font-family: Microsoft YaHei;
+        }
+        .container .page__hd {
+            margin: 20px 10px;
+        }
+        .container .page__hd img {
+            height: 60px;
+        }
+        .container .page__hd p {
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            margin-top: 10px;
+            background-image: url()
+        }
+        .weui-grids div {
+            height: 35px;
+            background-repeat: no-repeat;
+            background-position: center center;
+        }
+        </style>
+    </head>
+
+    <body>
+        <link rel="stylesheet" type="text/css" href="{% static 'css/iconfont.css' %}">
+        <div id="container" class="container">
+            <div class="page__hd">
+                <a href="/">
+                <img src="{% static 'images/logo.png' %}">
+                </a>
+                <p class="page__title">
+                   家校信息沟通平台
+                </p>
+            </div>
+            
+            <div class="user-info">
+                <span id="username">{{ request.session.username }}</span>  <!-- 显示用户名 -->
+                <div id="dropdown-menu" style="display: none;">
+                    <a href="{% url 'logout' %}">登出</a>
+                </div>
+            </div>
+
+            <div class="weui-grids">
+                <a class="weui-grid" href="{% url 'p_student_info'%}">
+
+                    <div style="background-image: url('{% static 'images/bag.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">学生信息</p>
+                </a>
+                <a class="weui-grid" id="watchScore">
+                    <div style="background-image: url('{% static 'images/text2.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">成绩查询</p>
+                </a>
+                <a class="weui-grid" id="watchCadre">
+                    <div style="background-image: url('{% static 'images/sign.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">干部任职</p>
+                </a>
+                <a class="weui-grid" id="watchRewardPunish">
+                    <div style="background-image: url('{% static 'images/text3.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">奖惩情况</p>
+                </a>
+                <a class="weui-grid">
+                    <div style="background-image: url('{% static 'images/house.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">专业培养计划</p>
+                </a>
+                <a class="weui-grid" id="leaves">
+                    <div style="background-image: url('{% static 'images/coffe.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">请销假记录</p>
+                </a>
+                <a class="weui-grid" id="watchCalendar">
+                    <div style="background-image: url('{% static 'images/text1.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">假期时间安排</p>
+                </a>
+                <a class="weui-grid" id="credit">
+                    <div style="background-image: url('{% static 'images/text4.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">毕业学分要求</p>
+                </a>
+                <a class="weui-grid" id="ask">
+                    <div style="background-image: url('{% static 'images/text1.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">我要提问</p>
+                </a>
+                <a class="weui-grid" id="watchReply">
+                    <div style="background-image: url('{% static 'images/text1.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">查看提问回答</p>
+                </a>
+            </div>
+        </div>
+        <script src="{% static 'js/index.js' %}"></script>
+        
+    </body>
+</html>

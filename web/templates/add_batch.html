@@ -1,0 +1,73 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>批量添加信息</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>批量添加教师信息</h1>
+
+    <!-- 下载教师模板按钮 -->
+    <a href="{% static 'file/teacher_template.xlsx' %}" download>
+        <button>下载教师信息模板</button>
+    </a>
+
+    <!-- 上传教师Excel文件的表单 -->
+    <form id="upload-teacher-form" action="/upload_teacher" method="post" enctype="multipart/form-data">
+        <label for="file">选择教师文件:</label>
+        <input type="file" id="file" name="file" accept=".xlsx">
+        <input type="submit" value="上传教师信息">
+    </form>
+
+    <h1>批量添加学生信息</h1>
+
+    <!-- 下载学生模板按钮 -->
+    <a href="{% static 'file/student_template.xlsx' %}" download>
+        <button>下载学生信息模板</button>
+    </a>
+
+    <!-- 上传学生Excel文件的表单 -->
+    <form id="upload-student-form" action="/upload_student" method="post" enctype="multipart/form-data">
+        <label for="file">选择学生文件:</label>
+        <input type="file" id="file" name="file" accept=".xlsx">
+        <input type="submit" value="上传学生信息">
+    </form>
+
+    <script>
+    $('#upload-teacher-form').submit(function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: formData,
+            success: function(data) {
+                alert('教师信息文件上传成功！');
+                window.location.href = '/upload';
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+
+    $('#upload-student-form').submit(function(e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: formData,
+            success: function(data) {
+                alert('学生信息文件上传成功！');
+                window.location.href = '/upload';
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+    </script>
+</body>
+</html>

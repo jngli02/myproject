@@ -1,0 +1,38 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>学生信息</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body>
+    <h1>学生信息</h1>
+
+    <!-- 学生信息表格 -->
+    <table id="children" class="table">
+        <thead>
+            <tr>
+                <th>学号</th>
+                <th>姓名</th>
+                <th>性别</th>
+                <th>民族</th>
+                <th>年级</th>
+                <th>班级</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for child in children %}
+                <tr>
+                    <td>{{ child.student_id }}</td>
+                    <td>{{ child.name }}</td>
+                    <td>{{ child.get_gender_display }}</td>
+                    <td>{{ child.ethnicity }}</td>
+                    <td>{{ child.grade }}</td>
+                    <td>{{ child.class_id }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+</body>
+</html>
