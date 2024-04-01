@@ -1,0 +1,100 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>表格标题格式化</title>
+    <!-- 导入 Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <!-- 导入 jQuery JS 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+</head>
+<body class="gray-bg">
+    <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table"></table>
+            </div>
+        </div>
+    </div>
+    <!-- Bootstrap JS 文件 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- 表格标题格式化所需的其他 JavaScript 代码 -->
+    <script>
+        var prefix = ctx + "demo/table";
+        var datas = [[${@dict.getType('sys_normal_disable')}]];
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                showSearch: false,
+                showRefresh: false,
+                showToggle: false,
+                showColumns: false,
+                headerStyle: headerStyle,
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'userId', 
+                    title : '用户ID'
+                },
+                {
+                    field : 'userCode', 
+                    title : '用户编号'
+                },
+                {
+                    field : 'userName', 
+                    title : '用户姓名'
+                },
+                {
+                    field : 'userPhone', 
+                    title : '用户手机'
+                },
+                {
+                    field : 'userEmail', 
+                    title : '用户邮箱'
+                },
+                {
+                    field : 'userBalance',
+                    title : '用户余额'
+                },
+                {
+                    field: 'status',
+                    title: '用户状态',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        return $.table.selectDictLabel(datas, value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="btn btn-success btn-xs" href="#"><i class="fa fa-edit"></i>编辑</a> ');
+                        actions.push('<a class="btn btn-danger btn-xs" href="#"><i class="fa fa-remove"></i>删除</a>');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+
+        function headerStyle(column) {
+            return {
+                userId: {
+                    classes: 'uppercase'
+                },
+                userName: {
+                    css: { background: 'yellow' }
+                },
+                userBalance: {
+                    css: { color: 'red' }
+                }
+            } [column.field]
+        }
+    </script>
+</body>
+</html>

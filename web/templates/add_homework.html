@@ -1,0 +1,97 @@
+﻿<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <title>新增作业</title>
+    <!-- 引入 Flatpickr CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <style>
+        .preview {
+            max-width: 200px;
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <form id="form-add-homework" method="post" action="{% url 'add_homework' teacher_id=teacher.id %}"  enctype="multipart/form-data">
+            {% csrf_token %}
+            <div>
+                <label>教师姓名：</label>
+                <div>{{ teacher.name }}</div>
+            </div>
+            <div>
+                <label>授课班级：</label>
+                <div>
+                    <select name="class_group">
+                        {% for class_group in teacher.class_groups.all %}
+                            <option value="{{ class_group.id }}">{{ class_group }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label>课程名称：</label>
+                <div>{{ teacher.subject }}</div>
+            </div>
+            <div>
+                <label>作业标题：</label>
+                <div><input name="title" type="text"></div>
+            </div>
+            <div>    
+                <label>作业内容：</label>
+                <div>
+                    <textarea name="content" id="content" cols="80" rows="10"></textarea>
+                </div>
+            </div>
+            <div><input name="start_time" type="text" class="flatpickr" data-enable-time="true" data-date-format="Y-m-d H:i" placeholder="选择开始时间"></div>
+            <div><input name="end_time" type="text" class="flatpickr" data-enable-time="true" data-date-format="Y-m-d H:i" placeholder="选择截止时间"></div>
+
+            <div>
+                <label>备注信息：</label>
+                <div><input name="remark" type="text" value=""></div>
+            </div>
+            <div>
+                <label for="file">附件：</label>
+                <input type="file" name="file" id="file">
+            </div>
+
+            <div>
+                <button type="submit">发布作业</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Include CKEditor -->
+    <script src="https://cdn.ckeditor.com/4.22.1/standard/ckeditor.js"></script>
+    <script>
+        // Initialize CKEditor
+        CKEDITOR.replace('content', 'default');
+    </script>
+
+
+    <!-- 引入 Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        flatpickr(".flatpickr", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i:S",
+            time_24hr: true,
+            locale: "zh",
+            allowInput: true,
+        });
+
+        // 预览附件
+        document.querySelectorAll('.attachment input[type=file]').forEach(function(input) {
+            input.addEventListener('change', function(event) {
+                var file = event.target.files[0];
+                var reader = new FileReader();
+                var preview = event.target.nextElementSibling;
+                reader.onload = function(event) {
+                    preview.src = event.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+        });
+    </script>
+</body>
+</html>

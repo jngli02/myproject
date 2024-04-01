@@ -1,0 +1,4 @@
+DELETE  from web_submission;
+DELETE  from web_studenthomework;
+DELETE  from web_homework;
+ DELETE  from web_attachment;

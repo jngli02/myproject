@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>教师课程表</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>教师课程表</h1>
+        <h2>您教授的科目：{{ subject }}</h2>
+        {% for class_group, class_timetable in timetable.items %}
+        <h2>{{ class_group }}</h2>
+        <table class="table table-bordered">
+            <tr>
+                <th></th>
+                <th>星期一</th>
+                <th>星期二</th>
+                <th>星期三</th>
+                <th>星期四</th>
+                <th>星期五</th>
+            </tr>
+            {% for time_range, day_schedule in class_timetable.items %}
+            <tr>
+                <td class="time-column">{{ time_range.0 }} - {{ time_range.1 }}</td>
+                <td>{{ day_schedule.星期一 }}</td>
+                <td>{{ day_schedule.星期二 }}</td>
+                <td>{{ day_schedule.星期三 }}</td>
+                <td>{{ day_schedule.星期四 }}</td>
+                <td>{{ day_schedule.星期五 }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        
+        <!-- 显示当前正在上课的信息 -->
+        <h3>当前正在上课</h3>
+        <table class="table table-bordered">
+            <tr>
+                <th>班级</th>
+                <th>当前课程</th>
+            </tr>
+            {% for class_group, current_schedule in class_current_schedules.items %}
+            <tr>
+                <td>{{ class_group }}</td>
+                <td>{{ current_schedule }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+        {% endfor %}
+    </div>
+</body>
+</html>

@@ -27,6 +27,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     
     #主页
+    path('', views.home, name='home'), 
     path('admin/', admin.site.urls),
     path('login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
@@ -36,6 +37,11 @@ urlpatterns = [
     path('p_home/',views.p_home, name='p_home'),
     #path('t_home/',views.t_home, name='t_home'),
     path('a_home/',views.a_home, name='a_home'),
+    path('upload_holiday_schedule',views.upload_holiday_schedule, name='upload_holiday_schedule'),
+    path('calendar',views.calendar, name='calendar'),
+    path('add_classschedule',views.add_classschedule, name='add_classschedule'),
+    path('p_classschedule',views.p_classschedule, name='p_classschedule'),
+
     
     #管理员界面
     path('admin_login/',views.admin_login_view,name='admin_login'),
@@ -44,6 +50,7 @@ urlpatterns = [
     path('student_info', views.student_info, name='student_info'),
     path('delete_student', views.delete_student, name='delete_student'),
     path('update_student/<int:student_id>/', views.update_student, name='update_student'),
+    path('create_class', views.create_class, name='create_class'),
     
     #path('add_news', views.add_news, name='add_news'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
@@ -58,12 +65,28 @@ urlpatterns = [
     
     #家长界面
     path('p_student_info', views.p_student_info, name='p_student_info'),
-    
+    path('class_group/<int:class_id>/', views.class_group, name='class_group'),
+    path('homework_info', views.homework_info, name='homework_info'),
+    path('leave_request/', views.leave_request, name='leave_request'),
 
 
     #教师界面
-   path('t_home', views.t_home, name='t_home'),
-   path('t_student_info', views.t_student_info, name='t_student_info'),
+    path('t_home', views.t_home, name='t_home'),
+    path('t_student_info', views.t_student_info, name='t_student_info'),
+    path('evaluation/<int:student_id>/', views.evaluation, name='evaluation'),
+    path('evaluation_history/<int:student_id>/', views.evaluation_history, name='evaluation_history'),
+    path('upload_grades', views.t_add_grades, name='t_add_grades'),
+    path('s_exam_scores/<int:student_id>/', views.s_exam_scores, name='s_exam_scores'),
+    path('class_exam_scores/<int:class_id>/', views.class_exam_scores, name='class_exam_scores'),
+    path('add_homework/<str:teacher_id>/', views.add_homework, name='add_homework'),
+    path('view_homework_submissions', views.view_homework_submissions, name='view_homework_submissions'),
+    path('t_classschedule',views.t_classschedule, name='t_classschedule'),
+    path('leave_approval',views.leave_approval, name='leave_approval'),
 
+    path('user_detail/<int:user_id>/', views.user_detail, name='user_detail'),
+    path('direct_chat/<int:user_id>/<int:class_id>/', views.direct_chat, name='direct_chat'),
+    
+    path('submit_homework/<int:homework_id>/<int:student_id>/', views.submit_homework, name='submit_homework'),
+    path('view_submissions/<int:homework_id>/', views.view_submissions, name='view_submissions'),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

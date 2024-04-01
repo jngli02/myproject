@@ -9,7 +9,10 @@
     <!-- 显示班级列表 -->
     <ul>
         {% for class_group in class_groups %}
-            <li><a href="?class_id={{ class_group.id }}">{{ class_group.name }}</a></li>
+            <li>
+                <a href="?class_id={{ class_group.id }}">{{ class_group }}</a>
+                <a href="{% url 'class_exam_scores' class_group.id %}">班级成绩</a>
+            </li>
         {% endfor %}
     </ul>
 
@@ -17,16 +20,14 @@
     <h2>学生列表</h2>
     <ul>
         {% for student in students %}
-            <li>{{ student.name }} - {{ student.student_id }}</li>
+            <li>
+                {{ student.name }} - {{ student.student_id }}
+                <!-- 添加综合评价和考试成绩单链接 -->
+                <a href="{% url 'evaluation' student.id %}">综合评价</a>
+                <a href="{% url 's_exam_scores' student.id %}">考试成绩</a>
+            </li>
         {% endfor %}
     </ul>
-
-    <!-- 添加综合评价和考试成绩单 -->
-    <h2>添加综合评价和考试成绩单</h2>
-    <form method="post">
-        {% csrf_token %}
-        <!-- 表单字段 -->
-        <button type="submit">提交</button>
-    </form>
 </body>
 </html>
+

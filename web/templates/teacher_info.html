@@ -37,7 +37,7 @@
                     <td>{{ teacher.user}}</td>
                     <td>{{ teacher.name }}</td>
                     <td>{{ teacher.gender }}</td>
-                    <td>{{ teacher.class_name }}</td>
+                    <td>{{ teacher.class_groups }}</td>
                     <td>{{ teacher.subject }}</td>
                     <td>{{ teacher.phone_number }}</td>
                     <td>{{ teacher.email }}</td>
@@ -57,7 +57,7 @@
                     <td>
                         <a href="{% url 'update_teacher' teacher.id %}" class="btn btn-primary">修改</a>
                         <!-- 使用表单来发送POST请求 -->
-                        <form action="{% url 'teacher_info' %}" method="post">
+                        <form action="{% url 'delete_teacher' %}" method="post">
                             {% csrf_token %}
                             <input type="hidden" name="teacher_id" value="{{ teacher.teacher_id }}">
                             <button type="submit" class="delete">删除</button>

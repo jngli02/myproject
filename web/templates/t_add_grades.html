@@ -1,0 +1,47 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>批量添加学生成绩</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <h1>批量添加学生成绩</h1>
+
+    <!-- 下载学生成绩模板按钮 -->
+    <a href="{% static 'file/grades_template.xlsx' %}" download>
+        <button>下载学生成绩模板</button>
+    </a>
+
+    <!-- 上传学生成绩Excel文件的表单 -->
+    <form id="upload-grades-form" action="/upload_grades" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file">选择学生成绩文件:</label>
+        <input type="file" id="file" name="file" accept=".xlsx">
+        <input type="submit" value="上传学生成绩">
+    </form>
+
+    <script>
+        // 当上传表单提交时执行以下代码
+        $('#upload-grades-form').submit(function(e) {
+            e.preventDefault(); // 阻止表单默认提交行为
+            var formData = new FormData(this); // 创建表单数据对象
+            $.ajax({
+                url: '/upload_grades', // 设置上传文件的URL
+                type: 'POST', // 请求类型为POST
+                data: formData, // 设置表单数据
+                success: function(data) { // 当请求成功时执行的回调函数
+                    alert('学生成绩文件上传成功！'); // 显示成功上传提示
+                    window.location.reload(); // 刷新页面
+                },
+                error: function(xhr, status, error) { // 当请求失败时执行的回调函数
+                    alert('上传失败，请检查文件格式或稍后重试！'); // 显示上传失败提示
+                },
+                cache: false, // 禁止缓存
+                contentType: false, // 禁止设置请求头类型
+                processData: false // 禁止自动处理数据
+            });
+        });
+    </script>
+</body>
+</html>

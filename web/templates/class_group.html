@@ -1,0 +1,241 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ class_group }}</title>
+    <style>
+        /* 样式 */
+        /* 群成员下拉菜单样式 */
+
+        .member-dropdown-container {
+            position: fixed;
+            top: 10px;
+            right: 600px; /* 控制按钮距离屏幕右侧的距离 */
+        }
+
+        .member-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .member-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 500px;
+            max-height: 200px; /* 限制下拉列表的最大高度 */
+            overflow-y: auto; /* 添加垂直滚动条 */
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .member-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .member-dropdown:hover .member-dropdown-content {
+            display: block;
+        }
+            /* 头像样式 */
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* 用户名样式 */
+        .username {
+            font-weight: bold;
+        }
+
+        /* 在线状态样式 */
+        .status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        /* 在线状态颜色 */
+        .online {
+            background-color: green;
+        }
+
+        .offline {
+            background-color: gray;
+        }
+
+        /* 按钮组样式 */
+        .btn-group {
+            display: inline-block; /* 设置为行内块元素 */
+            margin-left: 10px; /* 设置按钮之间的间距 */
+        }
+
+        /* 按钮样式 */
+        .btn-detail, .btn-chat {
+            padding: 5px 10px; /* 按钮内边距 */
+            font-size: 12px; /* 按钮字体大小 */
+        }
+
+
+        /* 聊天区域样式 */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 1400px;
+            height: 500px;
+            border: 1px solid #ccc;
+            overflow-y: auto; /* 添加垂直滚动条 */
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            max-width: 70%; /* 控制消息框最大宽度 */
+        }
+
+        .own-message {
+            background-color: #DCF8C6; /* 自己发送的消息颜色 */
+            align-self: flex-end; /* 将自己发送的消息右对齐 */
+            max-width: 40%; /* 设置消息的最大宽度为40% */
+            margin-left: auto; /* 消息框左侧外边距设置为auto，使其水平居中 */
+        }
+
+        .other-message {
+            background-color: #E8E8E8; /* 别人发送的消息颜色 */
+            align-self: flex-start; /* 将别人发送的消息左对齐 */
+            max-width: 40%; /* 设置消息的最大宽度为40% */
+            margin-right: auto; /* 消息框右侧外边距设置为auto，使其水平居中 */
+        }
+
+        /* 输入框样式 */
+        .input-container {
+            position: fixed;
+            bottom: 0;
+            right: 20px;
+            width: 300px;
+        }
+
+        .input-box {
+            width: calc(100% - 60px); /* 输入框宽度减去发送按钮宽度 */
+        }
+
+        .send-button {
+            width: 50px;
+        }
+
+        /* 表情按钮样式 */
+    #emoji-button {
+        cursor: pointer; /* 鼠标悬停时变为手形 */
+        /* 在这里添加更多样式 */
+    }
+
+    /* 表情选择面板样式 */
+    #emoji-panel {
+        display: none; /* 默认隐藏 */
+        position: absolute; /* 使用绝对定位 */
+        width: 200px; /* 宽度 */
+        height: 200px; /* 高度 */
+        overflow-y: auto; /* 如果内容超出高度，则显示滚动条 */
+        /* 在这里添加更多样式 */
+    }
+
+    /* 表情样式 */
+    .emoji {
+        cursor: pointer; /* 鼠标悬停时变为手形 */
+        /* 在这里添加更多样式 */
+    }
+    </style>
+</head>
+<body>
+    <h1>{{ class_group }}
+    </h1>
+
+    <!-- 群成员按钮 -->
+    <div class="member-dropdown-container">
+        <div class="member-dropdown">
+            <button class="member-dropdown-btn">群成员</button>
+            <div class="member-dropdown-content">
+                <h2>教师</h2>
+                {% for teacher_info_all in teachers_info_all %}
+                    <div class="user-info">
+                        <img src="{{ teacher_info_all.avatar_url }}" class="avatar"> <!-- 头像 -->
+                        <span class="username">{{ teacher_info_all.name }}（{{ teacher_info_all.subject }}）</span> <!-- 用户名 -->
+                        <!-- 检查用户是否在线，并设置相应的样式 -->
+                        
+                        {% if teacher_info_all.is_online %}
+                            <span class="status online"></span>
+                        {% else %}
+                            <span class="status offline"></span>
+                        {% endif %}
+                        <span class="btn-group">
+                            <a href="{% url 'user_detail' user_id=teacher_info_all.user_id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
+                            
+                            <a href="{% url 'direct_chat' user_id=teacher_info_all.user_id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a><!-- 发起私聊链接 -->
+                        </span>
+                    </div>
+                {% endfor %}
+                <h2>家长</h2>
+                {% for parent_info_all in parents_info_all %}
+                    <div class="user-info">
+                        <img src="{{ parent_info_all.avatar_url }}" class="avatar"> <!-- 头像 -->
+                        <span class="username">{{ parent_info_all.username }}（{{ parent_info_all.children|safe }}家长）</span> <!-- 用户名 -->
+                        <!-- 检查用户是否在线，并设置相应的样式 -->
+                        {% if parent_info_all.is_online %}
+                            <span class="status online"></span>
+                        {% else %}
+                            <span class="status offline"></span>
+                        {% endif %}
+                        <span class="btn-group">
+                            <a href="{% url 'user_detail' user_id=parent_info_all.user_id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
+                            <a href="{% url 'direct_chat' user_id=parent_info_all.user_id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a> <!-- 发起私聊链接 -->
+                        </span>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- 聊天区域 -->
+    <div class="chat-container" id="chat-container">
+        <!-- 历史聊天消息将在此处显示 -->
+        {% for message in messages %}
+             <div class="message {% if message.sender == user %}own-message{% else %}other-message{% endif %}">
+                 <p><strong>{{ message.sender }}</strong>: {{ message.content }}</p>
+            </div>
+        {% endfor %}
+    </div>
+
+
+    <!-- 输入框 -->
+    <form id="message-form" class="input-container" method="POST" action="/class_group/{{ class_id }}/"> <!-- 将 action 属性指定为后端处理函数的URL -->
+        {% csrf_token %}
+        <input type="file" id="image-upload" accept="image/*"> <!-- 添加图片按钮 -->
+        <input type="text" class="input-box" id="message-input" name="content" placeholder="Type your message here...">
+        <button type="button" id="emoji-button" class="emoji-button">😊</button> <!-- 表情选择按钮 -->
+        <input type="submit" class="send-button" value="Send">
+    </form>
+
+    <!-- JavaScript -->
+    <script>
+    // 表情选择按钮点击事件处理程序
+    document.getElementById('emoji-button').addEventListener('click', function() {
+        // 在此处显示表情选择面板或调用相应的表情选择工具库
+    });
+
+    // 图片上传按钮变化事件处理程序
+    document.getElementById('image-upload').addEventListener('change', function(event) {
+        var file = event.target.files[0];
+        // 在此处处理上传图片的逻辑，例如显示预览图等
+    });
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+﻿<!-- add_classschedule.html -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>上传课程表</title>
+</head>
+<body>
+    <h2>上传课程表</h2>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" name="file" accept=".xlsx, .xls">
+        <button type="submit">上传</button>
+    </form>
+</body>
+</html>

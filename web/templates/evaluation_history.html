@@ -1,0 +1,38 @@
+﻿<!-- evaluation_history.html -->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>历史评价</title>
+</head>
+<body>
+    <h1>历史评价记录</h1>
+
+    <table>
+        <tr>
+            <th>日期</th>
+            <th>课堂表现</th>
+            <th>作业完成情况</th>
+            <th>自学表现</th>
+            <th>课堂活动表现</th>
+            <th>学生纪律</th>
+            <th>课堂贡献</th>
+            <th>心理健康</th>
+            <th>身体素质</th>
+        </tr>
+    {% for evaluation in evaluations %}
+        <tr>
+            <td>{{ evaluation.date }}</td>
+            <td>{{ evaluation.class_performance }}</td>
+            <td>{{ evaluation.homework_completion }}</td>
+            <td>{{ evaluation.self_study_performance }}</td>
+            <td>{{ evaluation.class_activity_performance }}</td>
+            <td>{{ evaluation.student_discipline }}</td>
+            <td>{{ evaluation.class_contribution }}</td>
+            <td>{{ evaluation.mental_health }}</td>
+            <td>{{ evaluation.physical_fitness }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</body>
+</html>

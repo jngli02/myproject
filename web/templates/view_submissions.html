@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>查看作业提交</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #dddddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h2>作业：{{ homework.title }} 的提交情况</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>学生姓名</th>
+                <th>提交时间</th>
+                <th>学生答案</th>
+                <th>附件</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for submission in submissions %}
+            <tr>
+                <td>{{ submission.student_homework.student.name }}</td>
+                <td>{{ submission.submitted_at }}</td>
+                <td>{{ submission.answer }}</td>
+                <td>
+                    {% if submission.attachment %}
+                        <a href="{{ submission.attachment.url }}" download>{{ submission.attachment.name }}</a>
+                    {% else %}
+                        无
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

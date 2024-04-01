@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>请销假记录 </title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<!-- 请销假记录列表 -->
+<h1>请销假记录</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th scope="col">学生姓名</th>
+            <th scope="col">开始日期</th>
+            <th scope="col">结束日期</th>
+            <th scope="col">原因</th>
+            <th scope="col">操作</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for request in leave_requests %}
+        <tr>
+            <td>{{ request.student.name }}</td>
+            <td>{{ request.start_date }}</td>
+            <td>{{ request.end_date }}</td>
+            <td>{{ request.reason }}</td>
+            <td>
+                <form method="post" action="{% url 'leave_approval' %}">
+                    {% csrf_token %}
+                    <input type="hidden" name="request_id" value="{{ request.id }}">
+                       
+                    {% if request.end_date >= now %}
+                        <button type="submit" name="action" value="approve" class="btn btn-success">批准</button>
+                        <button type="submit" name="action" value="reject" class="btn btn-danger">拒绝</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-success" disabled>批准</button>
+                        <button type="submit" class="btn btn-danger" disabled>拒绝</button>
+                    {% endif %}
+                    {% if request.end_date < now %}
+                        <button type="submit" name="action" value="cancel" class="btn btn-warning">销假</button>
+                        <button type="submit" name="action" value="not_returned" class="btn btn-danger">未返校</button>
+                    {% else %}
+                        <button type="submit" class="btn btn-warning" disabled>销假</button>
+                        <button type="submit" class="btn btn-danger" disabled>未返校</button>
+                    {% endif %}
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- 模态框 -->
+<div class="modal" tabindex="-1" role="dialog" id="permissionDeniedModal">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">权限错误</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>您不是班主任，无法进行此操作。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>

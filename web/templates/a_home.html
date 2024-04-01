@@ -44,6 +44,11 @@
                 </p>
             </div>
             <div class="weui-grids">
+                <a class="weui-grid" href="{% url 'create_class' %}">
+                    <div style="background-image: url('{% static 'images/text3.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">创建班级</p>
+                </a>
                 <a class="weui-grid" href="{% url 'student_info' %}">
                     <div style="background-image: url('{% static 'images/text3.png' %}')">
                     </div>
@@ -69,20 +74,15 @@
                     </div>
                     <p class="weui-grid__label">查看所有教师信息</p>
                 </a>
-                <a class="weui-grid" >
-                    <div style="background-image: url('{% static 'images/text2.png' %}')">
-                    </div>
-                    <p class="weui-grid__label">批量添加教师</p>
-                </a>
-                <a class="weui-grid" id="scoreCadreRewardPunish">
-                    <div style="background-image: url('{% static 'images/coffe.png' %}')">
-                    </div>
-                    <p class="weui-grid__label">上传成绩、干部任职和奖惩情况</p>
-                </a>
-                <a class="weui-grid" id="calendar">
+                <a class="weui-grid" href="{% url 'upload_holiday_schedule' %}">
                     <div style="background-image: url('{% static 'images/house.png' %}')">
                     </div>
                     <p class="weui-grid__label">上传假期时间安排</p>
+                </a>
+                <a class="weui-grid" href="{% url 'add_classschedule' %}">
+                    <div style="background-image: url('{% static 'images/house.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">上传课表</p>
                 </a>
             </div>
         </div>

@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>提交作业</title>
+    <!-- 富文本编辑器的样式 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ckeditor@4.16.2/full-all/contents.css">
+</head>
+<body>
+    <h2>提交作业：{{ homework.title }}</h2>
+    <h3>作业详情：</h3>
+    <p>{{ homework.content | safe }}</p>
+    <p>开始时间：{{ homework.start_time }}</p>
+    <p>结束时间：{{ homework.end_time }}</p>
+    <p>备注：{{ homework.remark }}</p>
+    <!-- 提交作业表单 -->
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="answer">答题框：</label><br>
+        <textarea id="answer" name="answer" rows="10" cols="50"></textarea><br>
+        <label for="attachment">上传附件：</label><br>
+        <input type="file" id="attachment" name="attachment"><br>
+        <!-- 提交按钮 -->
+        <button type="submit">提交作业</button>
+    </form>
+
+    <!-- 富文本编辑器脚本 -->
+    <script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
+    <script>
+        // 启用富文本编辑器
+        CKEDITOR.replace('answer');
+    </script>
+</body>
+</html>

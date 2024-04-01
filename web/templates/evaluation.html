@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>综合评价</title>
+    <script>
+        // 页面加载时根据 submitted_evaluation_exists 变量的值禁用提交按钮和表单字段
+        window.onload = function() {
+            var submittedEvaluationExists = "{{ submitted_evaluation_exists }}";
+            if (submittedEvaluationExists === "True") {
+                document.getElementById("submitButton").disabled = true;
+                document.getElementById("saveButton").disabled = true;
+                var inputs = document.getElementById("evaluationForm").getElementsByTagName("input");
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].disabled = true;
+                }
+            }
+        };
+
+        // 处理提交成功后的弹窗提示
+        function showAlert() {
+            alert("提交成功！");
+        }
+    </script>
+</head>
+<body>
+    <h1>{{ student.name }}的综合评价</h1>
+
+    <p>学生姓名：{{ student.name }}</p>
+    <p>当前时间：{{ current_time }}</p>
+
+    <form method="post" id="evaluationForm">
+        {% csrf_token %}
+        <!-- 显示表单的内容 -->
+        {{ form.as_p }}
+        <button type="submit" name="save" id="saveButton">保存</button>
+        <button type="submit" name="submit" id="submitButton" onclick="showAlert()">提交</button>
+    </form>
+    <a href="{% url 'evaluation_history' student.id %}">查看历史评价</a>
+    {% if alert_message %}
+    <script type="text/javascript">
+        alert("{{ alert_message }}");
+    </script>
+    {% endif %}
+
+    {% if evaluation.status == 'submitted' %}
+    <script type="text/javascript">
+        // 禁用提交按钮和所有的输入框
+        document.getElementById("submitButton").disabled = true;
+        document.getElementById("saveButton").disabled = true;
+        var inputs = document.getElementById("evaluationForm").getElementsByTagName("input");
+        for (var i = 0; i < inputs.length; i++) {
+            inputs[i].disabled = true;
+        }
+    </script>
+    {% endif %}
+</body>
+</html>

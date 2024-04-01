@@ -1,0 +1,145 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>作业查看</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .modal-content {
+            border-radius: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        {% for item in homework_list %}
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">{{ item.child.name }}的作业</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>标题</th>
+                                <th>开始时间</th>
+                                <th>结束时间</th>
+                                <th>备注</th>
+                                <th>状态</th>
+                                <th>附件</th>
+                                <th>提交状态</th>
+                                <th>批改状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for info in item.submission_info %}
+                            <tr>
+                                <td>{{ info.homework.title }}</td>
+                                <td>{{ info.homework.start_time }}</td>
+                                <td>{{ info.homework.end_time }}</td>
+                                <td>{{ info.homework.remark }}</td>
+                                <td>
+                                    {% if info.homework.status == "未开始" or info.homework.status == "已超时" %}
+                                    <span class="text-danger">{{ info.homework.status }}</span>
+                                    {% else %}
+                                    {{ info.homework.status }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if info.homework.attachments.exists %}
+                                    {% for attachment in info.homework.attachments.all %}
+                                    <a href="{{ attachment.file.url }}" download>{{ attachment.file.name }}</a><br>
+                                    {% endfor %}
+                                    {% else %}
+                                    无附件
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if info.student_homework %}
+                                    {% if info.student_homework.submitted %}
+                                    已提交
+                                    {% else %}
+                                    未提交
+                                    {% endif %}
+                                    {% else %}
+                                    未提交
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if info.student_homework %}
+                                    {% if info.student_homework.graded %}
+                                    已批改
+                                    {% else %}
+                                    未批改
+                                    {% endif %}
+                                    {% else %}
+                                    未批改
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if info.homework.status != "未开始" and info.homework.status != "已超时" %}
+                                    {% if not info.student_homework or not info.student_homework.submitted %}
+                                    <a href="{% url 'submit_homework' homework_id=info.homework.id student_id=item.child.id %}" class="btn btn-primary">提交作业</a>
+                                    {% else %}
+                                    <span class="text-danger">已提交</span>
+                                    {% endif %}
+                                    {% else %}
+                                    <span class="text-danger">{{ info.homework.status }}</span>
+                                    {% endif %}
+                                    <!-- 查看提交按钮 -->
+                                    <a href="{% url 'view_submissions' homework_id=info.homework.id %}" class="btn btn-info">查看提交</a>
+                                    <!-- 查看批阅按钮 -->
+                                    <button onclick="openGradingModal('{{ info.grading }}', '{{ info.approval_comment }}')" class="btn btn-success">查看批阅</button>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- 查看批阅模态框 -->
+    <div id="gradingModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">批阅内容</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>评分: <span id="grading"></span></p>
+                    <p>审批意见: <span id="approvalComment"></span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+    // 打开模态框并显示批阅内容
+    function openGradingModal(grading, approvalComment) {
+        $('#gradingModal').modal('show'); // 使用 Bootstrap 提供的方法显示模态框
+        // 将评分和批阅意见显示在模态框中
+        document.getElementById("grading").innerText = grading || "无";
+        document.getElementById("approvalComment").innerText = approvalComment || "无";
+    }
+
+    // 使用 Bootstrap 提供的模态框关闭事件
+    $('#gradingModal').on('hidden.bs.modal', function () {
+        // 模态框隐藏时不需要额外的操作，因为 Bootstrap 会自动处理
+    });
+</script>
+
+</body>
+</html>

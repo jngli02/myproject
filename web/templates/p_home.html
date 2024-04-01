@@ -46,6 +46,9 @@
                    家校信息沟通平台
                 </p>
             </div>
+
+            <!-- 引用用户登录框 -->
+            {% include 'user_login_box.html' %}
             
             <div class="user-info">
                 <span id="username">{{ request.session.username }}</span>  <!-- 显示用户名 -->
@@ -56,56 +59,45 @@
 
             <div class="weui-grids">
                 <a class="weui-grid" href="{% url 'p_student_info'%}">
-
                     <div style="background-image: url('{% static 'images/bag.png' %}')">
                     </div>
                     <p class="weui-grid__label">学生信息</p>
                 </a>
-                <a class="weui-grid" id="watchScore">
-                    <div style="background-image: url('{% static 'images/text2.png' %}')">
-                    </div>
-                    <p class="weui-grid__label">成绩查询</p>
-                </a>
-                <a class="weui-grid" id="watchCadre">
+
+                {% for child in children %}
+                    {% if child.class_group %}
+                        {% if forloop.first %}  <!-- Check if it is the first child -->
+                            <a class="weui-grid" href="{% url 'class_group' class_id=child.class_group.id %}">
+                                <div style="background-image: url('{% static 'images/text2.png' %}')">
+                                </div>
+                                <p class="weui-grid__label" >{{ child.class_group }}</p>  <!-- Display class name -->
+                            </a>
+                        {% endif %}
+                    {% endif %}
+                {% endfor %}
+
+                
+                <a class="weui-grid" href="{% url 'homework_info'%}">
                     <div style="background-image: url('{% static 'images/sign.png' %}')">
                     </div>
-                    <p class="weui-grid__label">干部任职</p>
+                    <p class="weui-grid__label">学生作业</p>
                 </a>
-                <a class="weui-grid" id="watchRewardPunish">
+                <a class="weui-grid" href="{% url 'p_classschedule'%}">
                     <div style="background-image: url('{% static 'images/text3.png' %}')">
                     </div>
-                    <p class="weui-grid__label">奖惩情况</p>
+                    <p class="weui-grid__label">学生课表</p>
                 </a>
-                <a class="weui-grid">
-                    <div style="background-image: url('{% static 'images/house.png' %}')">
-                    </div>
-                    <p class="weui-grid__label">专业培养计划</p>
-                </a>
-                <a class="weui-grid" id="leaves">
+                <a class="weui-grid" href="{% url 'leave_request'%}">
                     <div style="background-image: url('{% static 'images/coffe.png' %}')">
                     </div>
                     <p class="weui-grid__label">请销假记录</p>
                 </a>
-                <a class="weui-grid" id="watchCalendar">
+                <a class="weui-grid" href="{% url 'calendar'%}">
                     <div style="background-image: url('{% static 'images/text1.png' %}')">
                     </div>
                     <p class="weui-grid__label">假期时间安排</p>
                 </a>
-                <a class="weui-grid" id="credit">
-                    <div style="background-image: url('{% static 'images/text4.png' %}')">
-                    </div>
-                    <p class="weui-grid__label">毕业学分要求</p>
-                </a>
-                <a class="weui-grid" id="ask">
-                    <div style="background-image: url('{% static 'images/text1.png' %}')">
-                    </div>
-                    <p class="weui-grid__label">我要提问</p>
-                </a>
-                <a class="weui-grid" id="watchReply">
-                    <div style="background-image: url('{% static 'images/text1.png' %}')">
-                    </div>
-                    <p class="weui-grid__label">查看提问回答</p>
-                </a>
+
             </div>
         </div>
         <script src="{% static 'js/index.js' %}"></script>

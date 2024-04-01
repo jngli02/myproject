@@ -3,36 +3,39 @@
 <head>
     <title>学生信息</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        .student-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .student-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 10px;
+        }
+    </style>
 </head>
 <body>
     <h1>学生信息</h1>
 
-    <!-- 学生信息表格 -->
-    <table id="children" class="table">
-        <thead>
-            <tr>
-                <th>学号</th>
-                <th>姓名</th>
-                <th>性别</th>
-                <th>民族</th>
-                <th>年级</th>
-                <th>班级</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for child in children %}
-                <tr>
-                    <td>{{ child.student_id }}</td>
-                    <td>{{ child.name }}</td>
-                    <td>{{ child.get_gender_display }}</td>
-                    <td>{{ child.ethnicity }}</td>
-                    <td>{{ child.grade }}</td>
-                    <td>{{ child.class_id }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
+    <!-- 学生信息 -->
+    {% for child in children %}
+    <div class="student-box">
+        <div class="student-photo">
+            <img src="{{ child.photo.url }}" alt="{{ child.name }}">
+        </div>
+        <p><strong>姓名：</strong>{{ child.name }}</p>
+        <p><strong>性别：</strong>{{ child.get_gender_display }}</p>
+        <p><strong>学号：</strong>{{ child.student_id }}</p>
+        <p><strong>班级：</strong>{{ child.class_group }}</p>
+        <a href="{% url 'evaluation_history' student_id=child.student_id %}" class="btn btn-primary">综合评价</a>
+        <a href="{% url 's_exam_scores' child.student_id %}" class="btn btn-secondary">历史成绩</a>
+    </div>
+    {% endfor %}
 
 </body>
 </html>

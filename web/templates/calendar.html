@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>校历</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div id="app" class="container mt-5">
+        <h1 class="mb-4">{{ current_year }}年校历</h1>
+
+        <!-- 校历图片展示 -->
+        <div v-if="calendar_image_path">
+            <div style="max-width: 600px;">
+                <img :src="calendar_image_path" class="img-fluid mb-3" alt="校历图片">
+            </div>
+            <a :href="calendar_image_path" download="calendar.png" class="btn btn-primary">下载校历</a>
+        </div>
+
+        <!-- 提示管理员未上传 -->
+        <div v-else>
+            <p class="text-danger">管理员未上传{{ current_year }}年的校历。</p>
+        </div>
+    </div>
+
+    <!-- Vue.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+
+    <script>
+        new Vue({
+            el: '#app',
+            data: {
+                current_year: '', // 当前年份
+                calendar_image_path: '', // 校历图片路径
+            },
+            mounted() {
+                // 获取当前年份
+                this.current_year = new Date().getFullYear();
+                // 设置校历图片路径
+                this.calendar_image_path = "{% if calendar_image_path %}{{ calendar_image_path }}{% else %}/default/calendar/image/path.png{% endif %}";
+            }
+        });
+    </script>
+</body>
+</html>

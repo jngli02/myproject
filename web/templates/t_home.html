@@ -57,10 +57,46 @@
                     </div>
                     <p class="weui-grid__label">学生信息</p>
                 </a>
-                <a class="weui-grid" id="postNews">
-                    <div style="background-image: url('{% static 'images/news.png' %}')">
+                <a class="weui-grid" href="{% url 't_add_grades'%}">
+                    <div style="background-image: url('{% static 'images/text1.png' %}')">
                     </div>
-                    <p class="weui-grid__label">发布公告</p>
+                    <p class="weui-grid__label">添加学生成绩</p>
+                </a>
+
+                {% for class_group in class_groups %}
+                    <a class="weui-grid" href="{% url 'class_group' class_id=class_group.id %}">
+                        <div style="background-image: url('{% static 'images/text2.png' %}')">
+                        </div>
+                        <p class="weui-grid__label" >{{ class_group }}</p>  <!-- Display class name -->
+                    </a>
+                {% endfor %}
+
+                <a class="weui-grid" href="{% url 'add_homework' teacher_id=teacher.id %}">
+                    <div style="background-image: url('{% static 'images/text3.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">发布作业</p>
+                </a>
+
+                <a class="weui-grid" href="{% url 'view_homework_submissions'%}">
+                    <div style="background-image: url('{% static 'images/text4.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">批改作业</p>
+                </a>
+
+                <a class="weui-grid" href="{% url 'calendar'%}">
+                    <div style="background-image: url('{% static 'images/text4.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">假期安排时间</p>
+                </a>
+                <a class="weui-grid" href="{% url 't_classschedule'%}">
+                    <div style="background-image: url('{% static 'images/text4.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">教师课表</p>
+                </a>
+                <a class="weui-grid" href="{% url 'leave_approval'%}">
+                    <div style="background-image: url('{% static 'images/coffe.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">请销假记录</p>
                 </a>
                 <!-- 添加更多的功能 -->
             </div>

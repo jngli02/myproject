@@ -1,0 +1,10 @@
+DELETE  from web_submission;
+DELETE  from web_studenthomework;
+DELETE  from web_homework;
+DELETE  from web_attachment;
+
+
+select * from web_submission;
+select * from web_studenthomework;
+select * from web_homework;
+select * from web_attachment;

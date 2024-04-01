@@ -1,0 +1,254 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Private Chat</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <style>
+        /* 样式 */
+        /* 群成员下拉菜单样式 */
+
+        .member-dropdown-container {
+            position: fixed;
+            top: 10px;
+            right: 600px; /* 控制按钮距离屏幕右侧的距离 */
+        }
+
+        .member-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .member-dropdown-content {
+            display: none;
+            position: absolute;
+            background-color: #f9f9f9;
+            min-width: 500px;
+            max-height: 200px; /* 限制下拉列表的最大高度 */
+            overflow-y: auto; /* 添加垂直滚动条 */
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+            z-index: 1;
+        }
+
+        .member-dropdown-content a {
+            color: black;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+
+        .member-dropdown:hover .member-dropdown-content {
+            display: block;
+        }
+            /* 头像样式 */
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* 用户名样式 */
+        .username {
+            font-weight: bold;
+        }
+
+        /* 在线状态样式 */
+        .status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        /* 在线状态颜色 */
+        .online {
+            background-color: green;
+        }
+
+        .offline {
+            background-color: gray;
+        }
+
+        /* 按钮组样式 */
+        .btn-group {
+            display: inline-block; /* 设置为行内块元素 */
+            margin-left: 10px; /* 设置按钮之间的间距 */
+        }
+
+        /* 按钮样式 */
+        .btn-detail, .btn-chat {
+            padding: 5px 10px; /* 按钮内边距 */
+            font-size: 12px; /* 按钮字体大小 */
+        }
+
+
+        /* 聊天区域样式 */
+        .chat-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 500px;
+            height: 500px;
+            border: 1px solid #ccc;
+            overflow-y: auto; /* 添加垂直滚动条 */
+            background-color: #f9f9f9;
+        }
+
+        .message {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            max-width: 70%; /* 控制消息框最大宽度 */
+        }
+
+        .own-message {
+            background-color: #DCF8C6; /* 自己发送的消息颜色 */
+            align-self: flex-end; /* 将自己发送的消息右对齐 */
+            max-width: 40%; /* 设置消息的最大宽度为40% */
+            margin-left: auto; /* 消息框左侧外边距设置为auto，使其水平居中 */
+        }
+
+        .other-message {
+            background-color: #E8E8E8; /* 别人发送的消息颜色 */
+            align-self: flex-start; /* 将别人发送的消息左对齐 */
+            max-width: 40%; /* 设置消息的最大宽度为40% */
+            margin-right: auto; /* 消息框右侧外边距设置为auto，使其水平居中 */
+        }
+
+        /* 输入框样式 */
+        .input-container {
+            position: fixed;
+            bottom: 0;
+            right: 20px;
+            width: 300px;
+        }
+
+        .input-box {
+            width: calc(100% - 60px); /* 输入框宽度减去发送按钮宽度 */
+        }
+
+        .send-button {
+            width: 50px;
+        }
+        .chat-header {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        /* 聊天对象样式 */
+        .chat-header h2 {
+            margin: 0;
+        }
+
+        /* 表情按钮样式 */
+        #emoji-button {
+            cursor: pointer; /* 鼠标悬停时变为手形 */
+            /* 在这里添加更多样式 */
+        }
+
+        /* 表情选择面板样式 */
+        #emoji-panel {
+            display: none; /* 默认隐藏 */
+            position: absolute; /* 使用绝对定位 */
+            width: 200px; /* 宽度 */
+            height: 200px; /* 高度 */
+            overflow-y: auto; /* 如果内容超出高度，则显示滚动条 */
+            /* 在这里添加更多样式 */
+        }
+
+        /* 表情样式 */
+        .emoji {
+            cursor: pointer; /* 鼠标悬停时变为手形 */
+            /* 在这里添加更多样式 */
+        }
+    </style>
+</head>
+<body>
+    <h1>Private Chat</h1>
+
+    <!-- 聊天区域 -->
+    <div class="chat-container" id="chat-container">
+        <!-- 聊天头部，只显示聊天对象的一行 -->
+        <div class="chat-header">
+            <h2>Private Chat with {{ chat_partner }}</h2>
+        </div>
+        <!-- 历史聊天消息将在此处显示 -->
+        {% for message in messages %}
+            <div class="message {% if message.sender == user %}own-message{% else %}other-message{% endif %}">
+                <p><strong>{{ message.sender }}</strong>: {{ message.content }}</p>
+                {% if message.image %}
+                    <img src="{{ message.image.url }}" alt="Image" style="max-width: 100px; max-height: 100px;">
+                {% endif %}
+            </div>
+        {% endfor %}
+
+    </div>
+
+    <!-- 输入框 -->
+    <form id="message-form" class="input-container" method="POST" action="/direct_chat/{{ chat_partner.id }}/{{ class_id }}/" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input type="file" id="image-upload" accept="image/*"> <!-- 添加图片按钮 -->
+        <input type="hidden" id="image-data" name="image_data"> <!-- 用于存储图片数据的隐藏字段 -->
+        <input type="text" class="input-box" id="message-input" name="content" placeholder="Type your message here...">
+        <!-- 预览框 -->
+        <div id="image-preview"></div>
+        <button type="button" id="emoji-button" class="emoji-button" onclick="toggleEmojiPicker()">😊</button> <!-- 表情选择按钮 -->
+        <!-- 表情选择器 -->
+        <div id="emoji-list" style="display: none;">
+            <button onclick="addEmoji(':苦笑:')"><img src="/static/emojis/苦笑.png" alt="苦笑"></button>
+            <button onclick="addEmoji(':得意:')"><img src="/static/emojis/得意.png" alt="得意"></button>
+            <button onclick="addEmoji(':放声大哭:')"><img src="/static/emojis/放声大哭.png" alt="放声大哭"></button>
+            <!-- 添加更多表情按钮 -->
+        </div>
+        <input type="submit" class="send-button" value="Send">
+    </form>
+
+    <!-- JavaScript -->
+    <script>
+        // 显示或隐藏表情选择器
+        function toggleEmojiPicker() {
+            var emojiList = document.getElementById("emoji-list");
+            if (emojiList.style.display === "none") {
+                emojiList.style.display = "block";
+            } else {
+                emojiList.style.display = "none";
+            }
+        }
+
+        // 将点击的表情添加到消息输入框中
+        function addEmoji(emoji) {
+            var messageInput = document.getElementById("message-input");
+            var content = messageInput.value;
+            var cursorPosition = messageInput.selectionStart;
+            var newContent = content.slice(0, cursorPosition) + emoji + content.slice(cursorPosition);
+            messageInput.value = newContent; // 将表情代码插入到输入框光标位置
+            messageInput.focus(); // 使输入框获取焦点
+            toggleEmojiPicker(); // 添加后隐藏表情选择器
+        }
+
+        // 图片上传按钮变化事件处理程序
+        document.getElementById('image-upload').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+        
+            // 当读取完成后触发该事件
+            reader.onload = function(e) {
+                // 将图片数据转换为 base64 编码
+                var imageData = e.target.result;
+                // 将 base64 编码的图片数据放入隐藏字段中
+                document.getElementById('image-data').value = imageData;
+
+                // 显示预览图
+                var imagePreview = document.getElementById('image-preview');
+                imagePreview.innerHTML = '<img src="' + imageData + '" alt="Image Preview" style="max-width: 100px; max-height: 100px;">'; // 限制预览图的大小
+            };
+        
+            // 读取图片数据
+            reader.readAsDataURL(file);
+        });
+    </script>
+
+</body>
+</html>

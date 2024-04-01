@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>注册</title>
+</head>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+h1 {
+    color: #333;
+    text-align: center;
+    margin-top: 50px;
+}
+form {
+    width: 300px;
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #fff;
+    box-shadow: 0px 0px 10px 0px #bbb;
+}
+label {
+    display: block;
+    margin-bottom: 10px;
+}
+input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #007BFF;
+    color: #fff;
+    cursor: pointer;
+}
+button:hover {
+    background-color: #0056b3;
+}
+.messages {
+    width: 300px;
+    margin: 20px auto;
+    padding: 10px;
+    border-radius: 5px;
+}
+.messages li {
+    list-style: none;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+.messages li.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.messages li.success {
+    background-color: #d4edda;
+    color: #155724;
+    </style>
+
+    <script>
+        function countdown(3, 'login.html') {
+            var counter = seconds;
+            var interval = setInterval(function() {
+                counter--;
+                // 显示倒计时
+                document.getElementById('countdown').innerText = counter;
+                if (counter === 0) { // 倒计时结束
+                    clearInterval(interval);
+                    // 跳转到登录页面
+                    window.location.href = redirectUrl;
+                }
+            }, 1000);
+        }
+    </script>
+<body>
+    <h1>注册</h1>
+    <form method="post">
+        {% csrf_token %}
+        <label for="username">用户名:</label>
+        <input id="username" type="text" name="username" required>
+        <label for="password">密码:</label>
+        <input id="password" type="password" name="password" required>
+        <button type="submit">注册</button>
+    </form>
+    {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</body>
+</html>

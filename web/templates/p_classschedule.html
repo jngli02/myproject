@@ -1,0 +1,73 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>孩子课程表</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css">
+    <style>
+        .table-container {
+            margin-top: 20px;
+        }
+        .time-column {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        .current-class {
+            background-color: #dff0d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">孩子课程表</h1>
+        {% for class_group_id, class_group_timetable in timetable.items %}
+        <div class="table-container">
+            <h2>{{ class_group_id }}</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>星期一</th>
+                        <th>星期二</th>
+                        <th>星期三</th>
+                        <th>星期四</th>
+                        <th>星期五</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for time_range, day_schedule in class_group_timetable.items %}
+                    <tr>
+                        <td class="time-column">{{ time_range.0 }} - {{ time_range.1 }}</td>
+                        <td>{{ day_schedule.星期一 }}</td>
+                        <td>{{ day_schedule.星期二 }}</td>
+                        <td>{{ day_schedule.星期三 }}</td>
+                        <td>{{ day_schedule.星期四 }}</td>
+                        <td>{{ day_schedule.星期五 }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        <div class="table-container">
+            <h3>当前正在上课</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>孩子姓名</th>
+                        <th>当前课程</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for child_name, current_schedule in children_current_schedules.items %}
+                    <tr {% if current_schedule != '无课程' %} class="current-class" {% endif %}>
+                        <td>{{ child_name }}</td>
+                        <td>{{ current_schedule }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
