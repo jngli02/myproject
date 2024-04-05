@@ -4,55 +4,359 @@
     <title>学生考试成绩</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- 导入 Chart.js 库 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script> <!-- 导入 Moment.js 库 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+ 
+        body {
+            position: relative;
+            width: 100%;
+            background-size: cover;
+        }
+ 
+        .header {
+            /* 固定定位 */
+            position: fixed;
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #f1f1f1;
+            background-color: #324057;
+        }
+ 
+        .logo {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 300px;
+            padding-left: 40px;
+        }
+ 
+        .logo span {
+            color: #5073fb;
+        }
+        
+        .block {
+            width: 100%; /* 让宽度占据父容器的100%，即占据整个可用空间 */
+            height: 60px; /* 设置高度为300像素，你也可以使用其他单位，如百分比、视口单位等 */
+        }
+
+
+        .notification--profile {
+            display: flex;
+            align-items: center;
+        }
+ 
+        .picon {
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 1.1rem;
+            padding: 5px;
+            border-radius: 5px;
+        }
+ 
+        .chat {
+            color: #70d7a5;
+            background-color: rgba(112, 215, 165, .2);
+        }
+        
+        .message {
+            color: #fd5d3b; /* 设置消息图标的颜色为红色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .bell {
+            color: #fdd835; /* 设置铃铛图标的颜色为黄色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .profile {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background-color: #5073fb;
+            border: 1px solid #5073fb;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+ 
+        .profile .icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110%;
+            object-fit: cover;
+        }
+        .student-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .student-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 10px;
+        }
+    </style>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <!-- 引入字体图标 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        a {
+            color: inherit; /* 继承父元素的颜色 */
+            text-decoration: none; /* 移除下划线 */
+        }
+
+        ul{
+            list-style: none;
+        }
+        nav{
+            /* 固定定位 */
+            position: fixed;
+            top: 60px; /* 距离页面顶部的距离为 0 */
+            left: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: #85c1e9; /* 淡蓝色 */
+        }
+        .menus{
+            margin: 50px 0;
+            color: #fff;
+        }
+        .li{
+            letter-spacing: 2px;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 30px 0;
+            /* 动画过渡 */
+            transition: 0.3s;
+        }
+        .menus li:hover{
+            background-color: #a9cce3; /* 鼠标悬停时的背景色 */
+        }
+        .li .fa{
+            font-size: 20px;
+            width: 50px;
+            height: 20px;
+            text-align: center;
+            margin-left: 5px;
+        }
+        .li ul{
+            width: 0;
+            height: 100vh;
+            padding: 50px 0;
+            background-color: #5499c7; /* 内部菜单的背景色 */
+            position: absolute;
+            top: 0;
+            right: 0;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .li ul li{
+            padding: 16px 24px;
+            /* 文字禁止换行 */
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+        .li:hover ul{
+            width: 250px;
+        }
+        .li ul li:hover{
+            background-color: #7fb3d5; /* 鼠标悬停时内部菜单项的背景色 */
+        }
+    </style>
+
+    <style>
+        .content {
+            padding: 80px 20px 20px;
+            border: 1px solid #ccc; /* 添加边框 */
+            border-radius: 5px; /* 添加边框圆角 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+            background-color: #f9f9f9; /* 修改背景颜色 */
+            font-size: 16px; /* 调整字体大小 */
+            line-height: 1.6; /* 调整行高 */
+        }
+        .content h1 {
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        td {
+            vertical-align: top;
+        }
+
+        .username {
+            cursor: pointer; /* 将用户名样式设置为指针，表示可点击 */
+            position: relative;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0; /* 修正位置 */
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            width: 120px; /* 设置下拉菜单宽度 */
+        }
+
+        .dropdown ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dropdown ul li {
+            padding: 10px;
+        }
+
+        .dropdown ul li a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+
+        .dropdown ul li:hover {
+            background-color: #f0f0f0;
+        }
+        .custom-link {
+        /* 这里是你的自定义样式 */
+        margin-left: 5px; /* 左侧间距 */
+        /* 其他样式 */
+        }
+    </style>
 </head>
 <body>
-    <h1>学生考试成绩</h1>
+<section class="header">
+    <div class="logo">
+        <i class="el-icon-menu icon icon-0 menu"></i>
+        <a href="{% url 'home' %}">
+            <h2><span style="color: #fd5d3b;">X</span>N:<span>家校系统</span></h2>
+        </a>
+    </div>
+    <div class="block">
+    </div>
+    <div class="notification--profile">
+        <a href="{% url 'admin_login' %}">
+            <div class="picon chat" title="管理员登录">
+                <i class="el-icon-chat-dot-round"></i>
+            </div>
+        </a>
+        <a href="{% url 'news_list' %}">
+            <div class="picon message" title="校园动态">
+                <i class="el-icon-message"></i>
+            </div>
+        </a>
+        <a href="{% url 'home' %}">
+            <div class="picon bell" title="消息提醒">
+                <i class="el-icon-bell"></i>
+            </div>
+        </a>
+        <div class="custom-link">
+            <span class="username" style="margin-left: 10px;margin-right: 10px">{{ user.username }}</span>
+            <div class="dropdown">
+                <label for="dropdown-toggle" class="menu">
+                    <ul>
+                        <li><a href="{% url 'profile_edit' %}">修改信息</a></li>
+                        <li><a href="/logout">退出登录</a></li>
+                    </ul>
+                </label>
+            </div>
+        </div>
 
-    <!-- 表格显示历史考试成绩 -->
-    <h2>历史考试成绩</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>考试时间</th>
-                <th>考试类型</th>
-                <th>语文</th>
-                <th>数学</th>
-                <th>物理</th>
-                <th>化学</th>
-                <th>英语</th>
-                <th>生物</th>
-                <th>政治</th>
-                <th>历史</th>
-                <th>地理</th>
-                <th>总分</th>
-                <th>备注</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for exam_score in exam_scores|dictsort:"exam_time" %}
+    </div>
+</section>
+
+
+    <div class="content">
+        <h1>学生考试成绩</h1>
+
+        <!-- 表格显示历史考试成绩 -->
+        <h2>历史考试成绩</h2>
+        <table>
+            <thead>
                 <tr>
-                    <td>{{ exam_score.exam_time }}</td>
-                    <td>{{ exam_score.exam_type }}</td>
-                    <td>{{ exam_score.chinese }}</td>
-                    <td>{{ exam_score.math }}</td>
-                    <td>{{ exam_score.physics }}</td>
-                    <td>{{ exam_score.chemistry }}</td>
-                    <td>{{ exam_score.english }}</td>
-                    <td>{{ exam_score.biology }}</td>
-                    <td>{{ exam_score.politics }}</td>
-                    <td>{{ exam_score.history }}</td>
-                    <td>{{ exam_score.geography }}</td>
-                    <td>{{ exam_score.total }}</td>
-                    <td>{{ exam_score.remarks }}</td>
+                    <th>考试时间</th>
+                    <th>考试类型</th>
+                    <th>语文</th>
+                    <th>数学</th>
+                    <th>物理</th>
+                    <th>化学</th>
+                    <th>英语</th>
+                    <th>生物</th>
+                    <th>政治</th>
+                    <th>历史</th>
+                    <th>地理</th>
+                    <th>总分</th>
+                    <th>备注</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for exam_score in exam_scores|dictsort:"exam_time" %}
+                    <tr>
+                        <td>{{ exam_score.exam_time }}</td>
+                        <td>{{ exam_score.exam_type }}</td>
+                        <td>{{ exam_score.chinese }}</td>
+                        <td>{{ exam_score.math }}</td>
+                        <td>{{ exam_score.physics }}</td>
+                        <td>{{ exam_score.chemistry }}</td>
+                        <td>{{ exam_score.english }}</td>
+                        <td>{{ exam_score.biology }}</td>
+                        <td>{{ exam_score.politics }}</td>
+                        <td>{{ exam_score.history }}</td>
+                        <td>{{ exam_score.geography }}</td>
+                        <td>{{ exam_score.total }}</td>
+                        <td>{{ exam_score.remarks }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <!-- 图表显示历史成绩趋势 -->
-    <h2>历史成绩趋势</h2>
-    <canvas id="totalChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示总分图表 -->
-    <canvas id="subjectChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示其他学科图表 -->
+        <!-- 图表显示历史成绩趋势 -->
+        <h2>历史成绩趋势</h2>
+        <canvas id="totalChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示总分图表 -->
+        <canvas id="subjectChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示其他学科图表 -->
+    </div>
+
+    
 
     <script>
         // 获取历史考试成绩数据
@@ -190,6 +494,17 @@
             }
         });
     </script>
+
+    <script>
+    // 等待文档加载完成
+    $(document).ready(function() {
+        // 当用户名被点击时
+        $('.username').click(function() {
+            // 切换下拉菜单的显示状态
+            $('.dropdown').toggle();
+        });
+    });
+</script>
 </body>
 </html>
 

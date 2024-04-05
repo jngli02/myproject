@@ -1,14 +1,216 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>校历</title>
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+ 
+        body {
+            position: relative;
+            width: 100%;
+            background-size: cover;
+        }
+ 
+        .header {
+            position: fixed;
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #f1f1f1;
+            background-color: #324057;
+        }
+ 
+        .logo {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 300px;
+            padding-left: 40px;
+        }
+ 
+        .logo span {
+            color: #5073fb;
+        }
+        
+        .block {
+            width: 100%; /* 让宽度占据父容器的100%，即占据整个可用空间 */
+            height: 60px; /* 设置高度为300像素，你也可以使用其他单位，如百分比、视口单位等 */
+        }
+
+
+        .notification--profile {
+            display: flex;
+            align-items: center;
+        }
+ 
+        .picon {
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 1.1rem;
+            padding: 5px;
+            border-radius: 5px;
+        }
+ 
+        .chat {
+            color: #70d7a5;
+            background-color: rgba(112, 215, 165, .2);
+        }
+        
+        .message {
+            color: #fd5d3b; /* 设置消息图标的颜色为红色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .bell {
+            color: #fdd835; /* 设置铃铛图标的颜色为黄色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .profile {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background-color: #5073fb;
+            border: 1px solid #5073fb;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+ 
+        .profile .icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110%;
+            object-fit: cover;
+        }
+        .student-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .student-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 10px;
+        }
+    </style>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+    <style>
+        .content {
+            margin-left: 340px;
+            padding: 120px 20px 20px;
+            border: 1px solid #ccc; /* 添加边框 */
+            border-radius: 5px; /* 添加边框圆角 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+            background-color: #f9f9f9; /* 修改背景颜色 */
+            font-size: 16px; /* 调整字体大小 */
+            line-height: 1.6; /* 调整行高 */
+        }
+        .username {
+            cursor: pointer; /* 将用户名样式设置为指针，表示可点击 */
+            position: relative;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0; /* 修正位置 */
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            width: 120px; /* 设置下拉菜单宽度 */
+        }
+
+        .dropdown ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dropdown ul li {
+            padding: 10px;
+        }
+
+        .dropdown ul li a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+
+        .dropdown ul li:hover {
+            background-color: #f0f0f0;
+        }
+        .custom-link {
+        /* 这里是你的自定义样式 */
+        margin-left: 5px; /* 左侧间距 */
+        /* 其他样式 */
+        }
+    </style>
 </head>
+
+
 <body>
-    <div id="app" class="container mt-5">
+<section class="header">
+    <div class="logo">
+        <i class="el-icon-menu icon icon-0 menu"></i>
+        <a href="{% url 'home' %}">
+            <h2><span style="color: #fd5d3b;">X</span>N:<span>家校系统</span></h2>
+        </a>
+    </div>
+    <div class="block">
+    </div>
+    <div class="notification--profile">
+        <a href="{% url 'admin_login' %}">
+            <div class="picon chat" title="管理员登录">
+                <i class="el-icon-chat-dot-round"></i>
+            </div>
+        </a>
+        <a href="{% url 'news_list' %}">
+            <div class="picon message" title="校园动态">
+                <i class="el-icon-message"></i>
+            </div>
+        </a>
+        <a href="{% url 'home' %}">
+            <div class="picon bell" title="消息提醒">
+                <i class="el-icon-bell"></i>
+            </div>
+        </a>
+        <div class="custom-link">
+            <span class="username" style="margin-left: 10px;margin-right: 10px">{{ user.username }}</span>
+            <div class="dropdown">
+                <label for="dropdown-toggle" class="menu">
+                    <ul>
+                        <li><a href="{% url 'profile_edit' %}">修改信息</a></li>
+                        <li><a href="/logout">退出登录</a></li>
+                    </ul>
+                </label>
+            </div>
+        </div>
+
+    </div>
+</section>
+    
+    <div id="app" class="container mt-5 content">
         <h1 class="mb-4">{{ current_year }}年校历</h1>
 
         <!-- 校历图片展示 -->
@@ -43,5 +245,16 @@
             }
         });
     </script>
+
+    <script>
+    // 等待文档加载完成
+    $(document).ready(function() {
+        // 当用户名被点击时
+        $('.username').click(function() {
+            // 切换下拉菜单的显示状态
+            $('.dropdown').toggle();
+        });
+    });
+</script>
 </body>
 </html>

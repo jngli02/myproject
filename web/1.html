@@ -1,0 +1,960 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/styles.css">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <title>【前端代码实例】使用HTML5+CSS3+JavaScript制作一个响应式的后台管理系统~带侧边导航栏仪表盘功能</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+ 
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+ 
+        body {
+            position: relative;
+            width: 100%;
+        }
+ 
+        .header {
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #f1f1f1;
+            background-color: #324057;
+        }
+ 
+        .logo {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 300px;
+            padding-left: 40px;
+        }
+ 
+        .logo span {
+            color: #5073fb;
+        }
+ 
+        .search--notification--profile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: calc(100% - 300px);
+            padding: 0 40px;
+        }
+ 
+        .search {
+            background-color: #f1f4f8;
+            border-radius: 50px;
+            width: 400px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+ 
+        .search input {
+            background-color: transparent;
+            outline: none;
+            border: none;
+            text-indent: 15px;
+            width: 85%;
+        }
+ 
+        .search button {
+            outline: none;
+            border: none;
+            border-radius: 50%;
+            background-color: #fff;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+ 
+        .search button i {
+            font-size: 1.1rem;
+            color: #5073fb;
+        }
+ 
+        .notification--profile {
+            display: flex;
+            align-items: center;
+        }
+ 
+        .picon {
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 1.1rem;
+            padding: 5px;
+            border-radius: 5px;
+        }
+ 
+        .lock {
+            color: #5073fb;
+            background-color: rgba(80, 115, 251, .2);
+        }
+ 
+        .bell {
+            color: #f1d243;
+            background-color: rgba(241, 210, 67, .2);
+        }
+ 
+        .chat {
+            color: #70d7a5;
+            background-color: rgba(112, 215, 165, .2);
+        }
+ 
+        .profile {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background-color: #5073fb;
+            border: 1px solid #5073fb;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+ 
+        .profile .icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110%;
+            object-fit: cover;
+        }
+ 
+        .main {
+            position: relative;
+            width: 100%;
+            min-height: calc(100vh - 60px);
+        }
+ 
+ 
+        /* sidebar */
+ 
+        .sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 300px;
+            background-color: #324057;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 2px solid #f1f1f1;
+            transition: .3s;
+        }
+ 
+        .sidebar.active {
+            width: 103px;
+            overflow: hidden;
+        }
+ 
+        .sidebar.active .sidebar--item {
+            display: none;
+        }
+ 
+        li {
+            list-style: none;
+        }
+ 
+        a {
+            text-decoration: none;
+        }
+ 
+        .sidebar--items a,
+        .sidebar--bottom-items a {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #fff;
+            padding: 10px;
+            border-radius: 10px;
+        }
+ 
+        .sidebar--items a:hover,
+        .sidebar--bottom-items a:hover {
+            background-color: #5073fb;
+            color: #fff;
+        }
+ 
+        #active--link {
+            background-color: #5073fb;
+            color: #fff;
+        }
+ 
+        .sidebar--bottom-items li:last-child a {
+            margin-bottom: 0;
+        }
+ 
+        .icon {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 20px;
+            font-size: 22px;
+        }
+ 
+        .icon-0 {
+            color: #5073fb;
+        }
+ 
+        .icon-1 {
+            color: #a280e9;
+        }
+ 
+        .icon-2 {
+            color: #70d7a5;
+ 
+        }
+ 
+        .icon-3 {
+            color: #85ade3;
+        }
+ 
+        .icon-4 {
+            /*color: #e36ac8;*/
+            color: rgb(241, 210, 67);
+        }
+ 
+        .icon-5 {
+            color: #e36ac8;
+        }
+ 
+        .icon-6 {
+            color: #5f5ce0;
+        }
+ 
+        .icon-7 {
+            color: #e86786;
+        }
+ 
+        .icon-8 {
+            color: #f1d243;
+        }
+ 
+ 
+        /* main--content */
+ 
+        .main--content {
+            position: absolute;
+            top: 0;
+            right: 0;
+            height: 100%;
+            width: calc(100% - 300px);
+            padding: 0 40px;
+            overflow-y: scroll;
+            transition: .3s;
+        }
+ 
+        .main--content.active {
+            width: calc(100% - 103px);
+        }
+ 
+        .title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            margin-top: 30px;
+        }
+ 
+        .section--title {
+            font-weight: 400;
+        }
+ 
+        .dropdown {
+            outline: none;
+            border: none;
+            background-color: #f1f4f8;
+            border-radius: 5px;
+            width: 150px;
+            padding: 5px;
+        }
+ 
+        .cards {
+            display: flex;
+            gap: 20px;
+        }
+ 
+        .card {
+            cursor: pointer;
+            padding: 20px;
+            border-radius: 20px;
+            min-width: 230px;
+            height: auto;
+            transition: .3s;
+        }
+ 
+        .card:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+ 
+        .card--data {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+ 
+        .card h1 {
+            font-size: 30px;
+            margin-top: 10px;
+        }
+ 
+        .card--icon--lg {
+            font-size: 71px;
+            margin: 0 auto;
+        }
+ 
+        .c1 {
+            color: #70d7a5;
+            background-color: #f0fbf6;
+        }
+ 
+        .c2 {
+            color: #aebffd;
+            background-color: #edf1ff;
+        }
+ 
+        .card--stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 5px;
+        }
+ 
+        .card--stats span {
+            display: flex;
+            align-items: center;
+        }
+ 
+        .card--icon {
+            margin-right: 5px;
+        }
+ 
+        .stat--icon {
+            color: #5f5ce0;
+        }
+ 
+        .up--arrow {
+            color: #70d7a5;
+        }
+ 
+        .down--arrow {
+            color: #e86786;
+        }
+ 
+        .card-1 {
+            background-color: rgba(80, 115, 251, .1);
+        }
+ 
+        .card-1 .card--title {
+            color: rgba(80, 115, 251, 1);
+        }
+ 
+        .card-1 .card--icon--lg {
+            color: rgba(80, 115, 251, .4);
+        }
+ 
+        .card-2 {
+            background-color: rgba(241, 210, 67, .1);
+        }
+ 
+        .card-2 .card--title {
+            color: rgba(241, 210, 67, 1);
+        }
+ 
+        .card-2 .card--icon--lg {
+            color: rgba(241, 210, 67, .4);
+        }
+ 
+        .card-3 {
+            background-color: rgba(112, 215, 165, .1);
+        }
+ 
+        .card-3 .card--title {
+            color: rgba(112, 215, 165, 1);
+        }
+ 
+        .card-3 .card--icon--lg {
+            color: rgba(112, 215, 165, .4);
+        }
+ 
+        .card-4 {
+            background-color: rgba(227, 106, 200, .1);
+        }
+ 
+        .card-4 .card--title {
+            color: rgba(227, 106, 200, 1);
+        }
+ 
+        .card-4 .card--icon--lg {
+            color: rgba(227, 106, 200, .4);
+        }
+ 
+ 
+        /* teachers */
+        /*教师们*/
+        .teachers--right--btns {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+ 
+        .add {
+            display: flex;
+            align-items: center;
+            padding: 5px 10px;
+            outline: none;
+            border: none;
+            background-color: #5073fb;
+            color: #fff;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: .3s;
+        }
+ 
+        .add:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+ 
+        .add i {
+            margin-right: 10px;
+            padding: 5px;
+            background-color: #fff;
+            border-radius: 50%;
+            color: #000;
+        }
+ 
+        .teachers--cards {
+            display: flex;
+            gap: 20px;
+        }
+ 
+        .teacher--card {
+            padding: 20px;
+            border-radius: 20px;
+            height: auto;
+            transition: .3s;
+            border: 2px solid #f1f1f1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: .8rem;
+        }
+ 
+        .teacher--card:hover {
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+ 
+        .img--box--cover {
+            border: 1px solid #5073fb;
+            padding: 2px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+ 
+        .img--box--cover1 {
+            border: 1px solid #70d7a5;
+        }
+ 
+        .img--box {
+            position: relative;
+            width: 71px;
+            height: 71px;
+            overflow: hidden;
+            border-radius: 50%;
+        }
+ 
+        .free {
+            color: #70d7a5;
+        }
+ 
+        /*中学教师*/
+        .scheduled {
+            color: #5073fb;
+        }
+ 
+ 
+        /* recent--students */
+        /*学生*/
+        .recent--students {
+            margin-bottom: 20px;
+        }
+ 
+        .table {
+            height: 200px;
+            overflow-y: scroll;
+        }
+ 
+        table {
+            width: 100%;
+            text-align: left;
+            border-collapse: collapse;
+            cursor: pointer;
+        }
+ 
+        tr {
+            border-bottom: 1px solid #f1f1f1;
+        }
+ 
+        td,
+        th {
+            padding-block: 10px;
+        }
+ 
+        .edit {
+            color: #70d7a5;
+            margin-right: 10px;
+        }
+ 
+        .delete {
+            color: #e86786;
+        }
+ 
+ 
+        /* responsive starts here */
+ 
+        @media screen and (max-width: 1350px) {
+            .cards,
+            .teachers--cards {
+                overflow-x: scroll;
+            }
+        }
+ 
+        @media screen and (max-width: 1024px) {
+            table {
+                min-width: 600px;
+            }
+        }
+ 
+        @media screen and (max-width: 768px) {
+            .logo {
+                padding-left: 30px;
+                width: fit-content;
+            }
+ 
+            .search--notification--profile {
+                padding: 0 20px;
+                margin-left: auto;
+            }
+ 
+            .main--content {
+                padding: 0 20px;
+            }
+ 
+            .sidebar {
+                padding: 20px;
+            }
+ 
+            .sidebar.active {
+                width: 85px;
+            }
+ 
+            .main--content.active {
+                width: calc(100% - 85px);
+            }
+        }
+ 
+        @media screen and (max-width: 590px) {
+            .search,
+            .lock,
+            .chat {
+                display: none;
+            }
+ 
+            .notification--profile {
+                margin-left: auto;
+            }
+ 
+            .search--notification--profile {
+                width: fit-content;
+            }
+ 
+            .sidebar {
+                transform: translateX(-100%);
+                z-index: 10;
+                background-color: #324057;
+            }
+ 
+            .sidebar.active {
+                transform: translateX(0);
+                width: 300px;
+            }
+ 
+            .sidebar.active .sidebar--item {
+                display: block;
+            }
+ 
+            .main--content {
+                width: calc(100% - 0px);
+            }
+ 
+            .main--content.active {
+                width: calc(100% - 0px);
+            }
+        }
+ 
+        @media screen and (max-width: 450px) {
+            .teacher--filter {
+                display: none;
+            }
+ 
+            .main--content {
+                padding: 0 10px;
+            }
+ 
+            .logo {
+                padding-left: 10px;
+            }
+ 
+            .search--notification--profile {
+                padding: 0 10px;
+            }
+ 
+            .sidebar {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+ 
+ 
+<section class="header">
+    <div class="logo">
+        <i class="el-icon-menu icon icon-0 menu"></i>
+        <h2><span style="color: #fd5d3b;">C</span>SDN:<span>南北极之间</span></h2>
+    </div>
+    <div class="search--notification--profile">
+        <div class="search">
+            <input type="text" placeholder="请输入搜索关键词……">
+            <button><i class="ri-search-2-line"></i></button>
+        </div>
+        <div class="notification--profile">
+            <div class="picon lock">
+                <i class="el-icon-lock"></i>
+            </div>
+            <div class="picon bell">
+                <i class="el-icon-bell"></i>
+            </div>
+            <div class="picon chat">
+                <i class="el-icon-chat-dot-round"></i>
+            </div>
+            <div class="picon profile">
+                <svg t="1659934004546" class="icon" viewBox="0 0 1024 1024" version="1.1"
+                     xmlns="http://www.w3.org/2000/svg" p-id="7540" width="40" height="40">
+                    <path d="M876.0576 769.024c5.12 34.816 34.82624 29.696 39.94624 45.056 0 9.71776-5.12 45.056-19.968 49.664-14.84288 0-34.816-5.12-49.664 0-9.71776 5.12-19.95776 9.72288-25.07776 19.96288-9.728 25.08288 9.71776 45.05088 0 54.77888-14.848 9.728-45.06112 25.088-54.784 14.848-14.84288-14.848-14.84288-34.82112-45.056-34.82112-39.94112 0-39.94112 39.94112-59.904 39.94112s-54.784-14.848-54.784-29.70112c5.12-19.96288 14.848-34.81088-5.12-54.77888-25.088-19.968-54.77888 0-65.01888-9.728-14.84288-9.728-19.96288-34.816-14.84288-49.65888s39.936-14.84288 39.936-54.78912c0-29.69088-34.816-34.81088-39.936-54.77376-5.12-14.848 5.12-39.94624 19.96288-45.06624 25.08288-9.71776 39.93088 9.728 65.01888-9.71776 14.848-14.83776 9.728-49.664 9.728-59.904 5.12-14.84288 25.07776-19.96288 39.936-19.96288 29.696 0 19.96288 34.82112 59.904 39.94112 39.936 0 34.816-14.848 54.77888-39.94112 25.08288 0 45.06112 9.72288 49.65888 19.96288 9.728 19.968-9.71776 49.664 19.968 69.63712 25.07776 14.84288 49.664-5.12 65.024 0 9.72288 5.12 14.84288 19.96288 19.96288 39.94112-9.72288 29.16352-54.78912 24.04352-49.66912 69.10976z m-179.70176-99.84c-119.80288 29.696-74.752 204.28288 39.936 184.832 115.2-25.09824 99.84-209.92-39.936-184.832z m-204.288-174.58688c-119.808 0-214.528-94.72-214.528-214.528s94.72-214.528 214.528-214.528c119.80288 0 214.52288 94.72 214.52288 214.528 0.00512 114.688-94.71488 214.528-214.52288 214.528z m174.592 49.65888s-79.88224 0-74.76224 54.784c5.12 59.904-74.752 14.83776-89.59488 65.024-19.968 59.89376 9.72288 49.65376 25.08288 89.6 9.728 25.08288-39.936 39.936-34.816 84.992 9.728 59.904 59.904 29.70624 74.75712 65.024 9.72288 29.696-25.08288 49.664-104.96 49.664-65.01888 0-189.44 0-234.496-5.12 0 0-129.536-5.12-129.536-89.6 0 0-5.12-124.928 74.752-214.528 0 0 84.992-109.56288 229.38112-109.56288l264.192 9.72288z"
+                          fill="#ffffff" p-id="7541"></path>
+                </svg>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="main">
+    <div class="sidebar">
+        <ul class="sidebar--items">
+            <li>
+                <a href="#" id="active--link">
+                    <span class="icon icon-1"><i class="el-icon-s-home"></i></span>
+                    <span class="sidebar--item">首页</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon icon-3">
+                        <i class="el-icon-user-solid"></i>
+                    </span>
+                    <span class="sidebar--item" style="white-space: nowrap;">教师管理</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon icon-4">
+                        <i class="el-icon-user"></i>
+                    </span>
+                    <span class="sidebar--item">学生管理</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon icon-2">
+                        <i class="el-icon-date"></i>
+                    </span>
+                    <span class="sidebar--item">课程安排</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon icon-5">
+                        <i class="el-icon-s-data"></i>
+                    </span>
+                    <span class="sidebar--item">成绩管理</span>
+                </a>
+            </li>
+            <li>
+                <a href="#">
+                    <span class="icon icon-6"><i class="el-icon-service"></i></span>
+                    <span class="sidebar--item">意见反馈</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="sidebar--bottom-items">
+            <li>
+                <a href="#">
+                    <span class="icon icon-7"><i class="el-icon-setting"></i></span>
+                    <span class="sidebar--item">设置</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="main--content">
+        <div class="overview">
+            <div class="title">
+                <h2 class="section--title">数据</h2>
+                <select name="date" id="date1" class="dropdown">
+                    <option value="today">今天</option>
+                    <option value="lastweek">上周</option>
+                    <option value="lastmonth">上个月</option>
+                    <option value="lastyear">去年</option>
+                    <option value="alltime">所有时间</option>
+                </select>
+            </div>
+            <div class="cards">
+                <div class="card card-1">
+                    <div class="card--data">
+                        <div class="card--content">
+                            <h5 class="card--title">教师总量</h5>
+                            <h1>199</h1>
+                        </div>
+                        <i class="el-icon-user-solid card--icon--lg"></i>
+                    </div>
+                    <div class="card--stats">
+                        <span><i class="el-icon-s-data card--icon stat--icon"></i>82%</span>
+                        <span><i class="el-icon-caret-top card--icon up--arrow"></i>20</span>
+                        <span><i class="el-icon-caret-bottom card--icon down--arrow"></i>12</span>
+                    </div>
+                </div>
+                <div class="card card-2">
+                    <div class="card--data">
+                        <div class="card--content">
+                            <h5 class="card--title">学生总量</h5>
+                            <h1>1234</h1>
+                        </div>
+                        <i class="el-icon-user card--icon--lg"></i>
+                    </div>
+                    <div class="card--stats">
+                        <span><i class="el-icon-s-data card--icon stat--icon"></i>90%</span>
+                        <span><i class="el-icon-caret-top card--icon up--arrow"></i>350</span>
+                        <span><i class="el-icon-caret-bottom card--icon down--arrow"></i>25</span>
+                    </div>
+                </div>
+                <div class="card card-3">
+                    <div class="card--data">
+                        <div class="card--content">
+                            <h5 class="card--title">课程安排</h5>
+                            <h1>102</h1>
+                        </div>
+                        <i class="el-icon-date card--icon--lg"></i>
+                    </div>
+                    <div class="card--stats">
+                        <span><i class="el-icon-s-data card--icon stat--icon"></i>86%</span>
+                        <span><i class="el-icon-caret-top card--icon up--arrow"></i>31</span>
+                        <span><i class="el-icon-caret-bottom card--icon down--arrow"></i>12</span>
+                    </div>
+                </div>
+                <div class="card card-4">
+                    <div class="card--data">
+                        <div class="card--content">
+                            <h5 class="card--title">成绩数据</h5>
+                            <h1>2653</h1>
+                        </div>
+                        <i class="el-icon-s-data card--icon--lg"></i>
+                    </div>
+                    <div class="card--stats">
+                        <span><i class="el-icon-s-data card--icon stat--icon"></i>86%</span>
+                        <span><i class="el-icon-caret-top card--icon up--arrow"></i>60</span>
+                        <span><i class="el-icon-caret-bottom card--icon down--arrow"></i>32</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="teachers">
+            <div class="title">
+                <h2 class="section--title">教师</h2>
+                <div class="teachers--right--btns">
+                    <select name="date" id="date2" class="下拉教师--过滤器">
+                        <option>筛选</option>
+                        <option value="free">小学教师</option>
+                        <option value="scheduled">中学教师</option>
+                    </select>
+                    <button class="add"><i class="ri-add-line"></i>添加教师</button>
+                </div>
+            </div>
+            <div class="teachers--cards">
+                <a href="#" class="teacher--card">
+                    <div class="img--box--cover img--box--cover1">
+                        <div class="img--box">
+                            <i class="el-icon-s-custom card--icon--lg c1"></i>
+                        </div>
+                    </div>
+                    <p class="free">小学教师</p>
+                </a>
+                <a href="#" class="teacher--card">
+                    <div class="img--box--cover">
+                        <div class="img--box">
+                            <i class="el-icon-s-custom card--icon--lg c2"></i>
+                        </div>
+                    </div>
+                    <p class="scheduled">中学教师</p>
+                </a>
+                <a href="#" class="teacher--card">
+                    <div class="img--box--cover">
+                        <div class="img--box">
+                            <i class="el-icon-s-custom card--icon--lg c2"></i>
+                        </div>
+                    </div>
+                    <p class="scheduled">中学教师</p>
+                </a>
+                <a href="#" class="teacher--card">
+                    <div class="img--box--cover img--box--cover1">
+                        <div class="img--box">
+                            <i class="el-icon-s-custom card--icon--lg c1"></i>
+                        </div>
+                    </div>
+                    <p class="free">小学教师</p>
+                </a>
+                <a href="#" class="teacher--card">
+                    <div class="img--box--cover">
+                        <div class="img--box">
+                            <i class="el-icon-s-custom card--icon--lg c2"></i>
+                        </div>
+                    </div>
+                    <p class="scheduled">中学教师</p>
+                </a>
+                <a href="#" class="teacher--card">
+                    <div class="img--box--cover img--box--cover1">
+                        <div class="img--box">
+                            <i class="el-icon-s-custom card--icon--lg c1"></i>
+                        </div>
+                    </div>
+                    <p class="free">小学教师</p>
+                </a>
+                <a href="#" class="teacher--card">
+                    <div class="img--box--cover">
+                        <div class="img--box">
+                            <i class="el-icon-s-custom card--icon--lg c2"></i>
+                        </div>
+                    </div>
+                    <p class="scheduled">中学教师</p>
+                </a>
+            </div>
+        </div>
+        <div class="recent--students">
+            <div class="title">
+                <h2 class="section--title">学生</h2>
+                <div class="teachers--right--btns">
+                    <select name="date" id="date3" class="下拉教师--过滤器">
+                        <option>筛选</option>
+                        <option value="name">姓名</option>
+                        <option value="status">学号</option>
+                    </select>
+                    <button class="add"><i class="ri-add-line"></i>添加学生</button>
+                </div>
+            </div>
+            <div class="table">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>姓名</th>
+                        <th>学号</th>
+                        <th>注册日期</th>
+                        <th>性别</th>
+                        <th>年龄</th>
+                        <th>设置</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>张三</td>
+                        <td>1001</td>
+                        <td>30/10/2202</td>
+                        <td>男</td>
+                        <td>10岁</td>
+                        <td><span><i class="el-icon-edit edit"></i><i class="el-icon-delete delete"></i></span></td>
+                    </tr>
+                    <tr>
+                        <td>李诗诗</td>
+                        <td>1002</td>
+                        <td>30/10/2202</td>
+                        <td>女</td>
+                        <td>11岁</td>
+                        <td><span><i class="el-icon-edit edit"></i><i class="el-icon-delete delete"></i></span></td>
+                    </tr>
+                    <tr>
+                        <td>小红</td>
+                        <td>1003</td>
+                        <td>29/10/2202</td>
+                        <td>女</td>
+                        <td>12岁</td>
+                        <td><span><i class="el-icon-edit edit"></i><i class="el-icon-delete delete"></i></span></td>
+                    </tr>
+                    <tr>
+                        <td>小明</td>
+                        <td>1004</td>
+                        <td>29/01/2201</td>
+                        <td>男</td>
+                        <td>15岁</td>
+                        <td><span><i class="el-icon-edit edit"></i><i class="el-icon-delete delete"></i></span></td>
+                    </tr>
+                    <tr>
+                        <td>小王</td>
+                        <td>1005</td>
+                        <td>29/10/2202</td>
+                        <td>男</td>
+                        <td>10岁</td>
+                        <td><span><i class="el-icon-edit edit"></i><i class="el-icon-delete delete"></i></span></td>
+                    </tr>
+                    <tr>
+                        <td>小李</td>
+                        <td>1006</td>
+                        <td>28/10/2202</td>
+                        <td>女</td>
+                        <td>16岁</td>
+                        <td><span><i class="el-icon-edit edit"></i><i class="el-icon-delete delete"></i></span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    let menu = document.querySelector('.menu')
+    let sidebar = document.querySelector('.sidebar')
+    let mainContent = document.querySelector('.main--content')
+ 
+    menu.onclick = function () {
+        sidebar.classList.toggle('active')
+        mainContent.classList.toggle('active')
+    }
+</script>
+</body>
+</html>

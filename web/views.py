@@ -1,5 +1,6 @@
 ﻿from django.shortcuts import render, redirect
 from django.contrib.auth.models import User
+from django.contrib.auth.models import Group
 from django.contrib import messages as msg
 from django.contrib.auth import views as auth_views
 from django.contrib.auth import authenticate, login
@@ -11,6 +12,7 @@ from django.conf import settings
 from .utils import replace_emoji
 from django.core.files.base import ContentFile
 import base64
+from django.http import HttpResponseForbidden
 
 from .models import Parent
 
@@ -34,7 +36,7 @@ from django.core.files.storage import default_storage
 from django.utils import timezone
 from .forms import EvaluationForm, SubmittedEvaluation
 from .forms import SubmittedEvaluationForm
-from .forms import HomeworkForm, AttachmentFormSet, HolidayScheduleForm,UploadExcelForm,LeaveRequestForm
+from .forms import HomeworkForm, AttachmentFormSet, HolidayScheduleForm,UploadExcelForm,LeaveRequestForm,ProfileForm,CustomPasswordChangeForm
 
 from django.db.models import Avg, Count
 from collections import defaultdict
@@ -44,7 +46,7 @@ from datetime import datetime
 
 from django.contrib.sessions.models import Session
 from django.urls import resolve
-from openpyxl import load_workbook
+
 
 
 def home(request):
@@ -91,18 +93,48 @@ def home(request):
 
     # 获取今天的日期
     today = datetime.now().date()
+    now = datetime.now().time()
 
     # 获取今天是星期几
     today_weekday = today.strftime('%A')
     # 使用映射字典将英文星期转换为中文星期
     today_weekday_cn = weekday_mapping.get(today_weekday, today_weekday)
-    print(today_weekday_cn)
 
     # 获取今天的课程表
     today_schedule = ClassSchedule.objects.filter(day_of_week=today_weekday_cn)
 
     # 计算课程总数
     total_classes = today_schedule.count()
+    
+     # 初始化正在上课的课程数量和还未上课的课程数量
+    classes_in_session = 0
+    classes_not_started = 0
+
+    # 计算正在上课的课程数量和还未上课的课程数量
+    for schedule in today_schedule:
+        if  now >= schedule.end_time:
+            classes_in_session += 1
+        elif now < schedule.start_time:
+            classes_not_started += 1
+            
+     # 计算今天的完课率
+    completion_rate = 0
+    if total_classes > 0:
+        completion_rate = round((classes_in_session / total_classes) * 100, 2)
+        
+    # 获取请假的学生数量
+    leave_students = LeaveRequest.objects.filter(status='假期中').count()    
+    
+    # 获取在校学生数量
+    in_school_students = total_students - leave_students
+
+    in_school_rate = round((in_school_students / total_students) * 100, 2)
+    
+     # 获取新闻列表
+    news_list = News.objects.all().order_by('-add_time')[:5]  # 获取最近添加的5条新闻
+    
+    # 将新闻的ID添加到上下文中
+    news_ids = [news.id for news in news_list]
 
     # 将数据传递给模板
     context = {
@@ -118,10 +150,18 @@ def home(request):
         'offline_count': offline_count,
         'online_percentage': online_percentage,
         'total_classes': total_classes,
-        'today_weekday': today_weekday,
+        'classes_in_session': classes_in_session,
+        'classes_not_started': classes_not_started,
+        'completion_rate': completion_rate,
+        'in_school_students': in_school_students,
+        'leave_students': leave_students,
+        'in_school_rate': in_school_rate,
+        'news_list': news_list,  # 将新闻列表传递给模板
+        'news_ids': news_ids,  # 将新闻的ID列表传递给模板
     }
 
     return render(request, 'home.html', context)
+
 
 def admin_login_view(request):
     if request.method == 'POST':
@@ -139,18 +179,51 @@ def admin_login_view(request):
     else:
         return render(request, 'admin_login.html')
 
-class PasswordResetView(auth_views.PasswordResetView):
-    template_name = 'password_reset_form.html'
-    email_template_name = 'password_reset_email.html'
-    subject_template_name = 'password_reset_subject.txt'
-    success_url = 'done/'
+from django.shortcuts import redirect
+
+def custom_password_reset(request):
+    context = {
+        'admin_phone_number': '123-456-7890'  # 替换为实际的管理员电话号码
+    }
+    return render(request, 'custom_password_reset.html', context)
+
 
 def logout_view(request):
+    # 从用户会话中获取用户名
+    username = request.session.get('username')
+    
+    # 检查用户是否在线
+    if is_user_online(request.user):
+        # 删除用户的会话数据
+        Session.objects.filter(session_key=request.session.session_key).delete()
+
+    # 执行登出操作
     logout(request)
-    online_users.remove(request.session.get('username'))  # 从在线用户列表中移除用户
+    
+    # 重定向到登录页面
     return redirect('login')
 
+def profile_edit(request):
+    if request.method == 'POST':
+        profile_form = ProfileForm(request.POST, instance=request.user)
+        password_form = CustomPasswordChangeForm(request.user, request.POST)
+        if profile_form.is_valid() and password_form.is_valid():
+            profile_form.save()
+            password_form.save()
+            # 添加日志输出
+            print("Profile and password forms are valid.")
+            # 处理表单提交后的逻辑
+            return redirect('accounts/login/')  # 修改为用户个人信息页面的 URL 名称
+        else:
+            print("Profile form errors:", profile_form.errors)
+            print("Password form errors:", password_form.errors)
+    else:
+        profile_form = ProfileForm(instance=request.user)
+        password_form = CustomPasswordChangeForm(request.user)
+    return render(request, 'profile_edit.html', {'profile_form': profile_form, 'password_form': password_form})
 
+
+@login_required
 def create_class(request):
     if request.method == 'POST':
         # 处理班级创建和删除
@@ -182,10 +255,14 @@ def login_view(request):
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
+            # 检查用户是否属于待审核用户组
+            pending_group = Group.objects.get(name='Pending')
+            if user.groups.filter(id=pending_group.id).exists():
+                msg.error(request, '您的账户正在等待管理员审核。请等待管理员审核通过后再登录。')
+                return redirect('login')
+
             # 登录用户
             login(request, user)
-
-            
 
             # 根据用户类型重定向到不同的页面
             if user_type == 'parent':
@@ -193,10 +270,13 @@ def login_view(request):
             elif user_type == 'teacher':
                 return redirect('t_home')
         else:
-            return render(request, 'login.html', {'error': 'Invalid login credentials'})
-    else:
-        return render(request, 'login.html')
+            msg.error(request, '用户名或密码错误。请重新输入。')
 
+    return render(request, 'login.html')
+
+    return render(request, 'login.html')
+
+@login_required
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -209,23 +289,71 @@ def register(request):
         photo = request.FILES['photo'] if 'photo' in request.FILES else None
         children = request.POST['children']
 
+        # 检查用户名是否已经存在
+        if User.objects.filter(username=username).exists():
+            return render(request, 'register.html', {'error': '用户名已存在'})
+
         if password == confirm_password:
+            # 创建用户，但状态为待审核
             user = User.objects.create_user(username=username, password=password, email=email)
             parent = Parent(user=user, name=parent_name, gender=gender, phone_number=phone_number, photo=photo, children=children)
             parent.save()
 
-            # 处理孩子的学号...
+            # 将用户添加到待审核用户组
+            group = Group.objects.get(name='Pending')
+            user.groups.add(group)
+
+            # 重定向到登录页面，并提醒用户需要管理员审核通过后才能登录
             return redirect('login')
         else:
             return render(request, 'register.html', {'error': '密码和确认密码不匹配'})
-
     return render(request, 'register.html')
 
 @login_required
 def a_home(request):
+    # 检查用户是否是管理员
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("您没有权限访问此页面。")
     template = loader.get_template('a_home.html')
     return HttpResponse(template.render(request=request))
 
+@login_required
+def user_approval(request):
+    # 检查用户是否是管理员
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("您没有权限访问此页面。")
+
+    # 查询待审核用户列表
+    pending_users = User.objects.filter(groups__name='Pending')
+    
+    # 查询普通用户列表
+    normal_users = User.objects.filter(groups__name='normal')
+
+    # 查询所有家长的信息
+    parent_infos = Parent.objects.all()
+
+    if request.method == 'POST':
+        user_id = request.POST.get('user_id')
+        action = request.POST.get('action')
+
+        if action == 'approve':
+            # 将用户从待审核用户组移到普通用户组
+            user = User.objects.get(pk=user_id)
+            pending_group = Group.objects.get(name='Pending')
+            user.groups.remove(pending_group)
+            normal_group = Group.objects.get(name='normal')
+            user.groups.add(normal_group)
+            # 你可能还需要发送一封通知邮件给用户，告知其审核通过
+        elif action == 'reject':
+            # 拒绝注册，可以将用户从系统中删除或者给予适当的提示
+            pass
+
+        # 处理完审核操作后，重定向到审核页面或其他适当的页面
+        return redirect('user_approval')
+
+    return render(request, 'user_approval.html', {'pending_users': pending_users, 'normal_users': normal_users, 'parent_infos': parent_infos})
+
+@login_required
 def add_student(request):
     if request.method == 'POST':
         form = StudentForm(request.POST)
@@ -241,6 +369,7 @@ def add_student(request):
         form = StudentForm()
     return render(request, 'add_student.html', {'form': form})
 
+@login_required
 @csrf_exempt
 def add_batch(request):
     if request.method == 'POST':
@@ -305,7 +434,7 @@ def add_batch(request):
     else:
         return render(request, 'add_batch.html')
     
-
+@login_required
 def upload_holiday_schedule(request):
     if request.method == 'POST':
         form = HolidayScheduleForm(request.POST, request.FILES)
@@ -317,7 +446,7 @@ def upload_holiday_schedule(request):
         form = HolidayScheduleForm()
     return render(request, 'upload_holiday_schedule.html', {'form': form})
 
-
+@login_required
 def calendar(request):
     # 获取当前时间
     current_time = timezone.now()
@@ -342,7 +471,7 @@ def calendar(request):
     # 渲染模板并返回响应
     return render(request, 'calendar.html', context)
 
-
+@login_required
 def add_classschedule(request):
     if request.method == 'POST':
         
@@ -401,9 +530,7 @@ def add_classschedule(request):
     
     return render(request, 'add_classschedule.html', {'form': form})
 
-
-
-
+@login_required
 def student_info(request):
     # 从数据库中获取所有学生信息，并按照学号升序排序
     all_students = Student.objects.all().order_by('student_id')
@@ -440,7 +567,7 @@ def student_info(request):
             paginator = Paginator(all_students, per_page)
             page_number = request.GET.get('page')
             students = paginator.get_page(page_number)
-            messages.error(request, '未找到该学生')
+            msg.error(request, '未找到该学生')
             return render(request, 'student_info.html', {'students': students})
 
     # 如果请求的方法是POST，说明是删除
@@ -456,10 +583,10 @@ def student_info(request):
                 # 删除学生对象
                 student.delete()
                 # 返回删除成功的消息
-                messages.success(request, '删除成功')
+                msg.success(request, '删除成功')
             else:
                 # 返回学生不存在的消息
-                messages.error(request, '学生不存在')
+                msg.error(request, '学生不存在')
             # 重定向到当前页面，以防止重复提交表单
             return redirect('student_info')
 
@@ -470,6 +597,7 @@ def student_info(request):
     # 渲染页面并传递学生信息
     return render(request, 'student_info.html', {'students': students})
 
+@login_required
 def delete_student(request):
     if request.method == 'POST':
         delete_id = request.POST.get('delete_id')
@@ -482,6 +610,7 @@ def delete_student(request):
     else:
         return JsonResponse({'status': 'error', 'message': '无效的请求方法'})
 
+@login_required
 def update_student(request, student_id):
     # 根据学生ID获取学生对象
     student = get_object_or_404(Student, id=student_id)
@@ -509,16 +638,18 @@ def update_student(request, student_id):
 #     else:
 #         form = NewsForm()
 #     return render(request, 'add_news.html', {'form': form})
-
+@login_required
 def news_list(request):
     news_added = request.GET.get('added') == 'true'
     news = News.objects.all().order_by('-add_time')
     return render(request, 'news_list.html', {'news': news, 'news_added': news_added})
 
+@login_required
 def news_detail(request, news_id):
     news = get_object_or_404(News, id=news_id)
     return render(request, 'news_detail.html', {'news': news})
 
+@login_required
 def teacher_info(request):
     if request.method == 'POST':
         # 获取要删除的教师的用户名
@@ -568,6 +699,7 @@ def teacher_info(request):
 
     return render(request, 'teacher_info.html', {'teachers': teachers})
 
+@login_required
 def update_teacher(request, teacher_id):
     # 获取对应的教师对象
     teacher = get_object_or_404(Teacher, id=teacher_id)
@@ -598,6 +730,28 @@ def update_teacher(request, teacher_id):
     # 如果请求的方法不是 POST，那么渲染更新教师信息的页面
     return render(request, 'update_teacher.html', {'teacher': teacher})
 
+@login_required
+def update_parent(request, parent_id):
+    parent = get_object_or_404(Parent, id=parent_id)
+
+    if request.method == 'POST':
+        parent.name = request.POST.get('name')
+        parent.gender = request.POST.get('gender')
+        parent.phone_number = request.POST.get('phone_number')
+        parent.email = request.POST.get('email')
+        
+        file = request.FILES.get('photo')
+        if file:
+            parent.photo.save(file.name, file)
+        
+        parent.save()
+
+        return redirect('parent_info')
+
+    return render(request, 'update_parent.html', {'parent': parent})
+
+
+@login_required
 def delete_teacher(request):
     if request.method == 'POST':
         # 获取要删除的教师的教师编号
@@ -619,6 +773,7 @@ def delete_teacher(request):
         # 重定向到添加批量教师界面
         return redirect('add_batch')
 
+@login_required
 def update_photo(request, teacher_id):
     # 获取对应的教师对象
     teacher = get_object_or_404(Teacher, id=teacher_id)
@@ -637,7 +792,10 @@ def update_photo(request, teacher_id):
 
 
 #家长界面
+@login_required    
 def p_home(request):
+    user = request.user
+
     # 获取当前登录的家长对象
     parent = Parent.objects.get(user=request.user)
     
@@ -648,8 +806,9 @@ def p_home(request):
     children = Student.objects.filter(student_id__in=children_ids)
 
     # 将家长的孩子信息传递给模板
-    return render(request, 'p_home.html', {'children': children})
+    return render(request, 'p_home.html', {'children': children,'user': user})
 
+@login_required
 def p_student_info(request):
     # 获取对应的家长对象
     parent = Parent.objects.get(user=request.user)
@@ -664,8 +823,9 @@ def p_student_info(request):
     return render(request, 'p_student_info.html', {'children': children})
 
 
-#使用教师界面的s_exam_scores的视图查看学生成绩
 
+
+#使用教师界面的s_exam_scores的视图查看学生成绩
 def is_user_online(user):
     # 获取当前用户的所有会话
     user_sessions = Session.objects.filter(expire_date__gte=timezone.now())
@@ -676,7 +836,7 @@ def is_user_online(user):
             return True
     return False
 
-
+@login_required
 def class_group(request, class_id):
     # 获取班级对象
     class_group = get_object_or_404(Class, id=class_id)
@@ -795,7 +955,7 @@ def direct_chat(request, user_id, class_id):
     
     return render(request, 'direct_chat.html', {'chat_partner': chat_partner, 'messages': messages, 'user_id': user_id, 'class_id': class_id})
 
-
+@login_required
 def homework_info(request):
     if request.user.is_authenticated:
         # 获取对应的家长对象
@@ -814,34 +974,28 @@ def homework_info(request):
             # 获取该班级下的作业列表
             child_homework = Homework.objects.filter(class_group=class_group)
             child_submission_info = []
-            
+
             for hw in child_homework:
                 # 获取学生对应的作业信息
                 student_homework = StudentHomework.objects.filter(student=child, homework=hw).first()
+                grading = None  # 默认赋值为None
+                approval_comment = ""  # 默认赋值为空字符串
+
                 if student_homework:
                     # 获取学生的提交信息
                     submission = Submission.objects.filter(student_homework=student_homework).first()
 
-                    # 获取教师的批改内容和评分
                     if submission:
                         grading = submission.grading
                         approval_comment = submission.approval_comment
 
-                    child_submission_info.append({
-                        'homework': hw,
-                        'student_homework': student_homework,
-                        'submission': submission,
-                        'grading': grading,
-                        'approval_comment': approval_comment
-                    })
-                else:
-                    child_submission_info.append({
-                        'homework': hw,
-                        'student_homework': None,
-                        'submission': None,
-                        'grading': None,
-                        'approval_comment': ""
-                    })
+                child_submission_info.append({
+                    'homework': hw,
+                    'student_homework': student_homework,
+                    'submission': submission,
+                    'grading': grading,
+                    'approval_comment': approval_comment
+                })
 
             homework_list.append({'child': child, 'submission_info': child_submission_info})
 
@@ -851,7 +1005,7 @@ def homework_info(request):
         return render(request, 'error.html', {'error_message': 'Please login to view homework.'})
 
 
-
+@login_required
 def view_homework_submissions(request):
     if request.method == 'POST':
         submission_id = request.POST.get('submission_id')
@@ -925,11 +1079,12 @@ def view_homework_submissions(request):
         'class_groups': class_groups,
         'students_with_homework': students_with_homework,
         'selected_class_id': class_id,
+        'teacher': teacher,
     }
 
     return render(request, 'view_homework_submissions.html', context)
 
-
+@login_required
 def p_classschedule(request):
     parent = request.user.parent
     children_ids = [int(id) for id in parent.children.split(',') if id.strip()]
@@ -988,7 +1143,6 @@ def p_classschedule(request):
     return render(request, 'p_classschedule.html', {'timetable': timetable, 'children_current_schedules': children_current_schedules, 'children': children})
 
 
-
 @login_required
 def leave_request(request):
     if request.method == 'POST':
@@ -1041,9 +1195,8 @@ def leave_request(request):
 
 
 
-
-
 #教师界面
+@login_required    
 def t_home(request):
     # 获取当前用户教师对象
     teacher = Teacher.objects.get(user=request.user)
@@ -1084,9 +1237,9 @@ def t_student_info(request):
         # 这里添加你的处理代码
         pass
 
-    return render(request, 't_student_info.html', {'class_groups': class_groups, 'students': students})
+    return render(request, 't_student_info.html', {'class_groups': class_groups, 'students': students, 'teacher': teacher})
 
-
+@login_required
 def evaluation_history(request, student_id):
     try:
         #家长获取学生综合评价信息
@@ -1100,7 +1253,14 @@ def evaluation_history(request, student_id):
     
     return render(request, 'evaluation_history.html', {'evaluations': evaluations})
 
+@login_required
 def evaluation(request, student_id):
+    # 首先确保用户是教师
+    if not request.user.is_authenticated or not hasattr(request.user, 'teacher'):
+        return JsonResponse({'error': '您不是教师，无法进行此操作'}, status=403)
+
+    teacher = Teacher.objects.get(user=request.user)
+
     # 获取学生的信息
     student = Student.objects.get(id=student_id)
 
@@ -1162,9 +1322,16 @@ def evaluation(request, student_id):
         del form.fields['physical_fitness']
         del form.fields['physical_fitness_notes']
 
-    return render(request, 'evaluation.html', {'form': form, 'student': student, 'current_time': current_time, 'submitted_evaluation_exists': submitted_evaluation_exists})
+    return render(request, 'evaluation.html', {'form': form, 'student': student, 'current_time': current_time, 'submitted_evaluation_exists': submitted_evaluation_exists,'teacher': teacher})
 
+@login_required
 def t_add_grades(request):
+    # 首先确保用户是教师
+    if not request.user.is_authenticated or not hasattr(request.user, 'teacher'):
+        return JsonResponse({'error': '您不是教师，无法进行此操作'}, status=403)
+
+    teacher = Teacher.objects.get(user=request.user)
+
     if request.method == 'POST':
         # 使用 'file' 来获取文件字段
         excel_file = request.FILES['file']
@@ -1193,10 +1360,11 @@ def t_add_grades(request):
             )
             # 计算总分
             grade.save()
-        return render(request, 't_add_grades.html')
+        return render(request, 't_add_grades.html',{'teacher': teacher})
     else:
-        return render(request, 't_add_grades.html')
+        return render(request, 't_add_grades.html',{'teacher': teacher})
 
+@login_required
 def s_exam_scores(request, student_id):
     # 获取该学生的所有考试成绩并按时间排序
     try:
@@ -1208,6 +1376,7 @@ def s_exam_scores(request, student_id):
     # 渲染模板并将考试成绩传递给模板
     return render(request, 's_exam_scores.html', {'exam_scores': exam_scores})
 
+@login_required
 def class_exam_scores(request, class_id):
     # 获取指定班级的所有成绩，包含学生姓名
     exam_scores = Grade.objects.filter(student__class_group_id=class_id).select_related('student')
@@ -1242,7 +1411,7 @@ def class_exam_scores(request, class_id):
     # 渲染模板
     return render(request, 'class_exam_scores.html', {'exam_scores': exam_scores,'scores_datas': scores_datas,'class_id': class_id})
 
-
+@login_required
 def add_homework(request, teacher_id):
     try:
         teacher = Teacher.objects.get(id=teacher_id)
@@ -1288,7 +1457,7 @@ def add_homework(request, teacher_id):
 
     return render(request, 'add_homework.html', {'form': form, 'teacher': teacher})
 
-
+@login_required
 def t_classschedule(request):
     # 获取当前教师所教的班级
     teacher = request.user.teacher
@@ -1401,26 +1570,27 @@ def leave_approval(request):
             return JsonResponse({'error': '您不是本班班主任，无法进行此操作'}, status=403)
 
     # 将更新后的记录信息传递到前端并渲染页面
-    return render(request, 'leave_approval.html', {'leave_requests': leave_requests, 'teacher_position': teacher_position, 'now': now})
-
-
+    return render(request, 'leave_approval.html', {'leave_requests': leave_requests, 'teacher_position': teacher_position, 'now': now,'teacher': teacher})
 
 
 #共用界面
-def user_detail(request, user_id):
+def t_user_detail(request, user_id):
     # 尝试从 Teacher 表中获取用户信息
     teacher = Teacher.objects.filter(id=user_id).first()
-
-    # 如果在 Teacher 表中找不到用户信息，则尝试从 Parent 表中获取用户信息
-    if not teacher:
-        parent = Parent.objects.filter(id=user_id).first()
-    else:
-        parent = None  # 如果在 Teacher 表中找到了用户信息，则不需要在 parent 中设置任何值
+    print(teacher)
 
     # 渲染模板并将相应用户信息传递给模板
-    return render(request, 'user_detail.html', {'teacher': teacher, 'parent': parent})
+    return render(request, 't_user_detail.html', {'teacher': teacher})
 
 
+def p_user_detail(request, user_id):
+
+    parent = Parent.objects.filter(id=user_id).first()
+
+    # 渲染模板并将相应用户信息传递给模板
+    return render(request, 'p_user_detail.html', {'parent': parent})
+
+@login_required
 def submit_homework(request, homework_id, student_id):
     # 获取作业对象
     homework = get_object_or_404(Homework, id=homework_id)
@@ -1454,7 +1624,7 @@ def submit_homework(request, homework_id, student_id):
     return render(request, 'submit_homework.html', {'homework': homework})
 
 
-
+@login_required
 def view_submissions(request, homework_id):
     # 获取作业对象
     homework = get_object_or_404(Homework, id=homework_id)
@@ -1463,9 +1633,6 @@ def view_submissions(request, homework_id):
     submissions = Submission.objects.filter(student_homework__homework=homework)
     
     return render(request, 'view_submissions.html', {'homework': homework, 'submissions': submissions})
-
-
-
 
 
 

@@ -1,0 +1,139 @@
+﻿<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+
+    <nav>
+        <ul class="menus">
+            <li class="li">
+                <a href="{% url 'p_home' %}">
+                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                    家长主页
+                </a>
+            </li>
+            <li class="li">
+                <i class="fa fa-check-square" aria-hidden="true"></i>
+                作业信息
+                <ul>
+                    <li><a href="{% url 'homework_info'%}">查看作业</a></li>
+                    <li><a href="{% url 'homework_info'%}">提交作业</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <i class="fa fa-comment" aria-hidden="true"></i>
+                学生信息
+                <ul>
+                    <li><a href="{% url 'p_student_info'%}">查看学生成绩</a></li>
+                    <li><a href="{% url 'p_student_info' %}">查看学生综合评价</a></li>
+                    <li><a href="{% url 'p_student_info' %}">查看学生信息</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                校园动态
+                <ul>
+                    <li><a href="{% url 'leave_request'%}">请销假记录</a></li>
+                    <li><a href="{% url 'p_classschedule'%}">我的课表</a></li>
+                    <li><a href="{% url 'calendar'%}">假期安排</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <a href="{% url 'p_home' %}">
+                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                    聊天
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <section class="header">
+        <div class="logo">
+            <i class="el-icon-menu icon icon-0 menu"></i>
+            <a href="{% url 'home' %}">
+                <h2><span style="color: #fd5d3b;">X</span>N:<span>家校系统</span></h2>
+            </a>
+        </div>
+        <div class="block">
+        </div>
+        <div class="notification--profile">
+            <a href="{% url 'admin_login' %}">
+                <div class="picon chat" title="管理员登录">
+                    <i class="el-icon-chat-dot-round"></i>
+                </div>
+            </a>
+            <a href="{% url 'news_list' %}">
+                <div class="picon message" title="校园动态">
+                    <i class="el-icon-message"></i>
+                </div>
+            </a>
+            <a href="{% url 'home' %}">
+                <div class="picon bell" title="消息提醒">
+                    <i class="el-icon-bell"></i>
+                </div>
+            </a>
+            <div class="custom-link">
+                <span class="username" style="margin-left: 10px;margin-right: 10px">{{ user.username }}</span>
+                <div class="dropdown">
+                    <label for="dropdown-toggle" class="menu">
+                        <ul>
+                            <li><a href="{% url 'profile_edit' %}">修改信息</a></li>
+                            <li><a href="/logout">退出登录</a></li>
+                        </ul>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+.username {
+    cursor: pointer; /* 将用户名样式设置为指针，表示可点击 */
+    position: relative;
+}
+.dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0; /* 修正位置 */
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    z-index: 1;
+    width: 120px; /* 设置下拉菜单宽度 */
+}
+
+.dropdown ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown ul li {
+    padding: 10px;
+}
+
+.dropdown ul li a {
+    text-decoration: none;
+    color: #333;
+    display: block;
+}
+
+.dropdown ul li:hover {
+    background-color: #f0f0f0;
+}
+.custom-link {
+/* 这里是你的自定义样式 */
+margin-left: 5px; /* 左侧间距 */
+/* 其他样式 */
+}
+
+
+
+
+<script>
+    // 等待文档加载完成
+    $(document).ready(function() {
+        // 当用户名被点击时
+        $('.username').click(function() {
+            // 切换下拉菜单的显示状态
+            $('.dropdown').toggle();
+        });
+    });
+</script>

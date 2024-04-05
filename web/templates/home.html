@@ -10,7 +10,7 @@
     <!-- 引入组件库 -->
     <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <title>家校系统</title>
-     <style>
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
  
         * {
@@ -19,7 +19,7 @@
             box-sizing: border-box;
             font-family: 'Roboto', sans-serif;
         }
- 
+        
         body {
             position: relative;
             width: 100%;
@@ -45,49 +45,13 @@
         .logo span {
             color: #5073fb;
         }
- 
-        .search--notification--profile {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: calc(100% - 300px);
-            padding: 0 40px;
+        
+        .block {
+            width: 100%; /* 让宽度占据父容器的100%，即占据整个可用空间 */
+            height: 300px; /* 设置高度为300像素，你也可以使用其他单位，如百分比、视口单位等 */
         }
- 
-        .search {
-            background-color: #f1f4f8;
-            border-radius: 50px;
-            width: 400px;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
- 
-        .search input {
-            background-color: transparent;
-            outline: none;
-            border: none;
-            text-indent: 15px;
-            width: 85%;
-        }
- 
-        .search button {
-            outline: none;
-            border: none;
-            border-radius: 50%;
-            background-color: #fff;
-            padding: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
- 
-        .search button i {
-            font-size: 1.1rem;
-            color: #5073fb;
-        }
- 
+
+
         .notification--profile {
             display: flex;
             align-items: center;
@@ -101,18 +65,18 @@
             border-radius: 5px;
         }
  
-        .lock {
-            color: #5073fb;
-            background-color: rgba(80, 115, 251, .2);
-        }
- 
-        .bell {
-            color: #f1d243;
-            background-color: rgba(241, 210, 67, .2);
-        }
- 
         .chat {
             color: #70d7a5;
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .message {
+            color: #fd5d3b; /* 设置消息图标的颜色为红色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .bell {
+            color: #fdd835; /* 设置铃铛图标的颜色为黄色 */
             background-color: rgba(112, 215, 165, .2);
         }
  
@@ -148,7 +112,7 @@
             top: 0;
             right: 0;
             height: 100%;
-            width: calc(100% - 300px);
+            width: calc(100% - 200px);
             padding: 0 40px;
             overflow-y: scroll;
             transition: .3s;
@@ -181,7 +145,7 @@
  
         .cards {
             display: flex;
-            gap: 20px;
+            gap: 30px;
         }
  
         .card {
@@ -335,7 +299,7 @@
  
         .teachers--cards {
             display: flex;
-            gap: 20px;
+            gap: 30px;
         }
  
         .teacher--card {
@@ -390,6 +354,27 @@
             margin-bottom: 20px;
         }
  
+        .table {
+            height: 200px;
+            overflow-y: scroll;
+        }
+ 
+        table {
+            width: 100%;
+            text-align: left;
+            border-collapse: collapse;
+            cursor: pointer;
+        }
+ 
+        tr {
+            border-bottom: 1px solid #f1f1f1;
+        }
+ 
+        td,
+        th {
+            padding-block: 10px;
+        }
+
         .table {
             height: 200px;
             overflow-y: scroll;
@@ -524,19 +509,96 @@
                 padding: 10px;
             }
         }
+
+        /* 模态框样式 */
+        .modal {
+        display: none; /* 默认隐藏 */
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+        background-color: #fefefe;
+        margin: 10% auto;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        max-width: 400px;
+        }
+
+        .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+        color: black;
+        text-decoration: none;
+        }
+
+        .modal-title {
+        margin-top: 0;
+        color: #333;
+        font-size: 24px;
+        }
+
+        .modal-body {
+        color: #666;
+        }
+
+        .modal-body p {
+        margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
  
 <section class="header">
-
+    <div class="logo">
+        <i class="el-icon-menu icon icon-0 menu"></i>
+        <h2><span style="color: #fd5d3b;">X</span>N:<span>家校系统</span></h2>
+    </div>
+    <div class="block">
+    </div>
+    <div class="notification--profile">
+        <a href="{% url 'admin_login' %}">
+            <div class="picon chat" title="管理员登录">
+                <i class="el-icon-chat-dot-round"></i>
+            </div>
+        </a>
+        <a href="{% url 'news_list' %}">
+            <div class="picon message" title="校园动态">
+                <i class="el-icon-message"></i>
+            </div>
+        </a>
+        <a href="{% url 'home' %}">
+            <div class="picon bell" title="消息提醒">
+                <i class="el-icon-bell"></i>
+            </div>
+        </a>
+        <a href="{% url 'login' %}" class="picon profile">
+            <svg t="1659934004546" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7540" width="40" height="40">
+                <path d="M876.0576 769.024c5.12 34.816 34.82624 29.696 39.94624 45.056 0 9.71776-5.12 45.056-19.968 49.664-14.84288 0-34.816-5.12-49.664 0-9.71776 5.12-19.95776 9.72288-25.07776 19.96288-9.728 25.08288 9.71776 45.05088 0 54.77888-14.848 9.728-45.06112 25.088-54.784 14.848-14.84288-14.848-14.84288-34.82112-45.056-34.82112-39.94112 0-39.94112 39.94112-59.904 39.94112s-54.784-14.848-54.784-29.70112c5.12-19.96288 14.848-34.81088-5.12-54.77888-25.088-19.968-54.77888 0-65.01888-9.728-14.84288-9.728-19.96288-34.816-14.84288-49.65888s39.936-14.84288 39.936-54.78912c0-29.69088-34.816-34.81088-39.936-54.77376-5.12-14.848 5.12-39.94624 19.96288-45.06624 25.08288-9.71776 39.93088 9.728 65.01888-9.71776 14.848-14.83776 9.728-49.664 9.728-59.904 5.12-14.84288 25.07776-19.96288 39.936-19.96288 29.696 0 19.96288 34.82112 59.904 39.94112 39.936 0 34.816-14.848 54.77888-39.94112 25.08288 0 45.06112 9.72288 49.65888 19.96288 9.728 19.968-9.71776 49.664 19.968 69.63712 25.07776 14.84288 49.664-5.12 65.024 0 9.72288 5.12 14.84288 19.96288 19.96288 39.94112-9.72288 29.16352-54.78912 24.04352-49.66912 69.10976z m-179.70176-99.84c-119.80288 29.696-74.752 204.28288 39.936 184.832 115.2-25.09824 99.84-209.92-39.936-184.832z m-204.288-174.58688c-119.808 0-214.528-94.72-214.528-214.528s94.72-214.528 214.528-214.528c119.80288 0 214.52288 94.72 214.52288 214.528 0.00512 114.688-94.71488 214.528-214.52288 214.528z m174.592 49.65888s-79.88224 0-74.76224 54.784c5.12 59.904-74.752 14.83776-89.59488 65.024-19.968 59.89376 9.72288 49.65376 25.08288 89.6 9.728 25.08288-39.936 39.936-34.816 84.992 9.728 59.904 59.904 29.70624 74.75712 65.024 9.72288 29.696-25.08288 49.664-104.96 49.664-65.01888 0-189.44 0-234.496-5.12 0 0-129.536-5.12-129.536-89.6 0 0-5.12-124.928 74.752-214.528 0 0 84.992-109.56288 229.38112-109.56288l264.192 9.72288z"
+                        fill="#ffffff" p-id="7541"></path>
+            </svg>
+        </a>
+    </div>
 </section>
 <section class="main">
     <div class="main--content">
         <div class="overview">
             <div class="title">
                 <h2 class="section--title">数据</h2>
-
             </div>
             <div class="cards">
                 <div class="card card-1">
@@ -562,9 +624,9 @@
                         <i class="el-icon-user card--icon--lg"></i>
                     </div>
                     <div class="card--stats">
-                        <span><i class="el-icon-s-data card--icon stat--icon"></i>%</span>
-                        <span><i class="el-icon-caret-top card--icon up--arrow"></i></span>
-                        <span><i class="el-icon-caret-bottom card--icon down--arrow"></i></span>
+                        <span><i class="el-icon-s-data card--icon stat--icon"></i>{{ in_school_rate }}%</span>
+                        <span><i class="el-icon-caret-top card--icon up--arrow"></i>{{ in_school_students }}</span>
+                        <span><i class="el-icon-caret-bottom card--icon down--arrow"></i>{{ leave_students }}</span>
                     </div>
                 </div>
                 <div class="card card-3">
@@ -576,9 +638,9 @@
                         <i class="el-icon-date card--icon--lg"></i>
                     </div>
                     <div class="card--stats">
-                        <span><i class="el-icon-s-data card--icon stat--icon"></i>86%</span>
-                        <span><i class="el-icon-caret-top card--icon up--arrow"></i></span>
-                        <span><i class="el-icon-caret-bottom card--icon down--arrow"></i></span>
+                        <span><i class="el-icon-s-data card--icon stat--icon"></i>{{ completion_rate }}%</span>
+                        <span><i class="el-icon-caret-top card--icon up--arrow"></i>{{ classes_in_session }}</span>
+                        <span><i class="el-icon-caret-bottom card--icon down--arrow"></i>{{ classes_not_started }}</span>
                     </div>
                 </div>
                 <div class="card card-4">
@@ -597,66 +659,74 @@
                 </div>
             </div>
         </div>
+
         <div class="teachers">
             <div class="title">
                 <h2 class="section--title">教师</h2>
             </div>
             <div class="teachers--cards">
-                <a href="#" class="teacher--card">
+                <a href="{% url 't_user_detail' 44 %}" class="teacher--card">
                     <div class="img--box--cover img--box--cover1">
                         <div class="img--box">
                             <i class="el-icon-s-custom card--icon--lg c1"></i>
                         </div>
                     </div>
-                    <p class="free">小学教师</p>
+                    <p class="free">魏俊</p>
+                    <p class="free">数学教师</p>
                 </a>
-                <a href="#" class="teacher--card">
+                <a href="{% url 't_user_detail' 45 %}" class="teacher--card">
                     <div class="img--box--cover">
                         <div class="img--box">
                             <i class="el-icon-s-custom card--icon--lg c2"></i>
                         </div>
                     </div>
-                    <p class="scheduled">中学教师</p>
+                    <p class="scheduled">黄明</p>
+                    <p class="scheduled">物理教师</p>
                 </a>
-                <a href="#" class="teacher--card">
+                <a href="{% url 't_user_detail' 46 %}" class="teacher--card">
                     <div class="img--box--cover">
                         <div class="img--box">
                             <i class="el-icon-s-custom card--icon--lg c2"></i>
                         </div>
                     </div>
-                    <p class="scheduled">中学教师</p>
+                    <p class="scheduled">张丽</p>
+                    <p class="scheduled">英语教师</p>
                 </a>
-                <a href="#" class="teacher--card">
+                <a href="{% url 't_user_detail' 47 %}" class="teacher--card">
                     <div class="img--box--cover img--box--cover1">
                         <div class="img--box">
                             <i class="el-icon-s-custom card--icon--lg c1"></i>
                         </div>
                     </div>
-                    <p class="free">小学教师</p>
+                    <p class="free">陈娟</p>
+                    <p class="free">生物教师</p>
                 </a>
-                <a href="#" class="teacher--card">
+                <a href="{% url 't_user_detail' 48 %}" class="teacher--card">
                     <div class="img--box--cover">
                         <div class="img--box">
                             <i class="el-icon-s-custom card--icon--lg c2"></i>
                         </div>
                     </div>
-                    <p class="scheduled">中学教师</p>
+                    <p class="scheduled">李清顺</p>
+                    <p class="scheduled">化学教师</p>
                 </a>
-                <a href="#" class="teacher--card">
+                <a href="{% url 't_user_detail' 49 %}" class="teacher--card">
                     <div class="img--box--cover img--box--cover1">
                         <div class="img--box">
                             <i class="el-icon-s-custom card--icon--lg c1"></i>
                         </div>
                     </div>
-                    <p class="free">小学教师</p>
+                    <p class="free">张旭</p>
+                    <p class="free">语文教师</p>
                 </a>
-                <a href="#" class="teacher--card">
+                <a href="{% url 't_user_detail' 50 %}" class="teacher--card">
                     <div class="img--box--cover">
                         <div class="img--box">
                             <i class="el-icon-s-custom card--icon--lg c2"></i>
                         </div>
                     </div>
-                    <p class="scheduled">中学教师</p>
+                    <p class="scheduled">胡雪涛</p>
+                    <p class="scheduled">信息科技教师</p>
                 </a>
             </div>
         </div>
@@ -665,13 +735,44 @@
                 <h2 class="section--title">学校动态</h2>
             </div>
             <div class="table">
-                <table>
-                    
-                </table>
+                <!-- 新闻部分 -->
+                <div class="news-section">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>标题</th>
+                                <th>简介</th>
+                                <th>添加时间</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for news in news_list %}
+                                <tr>
+                                    <td><a href="{% url 'news_detail' news.id %}">{{ news.title }}</a></td>
+                                    <td>{{ news.summary }}</td>
+                                    <td>{{ news.add_time }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
-        </div>
     </div>
 </section>
+
+<div id="myModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2 class="modal-title">教师总量信息</h2>
+    <div class="modal-body">
+      <p><strong>教师总量：</strong>{{ total_teachers }}</p>
+      <p><strong>教师在线率：</strong>{{ online_percentage }}%</p>
+      <p><strong>教师在线数：</strong>{{ online_count }}</p>
+      <p><strong>教师离线数：</strong>{{ offline_count }}</p>
+    </div>
+  </div>
+</div>
+
 <script>
     let menu = document.querySelector('.menu')
     let sidebar = document.querySelector('.sidebar')
@@ -681,6 +782,27 @@
         sidebar.classList.toggle('active')
         mainContent.classList.toggle('active')
     }
+
+    // 获取模态框和关闭按钮
+    var modal = document.getElementById("myModal");
+    var span = document.getElementsByClassName("close")[0];
+
+    // 点击card-1时显示模态框
+    document.querySelector('.card-1').addEventListener('click', function() {
+    modal.style.display = "block";
+    });
+
+    // 点击关闭按钮时隐藏模态框
+    span.onclick = function() {
+    modal.style.display = "none";
+    };
+
+    // 当用户点击模态框外部区域时，关闭模态框
+    window.onclick = function(event) {
+    if (event.target == modal) {
+        modal.style.display = "none";
+    }
+    };
 </script>
 </body>
 </html>

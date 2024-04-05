@@ -177,9 +177,9 @@
                             <span class="status offline"></span>
                         {% endif %}
                         <span class="btn-group">
-                            <a href="{% url 'user_detail' user_id=teacher_info_all.user_id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
+                            <a href="{% url 't_user_detail' user_id=teacher_info_all.id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
                             
-                            <a href="{% url 'direct_chat' user_id=teacher_info_all.user_id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a><!-- 发起私聊链接 -->
+                            <a href="{% url 'direct_chat' user_id=teacher_info_all.id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a><!-- 发起私聊链接 -->
                         </span>
                     </div>
                 {% endfor %}
@@ -195,8 +195,8 @@
                             <span class="status offline"></span>
                         {% endif %}
                         <span class="btn-group">
-                            <a href="{% url 'user_detail' user_id=parent_info_all.user_id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
-                            <a href="{% url 'direct_chat' user_id=parent_info_all.user_id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a> <!-- 发起私聊链接 -->
+                            <a href="{% url 'p_user_detail' user_id=parent_info_all.id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
+                            <a href="{% url 'direct_chat' user_id=parent_info_all.id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a> <!-- 发起私聊链接 -->
                         </span>
                     </div>
                 {% endfor %}

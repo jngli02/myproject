@@ -1,108 +1,478 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>作业查看</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+ 
+        body {
+            position: relative;
+            width: 100%;
+            background-size: cover;
+        }
+ 
+        .header {
+            position: fixed;
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #f1f1f1;
+            background-color: #324057;
+        }
+ 
+        .logo {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 300px;
+            padding-left: 40px;
+        }
+ 
+        .logo span {
+            color: #5073fb;
+        }
+        
+        .block {
+            width: 100%; /* 让宽度占据父容器的100%，即占据整个可用空间 */
+            height: 60px; /* 设置高度为300像素，你也可以使用其他单位，如百分比、视口单位等 */
+        }
+
+
+        .notification--profile {
+            display: flex;
+            align-items: center;
+        }
+ 
+        .picon {
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 1.1rem;
+            padding: 5px;
+            border-radius: 5px;
+        }
+ 
+        .chat {
+            color: #70d7a5;
+            background-color: rgba(112, 215, 165, .2);
+        }
+        
+        .message {
+            color: #fd5d3b; /* 设置消息图标的颜色为红色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .bell {
+            color: #fdd835; /* 设置铃铛图标的颜色为黄色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .profile {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background-color: #5073fb;
+            border: 1px solid #5073fb;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+ 
+        .profile .icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110%;
+            object-fit: cover;
+        }
+        .student-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .student-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 10px;
+        }
+    </style>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <!-- 引入字体图标 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        a {
+            color: inherit; /* 继承父元素的颜色 */
+            text-decoration: none; /* 移除下划线 */
+        }
+
+        ul{
+            list-style: none;
+        }
+        nav{
+            /* 固定定位 */
+            position: fixed;
+            top:60px;
+            left: 0;
+            width: 300px;
+            height: 100vh;
+            background-color: #85c1e9; /* 淡蓝色 */
+        }
+        .menus{
+            margin: 50px 0;
+            color: #fff;
+        }
+        .li{
+            letter-spacing: 2px;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 30px 0;
+            /* 动画过渡 */
+            transition: 0.3s;
+        }
+        .menus li:hover{
+            background-color: #a9cce3; /* 鼠标悬停时的背景色 */
+        }
+        .li .fa{
+            font-size: 20px;
+            width: 50px;
+            height: 20px;
+            text-align: center;
+            margin-left: 5px;
+        }
+        .li ul{
+            width: 0;
+            height: 100vh;
+            padding: 50px 0;
+            background-color: #5499c7; /* 内部菜单的背景色 */
+            position: absolute;
+            top: 0;
+            right: 0;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .li ul li{
+            padding: 16px 24px;
+            /* 文字禁止换行 */
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+        .li:hover ul{
+            width: 250px;
+        }
+        .li ul li:hover{
+            background-color: #7fb3d5; /* 鼠标悬停时内部菜单项的背景色 */
+        }
+    </style>
+
+
+    <style>
+        .content {
+            margin-left: 340px;
+            padding: 100px 20px 20px;
+            border: 1px solid #ccc; /* 添加边框 */
+            border-radius: 5px; /* 添加边框圆角 */
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* 添加阴影 */
+            background-color: #f9f9f9; /* 修改背景颜色 */
+            font-size: 16px; /* 调整字体大小 */
+            line-height: 1.6; /* 调整行高 */
+        }
+
         .modal-content {
             border-radius: 0;
         }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .table th,
+        .table td {
+            padding: 10px;
+            text-align: left;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        .btn {
+            display: inline-block;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: #fff;
+            text-align: center;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+        }
+        .submitted {
+            color: #28a745;
+        }
+
+        .graded {
+            color: #ffc107;
+        }
+
+        .not-submitted {
+            color: #dc3545;
+        }
+        .content h5 {
+            font-size: 24px; 
+        }
+        .username {
+            cursor: pointer; /* 将用户名样式设置为指针，表示可点击 */
+            position: relative;
+        }
+        .dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0; /* 修正位置 */
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1;
+            width: 120px; /* 设置下拉菜单宽度 */
+        }
+
+        .dropdown ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .dropdown ul li {
+            padding: 10px;
+        }
+
+        .dropdown ul li a {
+            text-decoration: none;
+            color: #333;
+            display: block;
+        }
+
+        .dropdown ul li:hover {
+            background-color: #f0f0f0;
+        }
+        .custom-link {
+        /* 这里是你的自定义样式 */
+        margin-left: 5px; /* 左侧间距 */
+        /* 其他样式 */
+        }
+
+    </style>
+    <!-- bootstrap modal 框样式 -->
+    <style>
+        .modal-open{overflow:hidden}.modal-open .modal{overflow-x:hidden;overflow-y:auto}.modal{position:fixed;top:0;left:0;z-index:1050;display:none;width:100%;height:100%;overflow:hidden;outline:0}.modal-dialog{position:relative;width:auto;margin:.5rem;pointer-events:none}.modal.fade .modal-dialog{transition:-webkit-transform .3s ease-out;transition:transform .3s ease-out;transition:transform .3s ease-out,-webkit-transform .3s ease-out;-webkit-transform:translate(0,-50px);transform:translate(0,-50px)}@media (prefers-reduced-motion:reduce){.modal.fade .modal-dialog{transition:none}}.modal.show .modal-dialog{-webkit-transform:none;transform:none}.modal.modal-static .modal-dialog{-webkit-transform:scale(1.02);transform:scale(1.02)}.modal-dialog-scrollable{display:-ms-flexbox;display:flex;max-height:calc(100% - 1rem)}.modal-dialog-scrollable .modal-content{max-height:calc(100vh - 1rem);overflow:hidden}.modal-dialog-scrollable .modal-footer,.modal-dialog-scrollable .modal-header{-ms-flex-negative:0;flex-shrink:0}.modal-dialog-scrollable .modal-body{overflow-y:auto}.modal-dialog-centered{display:-ms-flexbox;display:flex;-ms-flex-align:center;align-items:center;min-height:calc(100% - 1rem)}.modal-dialog-centered::before{display:block;height:calc(100vh - 1rem);height:-webkit-min-content;height:-moz-min-content;height:min-content;content:""}.modal-dialog-centered.modal-dialog-scrollable{-ms-flex-direction:column;flex-direction:column;-ms-flex-pack:center;justify-content:center;height:100%}.modal-dialog-centered.modal-dialog-scrollable .modal-content{max-height:none}.modal-dialog-centered.modal-dialog-scrollable::before{content:none}.modal-content{position:relative;display:-ms-flexbox;display:flex;-ms-flex-direction:column;flex-direction:column;width:100%;pointer-events:auto;background-color:#fff;background-clip:padding-box;border:1px solid rgba(0,0,0,.2);border-radius:.3rem;outline:0}.modal-backdrop{position:fixed;top:0;left:0;z-index:1040;width:100vw;height:100vh;background-color:#000}.modal-backdrop.fade{opacity:0}.modal-backdrop.show{opacity:.5}.modal-header{display:-ms-flexbox;display:flex;-ms-flex-align:start;align-items:flex-start;-ms-flex-pack:justify;justify-content:space-between;padding:1rem 1rem;border-bottom:1px solid #dee2e6;border-top-left-radius:calc(.3rem - 1px);border-top-right-radius:calc(.3rem - 1px)}.modal-header .close{padding:1rem 1rem;margin:-1rem -1rem -1rem auto}.modal-title{margin-bottom:0;line-height:1.5}.modal-body{position:relative;-ms-flex:1 1 auto;flex:1 1 auto;padding:1rem}.modal-footer{display:-ms-flexbox;display:flex;-ms-flex-wrap:wrap;flex-wrap:wrap;-ms-flex-align:center;align-items:center;-ms-flex-pack:end;justify-content:flex-end;padding:.75rem;border-top:1px solid #dee2e6;border-bottom-right-radius:calc(.3rem - 1px);border-bottom-left-radius:calc(.3rem - 1px)}.modal-footer>*{margin:.25rem}.modal-scrollbar-measure{position:absolute;top:-9999px;width:50px;height:50px;overflow:scroll}@media (min-width:576px){.modal-dialog{max-width:500px;margin:1.75rem auto}.modal-dialog-scrollable{max-height:calc(100% - 3.5rem)}.modal-dialog-scrollable .modal-content{max-height:calc(100vh - 3.5rem)}.modal-dialog-centered{min-height:calc(100% - 3.5rem)}.modal-dialog-centered::before{height:calc(100vh - 3.5rem);height:-webkit-min-content;height:-moz-min-content;height:min-content}.modal-sm{max-width:300px}}@media (min-width:992px){.modal-lg,.modal-xl{max-width:800px}}@media (min-width:1200px){.modal-xl{max-width:1140px}}
     </style>
 </head>
 <body>
-    <div class="container mt-5">
-        {% for item in homework_list %}
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="card-title">{{ item.child.name }}的作业</h5>
-            </div>
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table class="table table-bordered">
-                        <thead>
-                            <tr>
-                                <th>标题</th>
-                                <th>开始时间</th>
-                                <th>结束时间</th>
-                                <th>备注</th>
-                                <th>状态</th>
-                                <th>附件</th>
-                                <th>提交状态</th>
-                                <th>批改状态</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for info in item.submission_info %}
-                            <tr>
-                                <td>{{ info.homework.title }}</td>
-                                <td>{{ info.homework.start_time }}</td>
-                                <td>{{ info.homework.end_time }}</td>
-                                <td>{{ info.homework.remark }}</td>
-                                <td>
-                                    {% if info.homework.status == "未开始" or info.homework.status == "已超时" %}
-                                    <span class="text-danger">{{ info.homework.status }}</span>
-                                    {% else %}
-                                    {{ info.homework.status }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if info.homework.attachments.exists %}
-                                    {% for attachment in info.homework.attachments.all %}
-                                    <a href="{{ attachment.file.url }}" download>{{ attachment.file.name }}</a><br>
-                                    {% endfor %}
-                                    {% else %}
-                                    无附件
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if info.student_homework %}
-                                    {% if info.student_homework.submitted %}
-                                    已提交
-                                    {% else %}
-                                    未提交
-                                    {% endif %}
-                                    {% else %}
-                                    未提交
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if info.student_homework %}
-                                    {% if info.student_homework.graded %}
-                                    已批改
-                                    {% else %}
-                                    未批改
-                                    {% endif %}
-                                    {% else %}
-                                    未批改
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {% if info.homework.status != "未开始" and info.homework.status != "已超时" %}
-                                    {% if not info.student_homework or not info.student_homework.submitted %}
-                                    <a href="{% url 'submit_homework' homework_id=info.homework.id student_id=item.child.id %}" class="btn btn-primary">提交作业</a>
-                                    {% else %}
-                                    <span class="text-danger">已提交</span>
-                                    {% endif %}
-                                    {% else %}
-                                    <span class="text-danger">{{ info.homework.status }}</span>
-                                    {% endif %}
-                                    <!-- 查看提交按钮 -->
-                                    <a href="{% url 'view_submissions' homework_id=info.homework.id %}" class="btn btn-info">查看提交</a>
-                                    <!-- 查看批阅按钮 -->
-                                    <button onclick="openGradingModal('{{ info.grading }}', '{{ info.approval_comment }}')" class="btn btn-success">查看批阅</button>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+    
+    <section class="header">
+        <div class="logo">
+            <i class="el-icon-menu icon icon-0 menu"></i>
+            <a href="{% url 'home' %}">
+                <h2><span style="color: #fd5d3b;">X</span>N:<span>家校系统</span></h2>
+            </a>
+        </div>
+        <div class="block">
+        </div>
+        <div class="notification--profile">
+            <a href="{% url 'admin_login' %}">
+                <div class="picon chat" title="管理员登录">
+                    <i class="el-icon-chat-dot-round"></i>
+                </div>
+            </a>
+            <a href="{% url 'news_list' %}">
+                <div class="picon message" title="校园动态">
+                    <i class="el-icon-message"></i>
+                </div>
+            </a>
+            <a href="{% url 'home' %}">
+                <div class="picon bell" title="消息提醒">
+                    <i class="el-icon-bell"></i>
+                </div>
+            </a>
+            <div class="custom-link">
+                <span class="username" style="margin-left: 10px;margin-right: 10px">{{ user.username }}</span>
+                <div class="dropdown">
+                    <label for="dropdown-toggle" class="menu">
+                        <ul>
+                            <li><a href="{% url 'profile_edit' %}">修改信息</a></li>
+                            <li><a href="/logout">退出登录</a></li>
+                        </ul>
+                    </label>
                 </div>
             </div>
+
         </div>
-        {% endfor %}
+    </section>
+    <nav>
+        <ul class="menus">
+            <li class="li">
+                <a href="{% url 'p_home' %}">
+                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                    家长主页
+                </a>
+            </li>
+            <li class="li">
+                <i class="fa fa-check-square" aria-hidden="true"></i>
+                作业信息
+                <ul>
+                    <li><a href="{% url 'homework_info'%}">查看作业</a></li>
+                    <li><a href="{% url 'homework_info'%}">提交作业</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <i class="fa fa-comment" aria-hidden="true"></i>
+                学生信息
+                <ul>
+                    <li><a href="{% url 'p_student_info'%}">查看学生成绩</a></li>
+                    <li><a href="{% url 'p_student_info' %}">查看学生综合评价</a></li>
+                    <li><a href="{% url 'p_student_info' %}">查看学生信息</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                校园动态
+                <ul>
+                    <li><a href="{% url 'leave_request'%}">请销假记录</a></li>
+                    <li><a href="{% url 'p_classschedule'%}">我的课表</a></li>
+                    <li><a href="{% url 'calendar'%}">假期安排</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <a href="{% url 'p_home' %}">
+                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                    聊天
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <div class="content">
+        <div class="container mt-5">
+            {% for item in homework_list %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title">{{ item.child.name }}的作业</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>标题</th>
+                                    <th>开始时间</th>
+                                    <th>结束时间</th>
+                                    <th>备注</th>
+                                    <th>状态</th>
+                                    <th>附件</th>
+                                    <th>提交状态</th>
+                                    <th>批改状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for info in item.submission_info %}
+                                <tr>
+                                    <td>{{ info.homework.title }}</td>
+                                    <td>{{ info.homework.start_time }}</td>
+                                    <td>{{ info.homework.end_time }}</td>
+                                    <td>{{ info.homework.remark }}</td>
+                                    <td>
+                                        {% if info.homework.status == "未开始" or info.homework.status == "已超时" %}
+                                        <span class="text-danger">{{ info.homework.status }}</span>
+                                        {% else %}
+                                        {{ info.homework.status }}
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if info.homework.attachments.exists %}
+                                        {% for attachment in info.homework.attachments.all %}
+                                        <a href="{{ attachment.file.url }}" download>{{ attachment.file.name }}</a><br>
+                                        {% endfor %}
+                                        {% else %}
+                                        无附件
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if info.student_homework %}
+                                        {% if info.student_homework.submitted %}
+                                        已提交
+                                        {% else %}
+                                        未提交
+                                        {% endif %}
+                                        {% else %}
+                                        未提交
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if info.student_homework %}
+                                        {% if info.student_homework.graded %}
+                                        已批改
+                                        {% else %}
+                                        未批改
+                                        {% endif %}
+                                        {% else %}
+                                        未批改
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if info.homework.status != "未开始" and info.homework.status != "已超时" %}
+                                            {% if not info.student_homework or not info.student_homework.submitted %}
+                                                <a href="{% url 'submit_homework' homework_id=info.homework.id student_id=item.child.id %}" class="btn btn-primary">提交作业</a>
+                                            {% else %}
+                                                <span class="text-danger">已提交</span>
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="text-danger">{{ info.homework.status }}</span>
+                                        {% endif %}
+                                        <!-- 查看提交按钮 -->
+                                        <a href="{% url 'view_submissions' homework_id=info.homework.id %}" class="btn btn-info">查看提交</a>
+                                        <!-- 查看批阅按钮 -->
+                                        <button onclick="openGradingModal('{{ info.grading }}', '{{ info.approval_comment }}')" class="btn btn-success">查看批阅</button>
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
+    
 
     <!-- 查看批阅模态框 -->
     <div id="gradingModal" class="modal" tabindex="-1" role="dialog">
@@ -126,6 +496,7 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
+
 <script>
     // 打开模态框并显示批阅内容
     function openGradingModal(grading, approvalComment) {
@@ -138,6 +509,16 @@
     // 使用 Bootstrap 提供的模态框关闭事件
     $('#gradingModal').on('hidden.bs.modal', function () {
         // 模态框隐藏时不需要额外的操作，因为 Bootstrap 会自动处理
+    });
+</script>
+<script>
+    // 等待文档加载完成
+    $(document).ready(function() {
+        // 当用户名被点击时
+        $('.username').click(function() {
+            // 切换下拉菜单的显示状态
+            $('.dropdown').toggle();
+        });
     });
 </script>
 

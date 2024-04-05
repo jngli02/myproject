@@ -3,58 +3,241 @@
 <html lang="zh-cmn-Hans">
     <head>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
         <title>学生信息管理系统</title>
         <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}"/>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- 引入样式 -->
+        <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+        <!-- 引入组件库 -->
+        <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Roboto', sans-serif;
+            }
+ 
+            body {
+                position: relative;
+                width: 100%;
+                background-size: cover;
+            }
+ 
+            .header {
+                position: fixed; /* 固定定位 */
+                top: 0; /* 距离页面顶部的距离为 0 */
+                width: 100%; /* 页眉的宽度，设置为页面宽度，以充满整个屏幕 */
+                height: 60px; /* 页眉的高度 */
+                display: flex; /* 使用弹性布局 */
+                align-items: center; /* 垂直居中 */
+                border-bottom: 2px solid #f1f1f1; /* 页眉的底部边框 */
+                background-color: #324057; /* 页眉的背景色 */
+            }
+ 
+            .logo {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                width: 300px;
+                padding-left: 40px;
+            }
+ 
+            .logo span {
+                color: #5073fb;
+            }
         
+            .block {
+                width: 100%; /* 让宽度占据父容器的100%，即占据整个可用空间 */
+                height: 60px; /* 设置高度为300像素，你也可以使用其他单位，如百分比、视口单位等 */
+            }
+
+
+            .notification--profile {
+                display: flex;
+                align-items: center;
+            }
+ 
+            .picon {
+                cursor: pointer;
+                margin-left: 20px;
+                font-size: 1.1rem;
+                padding: 5px;
+                border-radius: 5px;
+            }
+ 
+            .chat {
+                color: #70d7a5;
+                background-color: rgba(112, 215, 165, .2);
+            }
+        
+            .message {
+                color: #fd5d3b; /* 设置消息图标的颜色为红色 */
+                background-color: rgba(112, 215, 165, .2);
+            }
+
+            .bell {
+                color: #fdd835; /* 设置铃铛图标的颜色为黄色 */
+                background-color: rgba(112, 215, 165, .2);
+            }
+
+            .profile {
+                position: relative;
+                width: 40px;
+                height: 40px;
+                background-color: #5073fb;
+                border: 1px solid #5073fb;
+                border-radius: 50%;
+                overflow: hidden;
+            }
+ 
+            .profile .icon {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 110%;
+                height: 110%;
+                object-fit: cover;
+            }
+            .student-box {
+                border: 1px solid #ccc;
+                padding: 20px;
+                margin-bottom: 20px;
+                width: 300px;
+            }
+            .student-photo {
+                width: 100px;
+                height: 100px;
+                border-radius: 50%;
+                overflow: hidden;
+                margin: 0 auto 10px;
+            }
+        </style>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8">
+        <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
         
        
         <style type="text/css">
-        p {
-            font-family: Microsoft YaHei;
-        }
-        .container .page__hd {
-            margin: 20px 10px;
-        }
-        .container .page__hd img {
-            height: 60px;
-        }
-        .container .page__hd p {
-            text-align: center;
-            font-size: 30px;
-            font-weight: bold;
-            margin-top: 10px;
-            background-image: url()
-        }
-        .weui-grids div {
-            height: 35px;
-            background-repeat: no-repeat;
-            background-position: center center;
-        }
+            p {
+                font-family: Microsoft YaHei;
+            }
+            .container .page__hd {
+                margin: 20px 10px;
+            }
+            .container .page__hd img {
+                height: 60px;
+            }
+            .container .page__hd p {
+                text-align: center;
+                font-size: 30px;
+                font-weight: bold;
+                margin-top: 10px;
+                background-image: url()
+            }
+            .weui-grids div {
+                height: 35px;
+                background-repeat: no-repeat;
+                background-position: center center;
+            }
+        </style>
+
+        <style>
+            .content {
+                padding: 80px 20px 20px; /* 添加内边距 */
+            }
+            .username {
+                cursor: pointer; /* 将用户名样式设置为指针，表示可点击 */
+                position: relative;
+            }
+            .dropdown {
+                display: none;
+                position: absolute;
+                top: 100%;
+                right: 0; /* 修正位置 */
+                background-color: #fff;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+                z-index: 1;
+                width: 120px; /* 设置下拉菜单宽度 */
+            }
+
+            .dropdown ul {
+                list-style-type: none;
+                padding: 0;
+                margin: 0;
+            }
+
+            .dropdown ul li {
+                padding: 10px;
+            }
+
+            .dropdown ul li a {
+                text-decoration: none;
+                color: #333;
+                display: block;
+            }
+
+            .dropdown ul li:hover {
+                background-color: #f0f0f0;
+            }
+            .custom-link {
+            /* 这里是你的自定义样式 */
+            margin-left: 5px; /* 左侧间距 */
+            /* 其他样式 */
+            }
         </style>
     </head>
 
     <body>
+
+    <section class="header">
+        <div class="logo">
+            <i class="el-icon-menu icon icon-0 menu"></i>
+            <a href="{% url 'home' %}">
+                <h2><span style="color: #fd5d3b;">X</span>N:<span>家校系统</span></h2>
+            </a>
+        </div>
+        <div class="block">
+        </div>
+        <div class="notification--profile">
+            <a href="{% url 'admin_login' %}">
+                <div class="picon chat" title="管理员登录">
+                    <i class="el-icon-chat-dot-round"></i>
+                </div>
+            </a>
+            <a href="{% url 'news_list' %}">
+                <div class="picon message" title="校园动态">
+                    <i class="el-icon-message"></i>
+                </div>
+            </a>
+            <a href="{% url 'home' %}">
+                <div class="picon bell" title="消息提醒">
+                    <i class="el-icon-bell"></i>
+                </div>
+            </a>
+            <div class="custom-link">
+                <span class="username" style="margin-left: 10px;margin-right: 10px">{{ user.username }}</span>
+                <div class="dropdown">
+                    <label for="dropdown-toggle" class="menu">
+                        <ul>
+                            <li><a href="{% url 'profile_edit' %}">修改信息</a></li>
+                            <li><a href="/logout">退出登录</a></li>
+                        </ul>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+    </section>
+    <div class="content">
         <link rel="stylesheet" type="text/css" href="{% static 'css/iconfont.css' %}">
         <div id="container" class="container">
             <div class="page__hd">
-                <a href="/">
-                <img src="{% static 'images/logo.png' %}">
-                </a>
                 <p class="page__title">
                    家校信息沟通平台
                 </p>
-            </div>
-
-            <!-- 引用用户登录框 -->
-            {% include 'user_login_box.html' %}
-            
-            <div class="user-info">
-                <span id="username">{{ request.session.username }}</span>  <!-- 显示用户名 -->
-                <div id="dropdown-menu" style="display: none;">
-                    <a href="{% url 'logout' %}">登出</a>
-                </div>
             </div>
 
             <div class="weui-grids">
@@ -101,6 +284,16 @@
             </div>
         </div>
         <script src="{% static 'js/index.js' %}"></script>
-        
+    <script>
+        // 等待文档加载完成
+        $(document).ready(function() {
+            // 当用户名被点击时
+            $('.username').click(function() {
+                // 切换下拉菜单的显示状态
+                $('.dropdown').toggle();
+            });
+        });
+    </script>
+
     </body>
 </html>

@@ -2,8 +2,118 @@
 <!DOCTYPE html>
 <html lang="zh-cmn-Hans">
     <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+ 
+        body {
+            position: relative;
+            width: 100%;
+            background-size: cover;
+        }
+ 
+        .header {
+            position: fixed;
+            height: 60px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #f1f1f1;
+            background-color: #324057;
+        }
+ 
+        .logo {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 300px;
+            padding-left: 40px;
+        }
+ 
+        .logo span {
+            color: #5073fb;
+        }
+        
+        .block {
+            width: 100%; /* 让宽度占据父容器的100%，即占据整个可用空间 */
+            height: 60px; /* 设置高度为300像素，你也可以使用其他单位，如百分比、视口单位等 */
+        }
+
+
+        .notification--profile {
+            display: flex;
+            align-items: center;
+        }
+ 
+        .picon {
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 1.1rem;
+            padding: 5px;
+            border-radius: 5px;
+        }
+ 
+        .chat {
+            color: #70d7a5;
+            background-color: rgba(112, 215, 165, .2);
+        }
+        
+        .message {
+            color: #fd5d3b; /* 设置消息图标的颜色为红色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .bell {
+            color: #fdd835; /* 设置铃铛图标的颜色为黄色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .profile {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background-color: #5073fb;
+            border: 1px solid #5073fb;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+ 
+        .profile .icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110%;
+            object-fit: cover;
+        }
+        .student-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .student-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 10px;
+        }
+    </style>
         <title>学生相关</title>
         
         <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
@@ -32,8 +142,51 @@
             background-position: center center;
         }
         </style>
+
+    <style>
+        .content {
+            margin-left: 300px; /* 使内容区域与导航栏保持一致的左边距 */
+            padding: 60px 20px 20px; /* 添加内边距 */
+        }
+    </style>
+
     </head>
     <body>
+
+        <section class="header">
+            <div class="logo">
+                <i class="el-icon-menu icon icon-0 menu"></i>
+                <a href="{% url 'home' %}">
+                    <h2><span style="color: #fd5d3b;">X</span>N:<span>家校系统</span></h2>
+                </a>
+            </div>
+            <div class="block">
+            </div>
+            <div class="notification--profile">
+                <a href="{% url 'admin_login' %}">
+                    <div class="picon chat" title="管理员登录">
+                        <i class="el-icon-chat-dot-round"></i>
+                    </div>
+                </a>
+                <a href="{% url 'news_list' %}">
+                    <div class="picon message" title="校园动态">
+                        <i class="el-icon-message"></i>
+                    </div>
+                </a>
+                <a href="{% url 'home' %}">
+                    <div class="picon bell" title="消息提醒">
+                        <i class="el-icon-bell"></i>
+                    </div>
+                </a>
+                <a href="{% url 'login' %}" class="picon profile">
+                    <svg t="1659934004546" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7540" width="40" height="40">
+                        <path d="M876.0576 769.024c5.12 34.816 34.82624 29.696 39.94624 45.056 0 9.71776-5.12 45.056-19.968 49.664-14.84288 0-34.816-5.12-49.664 0-9.71776 5.12-19.95776 9.72288-25.07776 19.96288-9.728 25.08288 9.71776 45.05088 0 54.77888-14.848 9.728-45.06112 25.088-54.784 14.848-14.84288-14.848-14.84288-34.82112-45.056-34.82112-39.94112 0-39.94112 39.94112-59.904 39.94112s-54.784-14.848-54.784-29.70112c5.12-19.96288 14.848-34.81088-5.12-54.77888-25.088-19.968-54.77888 0-65.01888-9.728-14.84288-9.728-19.96288-34.816-14.84288-49.65888s39.936-14.84288 39.936-54.78912c0-29.69088-34.816-34.81088-39.936-54.77376-5.12-14.848 5.12-39.94624 19.96288-45.06624 25.08288-9.71776 39.93088 9.728 65.01888-9.71776 14.848-14.83776 9.728-49.664 9.728-59.904 5.12-14.84288 25.07776-19.96288 39.936-19.96288 29.696 0 19.96288 34.82112 59.904 39.94112 39.936 0 34.816-14.848 54.77888-39.94112 25.08288 0 45.06112 9.72288 49.65888 19.96288 9.728 19.968-9.71776 49.664 19.968 69.63712 25.07776 14.84288 49.664-5.12 65.024 0 9.72288 5.12 14.84288 19.96288 19.96288 39.94112-9.72288 29.16352-54.78912 24.04352-49.66912 69.10976z m-179.70176-99.84c-119.80288 29.696-74.752 204.28288 39.936 184.832 115.2-25.09824 99.84-209.92-39.936-184.832z m-204.288-174.58688c-119.808 0-214.528-94.72-214.528-214.528s94.72-214.528 214.528-214.528c119.80288 0 214.52288 94.72 214.52288 214.528 0.00512 114.688-94.71488 214.528-214.52288 214.528z m174.592 49.65888s-79.88224 0-74.76224 54.784c5.12 59.904-74.752 14.83776-89.59488 65.024-19.968 59.89376 9.72288 49.65376 25.08288 89.6 9.728 25.08288-39.936 39.936-34.816 84.992 9.728 59.904 59.904 29.70624 74.75712 65.024 9.72288 29.696-25.08288 49.664-104.96 49.664-65.01888 0-189.44 0-234.496-5.12 0 0-129.536-5.12-129.536-89.6 0 0-5.12-124.928 74.752-214.528 0 0 84.992-109.56288 229.38112-109.56288l264.192 9.72288z"
+                                fill="#ffffff" p-id="7541"></path>
+                    </svg>
+                </a>
+            </div>
+        </section>
+        </section>
         <div id="container" class="container">
             <div class="page__hd">
                 <a href="/">
@@ -83,6 +236,11 @@
                     <div style="background-image: url('{% static 'images/house.png' %}')">
                     </div>
                     <p class="weui-grid__label">上传课表</p>
+                </a>
+                <a class="weui-grid" href="{% url 'user_approval' %}">
+                    <div style="background-image: url('{% static 'images/text4.png' %}')">
+                    </div>
+                    <p class="weui-grid__label">用户审核</p>
                 </a>
             </div>
         </div>

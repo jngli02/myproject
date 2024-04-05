@@ -2,90 +2,439 @@
 <html>
 <head>
     <title>教师信息</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+ 
+        body {
+            position: relative;
+            width: 100%;
+            background-size: cover;
+        }
+ 
+        .header {
+            position: fixed; /* 固定定位 */
+            top: 0; /* 距离页面顶部的距离为 0 */
+            width: 100%; /* 页眉的宽度，设置为页面宽度，以充满整个屏幕 */
+            height: 60px; /* 页眉的高度 */
+            display: flex; /* 使用弹性布局 */
+            align-items: center; /* 垂直居中 */
+            border-bottom: 2px solid #f1f1f1; /* 页眉的底部边框 */
+            background-color: #324057; /* 页眉的背景色 */
+        }
+ 
+        .logo {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            width: 300px;
+            padding-left: 40px;
+        }
+ 
+        .logo span {
+            color: #5073fb;
+        }
+        
+        .block {
+            width: 100%; /* 让宽度占据父容器的100%，即占据整个可用空间 */
+            height: 60px; /* 设置高度为300像素，你也可以使用其他单位，如百分比、视口单位等 */
+        }
+
+
+        .notification--profile {
+            display: flex;
+            align-items: center;
+        }
+ 
+        .picon {
+            cursor: pointer;
+            margin-left: 20px;
+            font-size: 1.1rem;
+            padding: 5px;
+            border-radius: 5px;
+        }
+ 
+        .chat {
+            color: #70d7a5;
+            background-color: rgba(112, 215, 165, .2);
+        }
+        
+        .message {
+            color: #fd5d3b; /* 设置消息图标的颜色为红色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .bell {
+            color: #fdd835; /* 设置铃铛图标的颜色为黄色 */
+            background-color: rgba(112, 215, 165, .2);
+        }
+
+        .profile {
+            position: relative;
+            width: 40px;
+            height: 40px;
+            background-color: #5073fb;
+            border: 1px solid #5073fb;
+            border-radius: 50%;
+            overflow: hidden;
+        }
+ 
+        .profile .icon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 110%;
+            height: 110%;
+            object-fit: cover;
+        }
+        .student-box {
+            border: 1px solid #ccc;
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 300px;
+        }
+        .student-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto 10px;
+        }
+    </style>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+    <!-- 引入字体图标 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <style>
+        a {
+            color: inherit; /* 继承父元素的颜色 */
+            text-decoration: none; /* 移除下划线 */
+        }
+
+        ul{
+            list-style: none;
+        }
+        nav {
+            position: fixed; /* 固定定位 */
+            top: 60px; /* 距离页面顶部的距离为 0 */
+            left: 0; /* 距离页面左侧的距离为 0 */
+            width: 300px; /* 导航栏的宽度 */
+            height: 100%; /* 导航栏的高度，设置为页面高度，以充满整个屏幕 */
+            background-color: #85c1e9; /* 导航栏的背景色 */
+        }
+        .menus{
+            margin: 50px 0;
+            color: #fff;
+        }
+        .li{
+            letter-spacing: 2px;
+            font-size: 17px;
+            font-weight: 600;
+            padding: 30px 0;
+            /* 动画过渡 */
+            transition: 0.3s;
+        }
+        .menus li:hover{
+            background-color: #a9cce3; /* 鼠标悬停时的背景色 */
+        }
+        .li .fa{
+            font-size: 20px;
+            width: 50px;
+            height: 20px;
+            text-align: center;
+            margin-left: 5px;
+        }
+        .li ul{
+            width: 0;
+            height: 100vh;
+            padding: 50px 0;
+            background-color: #5499c7; /* 内部菜单的背景色 */
+            position: absolute;
+            top: 0;
+            right: 0;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .li ul li{
+            padding: 16px 24px;
+            /* 文字禁止换行 */
+            white-space: nowrap;
+            transition: 0.3s;
+        }
+        .li:hover ul{
+            width: 250px;
+        }
+        .li ul li:hover{
+            background-color: #7fb3d5; /* 鼠标悬停时内部菜单项的背景色 */
+        }
+    </style>
+
+    <style>
+        .content {
+            margin-left: 300px; /* 使内容区域与导航栏保持一致的左边距 */
+            padding: 80px 20px 20px; /* 添加内边距 */
+        }
+
+         h1 {
+            font-size: 24px; /* 设置标题字体大小 */
+            margin-bottom: 20px; /* 添加标题下方间距 */
+        }
+
+        table {
+            width: 100%; /* 表格宽度占满父容器 */
+            border-collapse: collapse; /* 边框重叠处理 */
+        }
+
+        th, td {
+            padding: 10px; /* 单元格内边距 */
+            text-align: center; /* 文字居中显示 */
+            border: 1px solid #ccc; /* 添加边框 */
+        }
+
+        thead th {
+            background-color: #f2f2f2; /* 表头背景色 */
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #f9f9f9; /* 偶数行背景色 */
+        }
+
+        form {
+            margin-bottom: 20px; /* 表单下方间距 */
+        }
+
+        input[type="text"] {
+            padding: 8px; /* 输入框内边距 */
+            border: 1px solid #ccc; /* 输入框边框 */
+        }
+
+        button[type="submit"] {
+            padding: 8px 16px; /* 按钮内边距 */
+            background-color: #007bff; /* 按钮背景色 */
+            color: #fff; /* 按钮文字颜色 */
+            border: none; /* 移除按钮边框 */
+            cursor: pointer; /* 设置鼠标样式为手型 */
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3; /* 鼠标悬停时按钮背景色 */
+        }
+
+        .pagination {
+            margin-top: 20px; /* 分页器顶部间距 */
+            text-align: center; /* 文字居中显示 */
+        }
+
+        .step-links {
+            margin: 10px 0; /* 分页链接间距 */
+        }
+
+        .step-links a {
+            padding: 5px 10px; /* 分页链接内边距 */
+            margin-right: 5px; /* 分页链接右侧间距 */
+            text-decoration: none; /* 移除链接下划线 */
+            color: #007bff; /* 链接文字颜色 */
+            border: 1px solid #ccc; /* 链接边框 */
+            border-radius: 3px; /* 设置链接圆角 */
+        }
+
+        .step-links a:hover {
+            background-color: #f2f2f2; /* 鼠标悬停时链接背景色 */
+        }
+
+        .current {
+            font-weight: bold; /* 当前页码文字加粗 */
+        }
+    </style>
+
+
 </head>
 <body>
-    <h1>教师信息</h1>
+    
+    <section class="header">
+        <div class="logo">
+            <i class="el-icon-menu icon icon-0 menu"></i>
+            <a href="{% url 'home' %}">
+                <h2><span style="color: #fd5d3b;">X</span>N:<span>家校系统</span></h2>
+            </a>
+        </div>
+        <div class="block">
+        </div>
+        <div class="notification--profile">
+            <a href="{% url 'admin_login' %}">
+                <div class="picon chat" title="管理员登录">
+                    <i class="el-icon-chat-dot-round"></i>
+                </div>
+            </a>
+            <a href="{% url 'news_list' %}">
+                <div class="picon message" title="校园动态">
+                    <i class="el-icon-message"></i>
+                </div>
+            </a>
+            <a href="{% url 'home' %}">
+                <div class="picon bell" title="消息提醒">
+                    <i class="el-icon-bell"></i>
+                </div>
+            </a>
+            <a href="{% url 'login' %}" class="picon profile">
+                <svg t="1659934004546" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="7540" width="40" height="40">
+                    <path d="M876.0576 769.024c5.12 34.816 34.82624 29.696 39.94624 45.056 0 9.71776-5.12 45.056-19.968 49.664-14.84288 0-34.816-5.12-49.664 0-9.71776 5.12-19.95776 9.72288-25.07776 19.96288-9.728 25.08288 9.71776 45.05088 0 54.77888-14.848 9.728-45.06112 25.088-54.784 14.848-14.84288-14.848-14.84288-34.82112-45.056-34.82112-39.94112 0-39.94112 39.94112-59.904 39.94112s-54.784-14.848-54.784-29.70112c5.12-19.96288 14.848-34.81088-5.12-54.77888-25.088-19.968-54.77888 0-65.01888-9.728-14.84288-9.728-19.96288-34.816-14.84288-49.65888s39.936-14.84288 39.936-54.78912c0-29.69088-34.816-34.81088-39.936-54.77376-5.12-14.848 5.12-39.94624 19.96288-45.06624 25.08288-9.71776 39.93088 9.728 65.01888-9.71776 14.848-14.83776 9.728-49.664 9.728-59.904 5.12-14.84288 25.07776-19.96288 39.936-19.96288 29.696 0 19.96288 34.82112 59.904 39.94112 39.936 0 34.816-14.848 54.77888-39.94112 25.08288 0 45.06112 9.72288 49.65888 19.96288 9.728 19.968-9.71776 49.664 19.968 69.63712 25.07776 14.84288 49.664-5.12 65.024 0 9.72288 5.12 14.84288 19.96288 19.96288 39.94112-9.72288 29.16352-54.78912 24.04352-49.66912 69.10976z m-179.70176-99.84c-119.80288 29.696-74.752 204.28288 39.936 184.832 115.2-25.09824 99.84-209.92-39.936-184.832z m-204.288-174.58688c-119.808 0-214.528-94.72-214.528-214.528s94.72-214.528 214.528-214.528c119.80288 0 214.52288 94.72 214.52288 214.528 0.00512 114.688-94.71488 214.528-214.52288 214.528z m174.592 49.65888s-79.88224 0-74.76224 54.784c5.12 59.904-74.752 14.83776-89.59488 65.024-19.968 59.89376 9.72288 49.65376 25.08288 89.6 9.728 25.08288-39.936 39.936-34.816 84.992 9.728 59.904 59.904 29.70624 74.75712 65.024 9.72288 29.696-25.08288 49.664-104.96 49.664-65.01888 0-189.44 0-234.496-5.12 0 0-129.536-5.12-129.536-89.6 0 0-5.12-124.928 74.752-214.528 0 0 84.992-109.56288 229.38112-109.56288l264.192 9.72288z"
+                            fill="#ffffff" p-id="7541"></path>
+                </svg>
+            </a>
+        </div>
+    </section>
 
-    <!-- 搜索框 -->
-    <form method="get" action="{% url 'teacher_info' %}">
-        <input type="text" name="teacher_id" placeholder="输入教师编号">
-        <button type="submit">搜索</button>
-    </form>
+    <nav>
+        <ul class="menus">
+            <li class="li">
+                <a href="{% url 'a_home' %}">
+                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                    管理员主页
+                </a>
+            </li>
+            <li class="li">
+                <i class="fa fa-check-square" aria-hidden="true"></i>
+                学生信息
+                <ul>
+                    <li><a href="{% url 'student_info' %}">查看学生信息</a></li>
+                    <li><a href="{% url 'add_student'%}">添加学生</a></li>
+                    <li><a href="{% url 'add_batch'%}">批量添加学生</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <i class="fa fa-comment" aria-hidden="true"></i>
+                教师信息
+                <ul>
+                    <li><a href="{% url 'teacher_info'%}">查看教师信息</a></li>
+                    <li><a href="{% url 'add_batch' %}">批量添加教师</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <i class="fa fa-tags" aria-hidden="true"></i>
+                校园动态
+                <ul>
+                    <li><a href="{% url 'admin:index'%}">校园信息管理</a></li>
+                    <li><a href="{% url 'create_class'%}">创建班级</a></li>
+                    <li><a href="{% url 'upload_holiday_schedule'%}">上传假期时间安排</a></li>
+                    <li><a href="{% url 'add_classschedule'%}">上传课表</a></li>
+                </ul>
+            </li>
+            <li class="li">
+                <a href="{% url 'user_approval' %}">
+                    <i class="fa fa-th-large" aria-hidden="true"></i>
+                    用户管理
+                </a>
+            </li>
+        </ul>
+    </nav>
 
-    <!-- 教师信息表格 -->
-    <table id="teachers" class="table">
-        <thead>
-            <tr>
-                <th>教师编号</th>
-                <th>默认用户名</th>
-                <th>姓名</th>
-                <th>性别</th>
-                <th>授课班级</th>
-                <th>授课科目</th>
-                <th>电话号码</th>
-                <th>邮箱</th>
-                <th>职位</th>
-                <th>照片</th>
-                <th>操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for teacher in teachers %}
+    <div class="content">
+        <h1>教师信息</h1>
+
+        <!-- 搜索框 -->
+        <form method="get" action="{% url 'teacher_info' %}">
+            <input type="text" name="teacher_id" placeholder="输入教师编号">
+            <button type="submit">搜索</button>
+        </form>
+
+        <!-- 教师信息表格 -->
+        <table id="teachers" class="table">
+            <thead>
                 <tr>
-                    <td>{{ teacher.teacher_id }}</td>
-                    <td>{{ teacher.user}}</td>
-                    <td>{{ teacher.name }}</td>
-                    <td>{{ teacher.gender }}</td>
-                    <td>{{ teacher.class_groups }}</td>
-                    <td>{{ teacher.subject }}</td>
-                    <td>{{ teacher.phone_number }}</td>
-                    <td>{{ teacher.email }}</td>
-                    <td>{{ teacher.position }}</td>
-                    <td>
-                        {% if teacher.photo %}
-                            <img src="{{ teacher.photo.url }}" alt="教师照片" width="50" height="50">
-                        {% else %}
-                            <form method="post" action="{% url 'update_photo' teacher.id %}" enctype="multipart/form-data">
-                                {% csrf_token %}
-                                <input type="file" name="photo">
-                                <button type="submit">添加照片</button>
-                            </form>
-                        {% endif %}
-                    </td>
-                    <!-- 操作按钮... -->
-                    <td>
-                        <a href="{% url 'update_teacher' teacher.id %}" class="btn btn-primary">修改</a>
-                        <!-- 使用表单来发送POST请求 -->
-                        <form action="{% url 'delete_teacher' %}" method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="teacher_id" value="{{ teacher.teacher_id }}">
-                            <button type="submit" class="delete">删除</button>
-                        </form>
-                    </td>
+                    <th>教师编号</th>
+                    <th>默认用户名</th>
+                    <th>姓名</th>
+                    <th>性别</th>
+                    <th>授课班级</th>
+                    <th>授课科目</th>
+                    <th>电话号码</th>
+                    <th>邮箱</th>
+                    <th>职位</th>
+                    <th>照片</th>
+                    <th>操作</th>
                 </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                    <tr>
+                        <td>{{ teacher.teacher_id }}</td>
+                        <td>{{ teacher.user}}</td>
+                        <td>{{ teacher.name }}</td>
+                        <td>{{ teacher.gender }}</td>
+                        <td>
+                          <ul>
+                            {% for class_group in teacher.class_groups.all %}
+                              <li>{{ class_group }}</li>
+                            {% endfor %}
+                          </ul>
+                        </td>
+                        <td>{{ teacher.subject }}</td>
+                        <td>{{ teacher.phone_number }}</td>
+                        <td>{{ teacher.email }}</td>
+                        <td>{{ teacher.position }}</td>
+                        <td>
+                            {% if teacher.photo %}
+                                <img src="{{ teacher.photo.url }}" alt="教师照片" width="50" height="50">
+                            {% else %}
+                                <form method="post" action="{% url 'update_photo' teacher.id %}" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <input type="file" name="photo">
+                                    <button type="submit">添加照片</button>
+                                </form>
+                            {% endif %}
+                        </td>
+                        <!-- 操作按钮... -->
+                        <td>
+                            <a href="{% url 'update_teacher' teacher.id %}" class="btn btn-primary">
+                                <button type="submit" >修改</button>
+                            </a>
+                            <!-- 使用表单来发送POST请求 -->
+                            <form action="{% url 'delete_teacher' %}" method="post">
+                                {% csrf_token %}
+                                <input type="hidden" name="teacher_id" value="{{ teacher.teacher_id }}">
+                                <button type="submit" class="delete">删除</button>
+                            </form>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <!-- 分页器 -->
-    <div class="pagination">
-        <span class="step-links">
-            {% if teachers.has_previous %}
-                <a href="?page=1">« 第一页</a>
-                <a href="?page={{ teachers.previous_page_number }}">上一页</a>
-            {% endif %}
+        <!-- 分页器 -->
+        <div class="pagination">
+            <span class="step-links">
+                {% if teachers.has_previous %}
+                    <a href="?page=1">« 第一页</a>
+                    <a href="?page={{ teachers.previous_page_number }}">上一页</a>
+                {% endif %}
 
-            <span class="current">
-                第 {{ teachers.number }} 页，共 {{ teachers.paginator.num_pages }} 页
+                <span class="current">
+                    第 {{ teachers.number }} 页，共 {{ teachers.paginator.num_pages }} 页
+                </span>
+
+                {% if teachers.has_next %}
+                    <a href="?page={{ teachers.next_page_number }}">下一页</a>
+                    <a href="?page={{ teachers.paginator.num_pages }}">最后一页 »</a>
+                {% endif %}
             </span>
-
-            {% if teachers.has_next %}
-                <a href="?page={{ teachers.next_page_number }}">下一页</a>
-                <a href="?page={{ teachers.paginator.num_pages }}">最后一页 »</a>
-            {% endif %}
-        </span>
+        </div>
     </div>
+    
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {

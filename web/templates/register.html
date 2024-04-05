@@ -7,6 +7,9 @@
 </head>
 
 <body>
+    {% if error %}
+        <p style="color: red;">{{ error }}</p>
+    {% endif %}
     <h1>家长注册</h1>
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}

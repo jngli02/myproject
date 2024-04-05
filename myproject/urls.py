@@ -29,9 +29,9 @@ urlpatterns = [
     #主页
     path('', views.home, name='home'), 
     path('admin/', admin.site.urls),
-    path('login/', views.login_view, name='login'),
+    path('accounts/login/', views.login_view, name='login'),
     path('logout/', views.logout_view, name='logout'),
-    path('password_reset/', auth_views.PasswordResetView.as_view(), name='password_reset'),
+    path('custom_password_reset/', views.custom_password_reset, name='custom_password_reset'),
     path('password_reset/done/', auth_views.PasswordChangeDoneView.as_view(), name='password_reset_done'),
     path('register/', views.register, name='register'),
     path('p_home/',views.p_home, name='p_home'),
@@ -41,6 +41,8 @@ urlpatterns = [
     path('calendar',views.calendar, name='calendar'),
     path('add_classschedule',views.add_classschedule, name='add_classschedule'),
     path('p_classschedule',views.p_classschedule, name='p_classschedule'),
+    path('profile_edit',views.profile_edit, name='profile_edit'),
+    
 
     
     #管理员界面
@@ -51,6 +53,8 @@ urlpatterns = [
     path('delete_student', views.delete_student, name='delete_student'),
     path('update_student/<int:student_id>/', views.update_student, name='update_student'),
     path('create_class', views.create_class, name='create_class'),
+    path('user_approval', views.user_approval, name='user_approval'),
+    path('update_parent/<int:parent_id>/', views.update_parent, name='update_parent'),
     
     #path('add_news', views.add_news, name='add_news'),
     path('ckeditor/', include('ckeditor_uploader.urls')),
@@ -83,10 +87,14 @@ urlpatterns = [
     path('t_classschedule',views.t_classschedule, name='t_classschedule'),
     path('leave_approval',views.leave_approval, name='leave_approval'),
 
-    path('user_detail/<int:user_id>/', views.user_detail, name='user_detail'),
+    
     path('direct_chat/<int:user_id>/<int:class_id>/', views.direct_chat, name='direct_chat'),
     
     path('submit_homework/<int:homework_id>/<int:student_id>/', views.submit_homework, name='submit_homework'),
     path('view_submissions/<int:homework_id>/', views.view_submissions, name='view_submissions'),
+
+    path('t_user_detail/<int:user_id>/', views.t_user_detail, name='t_user_detail'),
+    path('p_user_detail/<int:user_id>/', views.p_user_detail, name='p_user_detail'),
+
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

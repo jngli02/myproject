@@ -1,9 +1,10 @@
 ﻿# forms.py
 from django import forms
 from .models import Student
-from .models import Teacher
+from .models import Teacher,Parent
 from .models import News
-from .models import Evaluation
+from .models import Evaluation,User
+from django.contrib.auth.forms import UserChangeForm, PasswordChangeForm
 from .models import SubmittedEvaluation, Homework, Attachment, HolidaySchedule,Class,LeaveRequest
 
 
@@ -107,3 +108,23 @@ class LeaveRequestForm(forms.ModelForm):
                 raise forms.ValidationError("结束日期不能早于开始日期")
 
         return cleaned_data
+
+
+class ProfileForm(UserChangeForm):
+    class Meta:
+        model = User
+        fields = ('username', 'email')  # 移除 'first_name' 和 'last_name'
+        
+class CustomPasswordChangeForm(PasswordChangeForm):
+    class Meta:
+        model = User
+
+class ParentForm(forms.ModelForm):
+    class Meta:
+        model = Parent
+        fields = ('phone_number','email')  # 添加需要编辑的字段
+
+class TeacherForm(forms.ModelForm):
+    class Meta:
+        model = Teacher
+        fields = ('phone_number', 'email')  # 添加需要编辑的字段
