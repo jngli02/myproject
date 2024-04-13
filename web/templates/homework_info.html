@@ -3,6 +3,9 @@
 <head>
     <title>作业查看</title>
     <meta charset="UTF-8">
+    <!-- 引入 Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script> <!-- 导入 Moment.js 库 -->
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- 引入样式 -->
@@ -457,11 +460,10 @@
                                             <span class="text-danger">{{ info.homework.status }}</span>
                                         {% endif %}
                                         <!-- 查看提交按钮 -->
-                                        <a href="{% url 'view_submissions' homework_id=info.homework.id %}" class="btn btn-info">查看提交</a>
+                                        <a href="{% url 'view_submissions' homework_id=info.homework.id student_id=item.child.id %}" class="btn btn-info">查看提交</a>
                                         <!-- 查看批阅按钮 -->
                                         <button onclick="openGradingModal('{{ info.grading }}', '{{ info.approval_comment }}')" class="btn btn-success">查看批阅</button>
                                     </td>
-
                                 </tr>
                                 {% endfor %}
                             </tbody>
@@ -469,10 +471,51 @@
                     </div>
                 </div>
             </div>
+            <!-- 为每个孩子创建一个canvas元素 -->
+            <canvas id="gradingTrendChart-{{ item.child.id }}" width="400" height="200"></canvas> <!-- Canvas 元素用于显示评分趋势图表 -->
             {% endfor %}
         </div>
     </div>
     
+    <script>
+        // 遍历每个孩子的评分趋势数据，为每个孩子创建一个评分趋势图表
+        {% for item in homework_list %}
+            // 获取评分趋势数据
+            var gradingScores_{{ item.child.id }} = [];
+            {% for info in item.submission_info %}
+                gradingScores_{{ item.child.id }}.push({
+                    题目: '{{ info.homework.title }}',
+                    评分: {{ info.grading }}
+                });
+            {% endfor %}
+
+            // 创建评分趋势图表
+            var gradingCtx_{{ item.child.id }} = document.getElementById('gradingTrendChart-{{ item.child.id }}').getContext('2d');
+            var gradingChart_{{ item.child.id }} = new Chart(gradingCtx_{{ item.child.id }}, {
+                type: 'line',
+                data: {
+                    labels: gradingScores_{{ item.child.id }}.map(function(score) { return score.题目; }),
+                    datasets: [{
+                        label: '评分',
+                        data: gradingScores_{{ item.child.id }}.map(function(score) { return score.评分; }),
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 5
+                        }
+                    }
+                }
+            });
+        {% endfor %}
+    </script>
+
+
 
     <!-- 查看批阅模态框 -->
     <div id="gradingModal" class="modal" tabindex="-1" role="dialog">
@@ -510,6 +553,7 @@
     $('#gradingModal').on('hidden.bs.modal', function () {
         // 模态框隐藏时不需要额外的操作，因为 Bootstrap 会自动处理
     });
+
 </script>
 <script>
     // 等待文档加载完成

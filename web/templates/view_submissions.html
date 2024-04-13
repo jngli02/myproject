@@ -367,23 +367,28 @@
                 </tr>
             </thead>
             <tbody>
-                {% for submission in submissions %}
-                <tr>
-                    <td>{{ submission.student_homework.student.name }}</td>
-                    <td>{{ submission.submitted_at }}</td>
-                    <td>{{ submission.answer|safe }}</td>
-                    <td>
-                        {% if submission.attachment %}
-                            <a href="{{ submission.attachment.url }}" download>{{ submission.attachment.name }}</a>
-                        {% else %}
-                            无
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
+                {% if submission %}
+                    <tr>
+                        <td>{{ submission.student_homework.student.name }}</td>
+                        <td>{{ submission.submitted_at }}</td>
+                        <td>{{ submission.answer|safe }}</td>
+                        <td>
+                            {% if submission.attachment %}
+                                <a href="{{ submission.attachment.url }}" download>{{ submission.attachment.name }}</a>
+                            {% else %}
+                                无
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">暂无提交信息</td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>
+
   
     <script>
     // 等待文档加载完成

@@ -399,8 +399,7 @@ def add_batch(request):
                         class_group = Class.objects.get(year=year, grade=grade)
                         student.class_group = class_group
                     except Class.DoesNotExist:
-                        pass
-                
+                        pass   
                 student.save()
                 print(f"Added new student with ID: {row['学号']}")
             elif '教师编号' in row:
@@ -483,14 +482,7 @@ def add_classschedule(request):
                 year = file_name[0:4]
                 grade = file_name[-7]
                 print(year,grade)
-                data = pd.read_excel(file)  # 使用Pandas读取Excel文件
-                # 获取班级信息
-                # class_name = data.iloc[0, 0]  # 第一行的第一列单元格
-                # if class_name:
-                #     class_name_parts = class_name.split(' ')
-                #     year = class_name_parts[0][:4]  # 假设年级信息在班级信息的前四个字符
-                #     grade = class_name_parts[0][4:]  # 假设班级信息的剩余部分是班级
-                #     class_obj, _ = Class.objects.get_or_create(year=year, grade=grade)
+                data = pd.read_excel(file) 
 
                 # 固定的星期几列表
                 day_of_weeks = ['星期一', '星期二', '星期三', '星期四', '星期五']
@@ -521,13 +513,10 @@ def add_classschedule(request):
                                 end_time=end_time,
                                 class_name=course_name
                             )
-
                 return redirect('a_home')  # 重定向到成功页面，记得在urls.py中设置success_page对应的URL
 
     else:
-        
         form = UploadExcelForm()
-    
     return render(request, 'add_classschedule.html', {'form': form})
 
 @login_required
@@ -629,15 +618,6 @@ def update_student(request, student_id):
     return render(request, 'update_student.html', {'form': form, 'student': student})
 
 
-# def add_news(request):
-#     if request.method == 'POST':
-#         form = NewsForm(request.POST)
-#         if form.is_valid():
-#             form.save()
-#             return HttpResponseRedirect(reverse('news_list') + '?added=true')
-#     else:
-#         form = NewsForm()
-#     return render(request, 'add_news.html', {'form': form})
 @login_required
 def news_list(request):
     news_added = request.GET.get('added') == 'true'
@@ -971,26 +951,26 @@ def homework_info(request):
         for child in children:
             # 获取特定孩子所在的班级
             class_group = child.class_group
-            # 获取该班级下的作业列表
+            # 获取该班级下当前孩子的作业列表
             child_homework = Homework.objects.filter(class_group=class_group)
             child_submission_info = []
 
-            for hw in child_homework:
-                # 获取学生对应的作业信息
-                student_homework = StudentHomework.objects.filter(student=child, homework=hw).first()
+            # 获取当前孩子的所有作业信息
+            student_homeworks = StudentHomework.objects.filter(student=child, homework__in=child_homework)
+
+            for student_homework in student_homeworks:
+                # 获取学生的提交信息
+                submission = Submission.objects.filter(student_homework=student_homework).first()
+
                 grading = None  # 默认赋值为None
                 approval_comment = ""  # 默认赋值为空字符串
 
-                if student_homework:
-                    # 获取学生的提交信息
-                    submission = Submission.objects.filter(student_homework=student_homework).first()
-
-                    if submission:
-                        grading = submission.grading
-                        approval_comment = submission.approval_comment
+                if submission:
+                    grading = submission.grading
+                    approval_comment = submission.approval_comment
 
                 child_submission_info.append({
-                    'homework': hw,
+                    'homework': student_homework.homework,
                     'student_homework': student_homework,
                     'submission': submission,
                     'grading': grading,
@@ -1020,69 +1000,82 @@ def view_homework_submissions(request):
         submission.approval_comment = approval_comment
         submission.graded = True
         submission.save()
-
-        return JsonResponse({'message': '评分和审批意见已保存'})
+        # 更新对应的学生作业对象的 graded 属性
+        student_homework = submission.student_homework
+        student_homework.graded = True
+        student_homework.save()
 
     # 假设教师已经登录，获取当前登录的教师
     if hasattr(request.user, 'teacher'):
         teacher = request.user.teacher
+
+        # 获取教师自己发布的作业
+        teacher_homeworks = Homework.objects.filter(teacher=teacher)
+
+        # 获取教师所授的班级列表
+        class_groups = teacher.class_groups.all()
+
+        # 获取班级ID（如果通过GET请求传递）
+        class_id = request.GET.get('class_id')
+
+        # 初始化学生作业信息列表
+        students_with_homework = []
+
+        # 如果有班级ID，获取该班级的学生作业信息
+        if class_id:
+            class_group = get_object_or_404(Class, id=class_id)
+
+            # 确保教师有权限查看该班级的作业
+            if class_group in class_groups:
+                # 遍历教师自己发布的作业
+                for homework in teacher_homeworks.filter(class_group=class_group):
+                    student_homeworks = StudentHomework.objects.filter(homework=homework)
+                    # 遍历学生作业记录
+                    for student_homework in student_homeworks:
+                        submission = Submission.objects.filter(student_homework=student_homework).first()
+                        submitted_at = submission.submitted_at if submission else None
+                        students_with_homework.append({
+                            'student': student_homework.student,
+                            'homework_title': student_homework.homework.title,
+                            'submitted_at': submitted_at,
+                            'answer': submission.answer if submission else None,
+                            'attachment': submission.attachment.url if submission and submission.attachment else None,
+                            'graded': student_homework.graded,  # 获取批阅信息
+                            'submitted': True if submission else False,  # 检查是否已提交
+                            'submission_id': submission.id if submission else None  # 获取提交ID
+                        })
+        else:
+            # 如果没有班级ID，即选择了全部班级，则获取所有班级的学生作业信息
+            for class_group in class_groups:
+                # 获取该班级的所有学生作业记录，按提交时间降序排序
+                for homework in teacher_homeworks.filter(class_group=class_group):
+                    student_homeworks = StudentHomework.objects.filter(homework=homework)
+                    # 遍历学生作业记录
+                    for student_homework in student_homeworks:
+                        submission = Submission.objects.filter(student_homework=student_homework).first()
+                        submitted_at = submission.submitted_at if submission else None
+                        students_with_homework.append({
+                            'student': student_homework.student,
+                            'homework_title': student_homework.homework.title,
+                            'submitted_at': submitted_at,
+                            'answer': submission.answer if submission else None,
+                            'attachment': submission.attachment.url if submission and submission.attachment else None,
+                            'graded': student_homework.graded,  # 获取批阅信息
+                            'submitted': True if submission else False,  # 检查是否已提交
+                            'submission_id': submission.id if submission else None  # 获取提交ID
+                        })
+
+        context = {
+            'class_groups': class_groups,
+            'students_with_homework': students_with_homework,
+            'selected_class_id': class_id,
+            'teacher': teacher,
+        }
+
+        return render(request, 'view_homework_submissions.html', context)
     else:
         return HttpResponse("当前用户不是教师，请使用教师账号登录")
 
-    # 获取教师所授的班级列表
-    class_groups = teacher.class_groups.all()
-
-    # 获取班级ID（如果通过GET请求传递）
-    class_id = request.GET.get('class_id')
-
-    # 初始化学生作业信息列表
-    students_with_homework = []
-
-    if not class_id:
-        # 如果没有班级ID，即选择了全部班级，则获取所有班级的学生作业信息
-        for class_group in class_groups:
-            # 获取该班级的所有学生作业记录，按提交时间降序排序
-            student_homeworks = StudentHomework.objects.filter(student__class_group=class_group)
-            # 遍历学生作业记录
-            for student_homework in student_homeworks:
-                submission = Submission.objects.filter(student_homework=student_homework).first()
-                submitted_at = submission.submitted_at if submission else None
-                students_with_homework.append({
-                    'student': student_homework.student,
-                    'homework_title': student_homework.homework.title,
-                    'submitted_at': submitted_at,
-                    'answer': submission.answer if submission else None,
-                    'attachment': submission.attachment.url if submission and submission.attachment else None,
-                    'graded': student_homework.graded,  # 获取批阅信息
-                    'submitted': True if submission else False,  # 检查是否已提交
-                })
-    else:
-        # 如果有班级ID，获取该班级的学生作业信息
-        class_group = get_object_or_404(Class, id=class_id)
-        # 获取该班级的所有学生作业记录，按提交时间降序排序
-        student_homeworks = StudentHomework.objects.filter(student__class_group=class_group)
-        # 遍历学生作业记录
-        for student_homework in student_homeworks:
-            submission = Submission.objects.filter(student_homework=student_homework).first()
-            submitted_at = submission.submitted_at if submission else None
-            students_with_homework.append({
-                'student': student_homework.student,
-                'homework_title': student_homework.homework.title,
-                'submitted_at': submitted_at,
-                'answer': submission.answer if submission else None,
-                'attachment': submission.attachment.url if submission and submission.attachment else None,
-                'graded': student_homework.graded,  # 获取批阅信息
-                'submitted': True if submission else False,  # 检查是否已提交
-            })
-
-    context = {
-        'class_groups': class_groups,
-        'students_with_homework': students_with_homework,
-        'selected_class_id': class_id,
-        'teacher': teacher,
-    }
-
-    return render(request, 'view_homework_submissions.html', context)
 
 @login_required
 def p_classschedule(request):
@@ -1366,15 +1359,25 @@ def t_add_grades(request):
 
 @login_required
 def s_exam_scores(request, student_id):
-    # 获取该学生的所有考试成绩并按时间排序
     try:
         student = Student.objects.get(student_id=student_id)
-        print(student)
         exam_scores = Grade.objects.filter(student=student).order_by('-exam_time')
-    except:
+    except Student.DoesNotExist:
         exam_scores = Grade.objects.filter(student_id=student_id).order_by('-exam_time')
-    # 渲染模板并将考试成绩传递给模板
-    return render(request, 's_exam_scores.html', {'exam_scores': exam_scores})
+
+    # 计算平均分
+    total_average = exam_scores.aggregate(Avg('total'))['total__avg']
+    subject_averages = exam_scores.aggregate(
+        Avg('chinese'), Avg('math'), Avg('physics'), Avg('chemistry'), 
+        Avg('english'), Avg('biology'), Avg('politics'), Avg('history'), Avg('geography')
+    )
+
+    # 渲染模板并将考试成绩和平均分传递给模板
+    return render(request, 's_exam_scores.html', {
+        'exam_scores': exam_scores,
+        'total_average': total_average,
+        'subject_averages': subject_averages,
+    })
 
 @login_required
 def class_exam_scores(request, class_id):
@@ -1392,7 +1395,7 @@ def class_exam_scores(request, class_id):
             Avg('chinese'), Avg('math'), Avg('physics'), Avg('chemistry'), 
             Avg('english'), Avg('biology'), Avg('politics'), Avg('history'), Avg('geography')
         )
-        print(exam_date.strftime("%Y-%m-%d"))
+
         scores_datas.append({
             'exam_date': exam_date,  # 将日期对象转换为字符串格式
             'total_average': total_average,
@@ -1532,9 +1535,23 @@ def leave_approval(request):
     # 获取教师所教授的班级和职位
     teacher_class_groups = teacher.class_groups.all()
     teacher_position = teacher.position
-
+    
     # 获取学生请假记录
     leave_requests = LeaveRequest.objects.filter(student__class_group__in=teacher_class_groups)
+
+    # 获取每个学生的请假次数
+    leave_counts = {}
+    for leave_request in leave_requests:
+        student_id = leave_request.student.id
+        if student_id not in leave_counts:
+            leave_counts[student_id] = 0
+        leave_counts[student_id] += 1
+
+    # 将请假次数与学生信息关联
+    for leave_request in leave_requests:
+        student_id = leave_request.student.id
+        leave_request.leave_count = leave_counts.get(student_id, 0)
+    print(leave_request.leave_count)
 
     if request.method == 'POST':
         # 处理请假批准、拒绝、销假或未返校操作
@@ -1568,9 +1585,23 @@ def leave_approval(request):
                 return JsonResponse({'error': '您不是班主任，无法进行此操作'}, status=403)
         else:
             return JsonResponse({'error': '您不是本班班主任，无法进行此操作'}, status=403)
+        
+    # 构建包含请假次数的字典列表
+    leave_requests_data = []
+    for leave_request in leave_requests:
+        leave_request_data = {
+            'id': leave_request.id,
+            'student_name': leave_request.student.name,
+            'start_date': leave_request.start_date,
+            'end_date': leave_request.end_date,
+            'status': leave_request.status,
+            'reason': leave_request.reason,
+            'leave_count': leave_counts.get(leave_request.student.id, 0)  # 获取该学生的请假次数
+        }
+        leave_requests_data.append(leave_request_data)
 
-    # 将更新后的记录信息传递到前端并渲染页面
-    return render(request, 'leave_approval.html', {'leave_requests': leave_requests, 'teacher_position': teacher_position, 'now': now,'teacher': teacher})
+    # 将字典列表传递给前端
+    return render(request, 'leave_approval.html', {'leave_requests_data': leave_requests_data, 'teacher_position': teacher_position, 'now': now, 'teacher': teacher})
 
 
 #共用界面
@@ -1625,14 +1656,18 @@ def submit_homework(request, homework_id, student_id):
 
 
 @login_required
-def view_submissions(request, homework_id):
+def view_submissions(request, homework_id, student_id):
     # 获取作业对象
     homework = get_object_or_404(Homework, id=homework_id)
     
-    # 获取该作业的所有已提交的作业信息
-    submissions = Submission.objects.filter(student_homework__homework=homework)
+    # 获取特定学生的作业信息
+    student_homework = get_object_or_404(StudentHomework, student_id=student_id, homework=homework)
     
-    return render(request, 'view_submissions.html', {'homework': homework, 'submissions': submissions})
+    # 获取特定学生的提交信息
+    submission = Submission.objects.filter(student_homework=student_homework).first()
+
+    return render(request, 'view_submissions.html', {'homework': homework, 'submission': submission})
+
 
 
 

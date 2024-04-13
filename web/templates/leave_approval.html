@@ -4,7 +4,6 @@
     <title>请销假记录 </title>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
@@ -195,55 +194,7 @@
             margin-bottom: 20px; /* 设置标题下边距 */
         }
 
-        /* 按钮样式 */
-        .content button {
-            padding: 10px 20px; /* 设置内边距 */
-            background-color: #007bff; /* 设置背景色 */
-            color: #fff; /* 设置文字颜色 */
-            border: none; /* 移除边框 */
-            border-radius: 4px; /* 设置边框圆角 */
-            cursor: pointer; /* 设置鼠标样式为手型 */
-            transition: background-color 0.3s; /* 设置过渡效果 */
-            margin-right: 10px; /* 设置右边距 */
-        }
-
-        .content button:hover {
-            background-color: #0056b3; /* 鼠标悬停时的背景色 */
-        }
-
-        /* 文件上传表单样式 */
-        #upload-grades-form {
-            margin-top: 20px; /* 设置上边距 */
-        }
-
-        #upload-grades-form label {
-            display: block; /* 将标签显示为块级元素 */
-            font-weight: bold; /* 设置字体加粗 */
-            margin-bottom: 10px; /* 设置下边距 */
-        }
-
-        #upload-grades-form input[type="file"] {
-            width: 100%; /* 设置宽度为100% */
-            padding: 8px; /* 设置内边距 */
-            margin-bottom: 10px; /* 设置下边距 */
-            border: 1px solid #ccc; /* 设置边框 */
-            border-radius: 4px; /* 设置边框圆角 */
-            box-sizing: border-box; /* 设置盒子模型为border-box */
-        }
-
-        #upload-grades-form input[type="submit"] {
-            padding: 10px 20px; /* 设置内边距 */
-            background-color: #28a745; /* 设置背景色 */
-            color: #fff; /* 设置文字颜色 */
-            border: none; /* 移除边框 */
-            border-radius: 4px; /* 设置边框圆角 */
-            cursor: pointer; /* 设置鼠标样式为手型 */
-            transition: background-color 0.3s; /* 设置过渡效果 */
-        }
-
-        #upload-grades-form input[type="submit"]:hover {
-            background-color: #218838; /* 鼠标悬停时的背景色 */
-        }
+        
         .username {
             cursor: pointer; /* 将用户名样式设置为指针，表示可点击 */
             position: relative;
@@ -282,6 +233,67 @@
         /* 这里是你的自定义样式 */
         margin-left: 5px; /* 左侧间距 */
         /* 其他样式 */
+        }
+
+        /* 表格样式 */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        /* 表头样式 */
+        .table thead th {
+            padding: 10px;
+            text-align: center;
+            background-color: #343a40; /* 表头背景颜色 */
+            color: #fff; /* 表头文字颜色 */
+            border: 1px solid #dee2e6; /* 表格边框颜色 */
+        }
+
+        /* 表格内容样式 */
+        .table tbody td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #dee2e6; /* 表格边框颜色 */
+        }
+
+        /* 偶数行背景色 */
+        .table tbody tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        /* 操作按钮样式 */
+        .btn {
+            padding: 5px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-success {
+            background-color: #28a745; /* 成功按钮背景颜色 */
+            color: #fff; /* 成功按钮文字颜色 */
+        }
+
+        .btn-danger {
+            background-color: #dc3545; /* 危险按钮背景颜色 */
+            color: #fff; /* 危险按钮文字颜色 */
+        }
+
+        .btn-warning {
+            background-color: #ffc107; /* 警告按钮背景颜色 */
+            color: #212529; /* 警告按钮文字颜色 */
+        }
+
+        /* 禁用按钮样式 */
+        .btn:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+        /* 悬停样式 */
+        .btn:hover {
+            opacity: 0.85;
         }
     </style>
 </head>
@@ -372,53 +384,113 @@
         </ul>
     </nav>
 <div class="content">
-    <!-- 请销假记录列表 -->
-    <h1>请销假记录</h1>
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">学生姓名</th>
-                <th scope="col">开始日期</th>
-                <th scope="col">结束日期</th>
-                <th scope="col">原因</th>
-                <th scope="col">操作</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for request in leave_requests %}
-            <tr>
-                <td>{{ request.student.name }}</td>
-                <td>{{ request.start_date }}</td>
-                <td>{{ request.end_date }}</td>
-                <td>{{ request.reason }}</td>
-                <td>
-                    <form method="post" action="{% url 'leave_approval' %}">
-                        {% csrf_token %}
-                        <input type="hidden" name="request_id" value="{{ request.id }}">
-                       
-                        {% if request.end_date >= now %}
-                            <button type="submit" name="action" value="approve" class="btn btn-success">批准</button>
-                            <button type="submit" name="action" value="reject" class="btn btn-danger">拒绝</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-success" disabled>批准</button>
-                            <button type="submit" class="btn btn-danger" disabled>拒绝</button>
-                        {% endif %}
-                        {% if request.end_date < now %}
-                            <button type="submit" name="action" value="cancel" class="btn btn-warning">销假</button>
-                            <button type="submit" name="action" value="not_returned" class="btn btn-danger">未返校</button>
-                        {% else %}
-                            <button type="submit" class="btn btn-warning" disabled>销假</button>
-                            <button type="submit" class="btn btn-danger" disabled>未返校</button>
-                        {% endif %}
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    
+    <!-- 请假记录列表 -->
+    <h1>请假记录</h1>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">学生姓名</th>
+                    <th scope="col">开始日期</th>
+                    <th scope="col">结束日期</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">原因</th>
+                    <th scope="col">操作</th>
+                    <th scope="col">请假次数</th> <!-- 新添加的列 -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave_request_data in leave_requests_data %}
+                {% if leave_request_data.status == "未批假" or leave_request_data.status == "假期中" %}
+                <tr>
+                    <td>{{ leave_request_data.student_name }}</td> 
+                    <td>{{ leave_request_data.start_date }}</td>
+                    <td>{{ leave_request_data.end_date }}</td>
+                    <td>{{ leave_request_data.status }}</td>
+                    <td>{{ leave_request_data.reason }}</td>
+                    <td>
+                        <form method="post" action="{% url 'leave_approval' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="request_id" value="{{ leave_request_data.id }}">
+                            {% if leave_request_data.end_date >= now %}
+                                <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">批准</button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">拒绝</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-success btn-sm" disabled>批准</button>
+                                <button type="submit" class="btn btn-danger btn-sm" disabled>拒绝</button>
+                            {% endif %}
+                            {% if leave_request_data.end_date < now %}
+                                <button type="submit" name="action" value="cancel" class="btn btn-warning btn-sm">销假</button>
+                                <button type="submit" name="action" value="not_returned" class="btn btn-danger btn-sm">未返校</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-warning btn-sm" disabled>销假</button>
+                                <button type="submit" class="btn btn-danger btn-sm" disabled>未返校</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                    <td>{{ leave_request_data.leave_count }}</td> 
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </div>
+
+<div class="content">
+    <!-- 销假记录列表 -->
+    <h1>销假记录</h1>
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead class="thead-dark">
+                <tr>
+                    <th scope="col">学生姓名</th>
+                    <th scope="col">开始日期</th>
+                    <th scope="col">结束日期</th>
+                    <th scope="col">状态</th>
+                    <th scope="col">原因</th>
+                    <th scope="col">操作</th>
+                    <th scope="col">请假次数</th> <!-- 新添加的列 -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for leave_request_data in leave_requests_data %}
+                {% if leave_request_data.status == "已销假" or leave_request_data.status == "未返校" %}
+                <tr>
+                    <td>{{ leave_request_data.student_name }}</td> 
+                    <td>{{ leave_request_data.start_date }}</td>
+                    <td>{{ leave_request_data.end_date }}</td>
+                    <td>{{ leave_request_data.status }}</td>
+                    <td>{{ leave_request_data.reason }}</td>
+                    <td>
+                        <form method="post" action="{% url 'leave_approval' %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="request_id" value="{{ leave_request_data.id }}">
+                            {% if leave_request_data.end_date >= now %}
+                                <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">批准</button>
+                                <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm">拒绝</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-success btn-sm" disabled>批准</button>
+                                <button type="submit" class="btn btn-danger btn-sm" disabled>拒绝</button>
+                            {% endif %}
+                            {% if leave_request_data.end_date < now %}
+                                <button type="submit" name="action" value="cancel" class="btn btn-warning btn-sm">销假</button>
+                                <button type="submit" name="action" value="not_returned" class="btn btn-danger btn-sm">未返校</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-warning btn-sm" disabled>销假</button>
+                                <button type="submit" class="btn btn-danger btn-sm" disabled>未返校</button>
+                            {% endif %}
+                        </form>
+                    </td>
+                    <td>{{ leave_request_data.leave_count }}</td> 
+                </tr>
+                {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <!-- 模态框 -->
     <div class="modal" tabindex="-1" role="dialog" id="permissionDeniedModal">
         <div class="modal-dialog" role="document">
@@ -438,6 +510,7 @@
             </div>
         </div>
     </div>
+
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>

@@ -163,6 +163,36 @@
         margin-left: 5px; /* 左侧间距 */
         /* 其他样式 */
         }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        th, td {
+            border: 1px solid #ddd; /* 添加边框 */
+            padding: 8px;
+            text-align: center; /* 文本居中对齐 */
+        }
+
+        th {
+            background-color: #f2f2f2; /* 添加背景色 */
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9; /* 添加斑马纹 */
+        }
+
+        tr:hover {
+            background-color: #f2f2f2; /* 悬停时改变背景色 */
+        }
+
+        select {
+            padding: 5px;
+            font-size: 16px;
+        }
+
     </style>
 </head>
 <body>
@@ -206,99 +236,152 @@
     </div>
 </section>
 
-    <div class="content">
-        <h2>历史考试成绩</h2>
-        <form method="POST" action="{% url 'class_exam_scores' class_id=class_id %}">
-            {% csrf_token %}
-            <label for="exam_date">选择考试日期：</label>
-            <input type="date" name="exam_date" id="exam_date">
-            <button type="submit">查看成绩</button>
-        </form>
-        {% if exam_scores %}
-            <h2>{{ selected_date }}的考试成绩</h2>
-            <table border="1">
+<div class="content">
+    <h2>历史考试成绩</h2>
+    <form method="POST" action="{% url 'class_exam_scores' class_id=class_id %}">
+        {% csrf_token %}
+        <label for="exam_date">选择考试日期：</label>
+        <input type="date" name="exam_date" id="exam_date">
+        <button type="submit">查看成绩</button>
+    </form>
+    {% if exam_scores %}
+        <table border="1">
+            <tr>
+                <th>考试时间</th>
+                <th>学生</th>
+                <th>考试类型</th>
+                <th>语文</th>
+                <th>数学</th>
+                <th>物理</th>
+                <th>化学</th>
+                <th>英语</th>
+                <th>生物</th>
+                <th>政治</th>
+                <th>历史</th>
+                <th>地理</th>
+                <th>总分</th>
+                <th>备注</th>
+            </tr>
+            {% for exam_score in exam_scores %}
                 <tr>
-                    <th>考试时间</th>
-                    <th>学生</th>
-                    <th>考试类型</th>
-                    <th>语文</th>
-                    <th>数学</th>
-                    <th>物理</th>
-                    <th>化学</th>
-                    <th>英语</th>
-                    <th>生物</th>
-                    <th>政治</th>
-                    <th>历史</th>
-                    <th>地理</th>
-                    <th>总分</th>
-                    <th>备注</th>
+                    <td>{{ exam_score.exam_time }}</td>
+                    <td>{{ exam_score.student.name }}</td>
+                    <td>{{ exam_score.exam_type }}</td>
+                    <td>{{ exam_score.chinese }}</td>
+                    <td>{{ exam_score.math }}</td>
+                    <td>{{ exam_score.physics }}</td>
+                    <td>{{ exam_score.chemistry }}</td>
+                    <td>{{ exam_score.english }}</td>
+                    <td>{{ exam_score.biology }}</td>
+                    <td>{{ exam_score.politics }}</td>
+                    <td>{{ exam_score.history }}</td>
+                    <td>{{ exam_score.geography }}</td>
+                    <td>{{ exam_score.total }}</td>
+                    <td>{{ exam_score.remarks }}</td>
                 </tr>
-                {% for exam_score in exam_scores %}
-                    <tr>
-                        <td>{{ exam_score.exam_time }}</td>
-                        <td>{{ exam_score.student.name }}</td>
-                        <td>{{ exam_score.exam_type }}</td>
-                        <td>{{ exam_score.chinese }}</td>
-                        <td>{{ exam_score.math }}</td>
-                        <td>{{ exam_score.physics }}</td>
-                        <td>{{ exam_score.chemistry }}</td>
-                        <td>{{ exam_score.english }}</td>
-                        <td>{{ exam_score.biology }}</td>
-                        <td>{{ exam_score.politics }}</td>
-                        <td>{{ exam_score.history }}</td>
-                        <td>{{ exam_score.geography }}</td>
-                        <td>{{ exam_score.total }}</td>
-                        <td>{{ exam_score.remarks }}</td>
-                    </tr>
-                {% endfor %}
-            </table>
-        {% endif %}
-    </div>
-    
-    <canvas id="totalChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示总分图表 -->
-    <canvas id="subjectChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示其他学科图表 -->
-
-    <script>
-        // 获取历史考试成绩数据
-        var examScores = [
-            {% for scores_data in scores_datas %}
-                { 
-                    chinese: {{ scores_data.subject_averages.语文 }},
-                    math: {{ scores_data.subject_averages.数学 }},
-                    physics: {{ scores_data.subject_averages.物理 }},
-                    chemistry: {{ scores_data.subject_averages.化学 }},
-                    english: {{ scores_data.subject_averages.英语 }},
-                    biology: {{ scores_data.subject_averages.生物 }},
-                    politics: {{ scores_data.subject_averages.政治 }},
-                    history: {{ scores_data.subject_averages.历史 }},
-                    geography: {{ scores_data.subject_averages.地理 }},
-                    total: {{ scores_data.total_average }},
-                    examTime: '{{ scores_data.exam_date }}'
-                },
             {% endfor %}
-        ];
+        </table>
+    {% endif %}
 
-       // 先按照考试时间排序
-        examScores.sort(function(a, b) {
-            return moment(a.examTime, "MMMM D, YYYY, h:mm:ss a").toDate() - moment(b.examTime, "MMMM D, YYYY, h:mm:ss a").toDate();
-        });
+    <label for="subjectSelect">选择要显示的学科：</label>
+    <select id="subjectSelect">
+        <option value="语文">语文</option>
+        <option value="数学">数学</option>
+        <option value="物理">物理</option>
+        <option value="化学">化学</option>
+        <option value="英语">英语</option>
+        <option value="生物">生物</option>
+        <option value="政治">政治</option>
+        <option value="历史">历史</option>
+        <option value="地理">地理</option>
+    </select>
+</div>
 
-        var parsedDates = examScores.map(function(examScore) {
-            return moment(examScore.examTime, "MMMM D, YYYY, h:mm:ss a").format("YYYY-MM-DD");
-        });
+<canvas id="totalChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示总分图表 -->
+<canvas id="subjectChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示其他学科图表 -->
 
+<script>
+    // 获取历史考试成绩数据
+    var examScores = [
+        {% for scores_data in scores_datas %}
+            { 
+                语文: {{ scores_data.subject_averages.语文 }},
+                数学: {{ scores_data.subject_averages.数学 }},
+                物理: {{ scores_data.subject_averages.物理 }},
+                化学: {{ scores_data.subject_averages.化学 }},
+                英语: {{ scores_data.subject_averages.英语 }},
+                生物: {{ scores_data.subject_averages.生物 }},
+                政治: {{ scores_data.subject_averages.政治 }},
+                历史: {{ scores_data.subject_averages.历史 }},
+                地理: {{ scores_data.subject_averages.地理 }},
+                总分: {{ scores_data.total_average }},
+                examTime: '{{ scores_data.exam_date }}'
+            },
+        {% endfor %}
+    ];
 
-        // 使用 Chart.js 创建总分图表
-        var totalCtx = document.getElementById('totalChart').getContext('2d');
-        var totalChart = new Chart(totalCtx, {
+    // 先按照考试时间排序
+    examScores.sort(function(a, b) {
+        return moment(a.examTime, "MMMM D, YYYY, h:mm:ss a").toDate() - moment(b.examTime, "MMMM D, YYYY, h:mm:ss a").toDate();
+    });
+
+    var parsedDates = examScores.map(function(examScore) {
+        return moment(examScore.examTime, "MMMM D, YYYY, h:mm:ss a").format("YYYY-MM-DD");
+    });
+
+    // 创建总分图表
+    var totalCtx = document.getElementById('totalChart').getContext('2d');
+    var totalChart = new Chart(totalCtx, {
+        type: 'line',
+        data: {
+            labels: parsedDates,
+            datasets: [{
+                label: '总分',
+                data: examScores.map(function(score) { return score.总分; }),
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                tension: 0.1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    suggestedMax: 100
+                }
+            }
+        }
+    });
+
+    // 添加选择框变化事件监听器
+    $('#subjectSelect').change(function() {
+        var selectedSubject = $(this).val(); // 获取用户选择的学科
+        updateSubjectChart(selectedSubject); // 更新学科图表
+    });
+
+    // 全局变量，用于存储学科图表实例
+    var subjectChart;
+
+    // 更新学科图表
+    function updateSubjectChart(subject) {
+        var subjectCtx = document.getElementById('subjectChart').getContext('2d'); // 使用不同的 Canvas 元素
+        var subjectData = examScores.map(function(score) { return score[subject]; });
+
+        // 销毁现有的学科图表
+        if (subjectChart) {
+            subjectChart.destroy();
+        }
+
+        // 创建新的学科图表
+        subjectChart = new Chart(subjectCtx, {
             type: 'line',
             data: {
                 labels: parsedDates,
                 datasets: [{
-                    label: '总分',
-                    data: examScores.map(function(score) { return score.total; }),
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    label: subject,
+                    data: subjectData,
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
                     tension: 0.1
                 }]
             },
@@ -306,108 +389,25 @@
                 scales: {
                     y: {
                         beginAtZero: true,
-                        suggestedMax: 100 // 设置纵轴最大值为 100
+                        suggestedMax: 100
                     }
                 }
             }
         });
+    }
 
-        // 使用 Chart.js 创建其他学科图表
-        var subjectCtx = document.getElementById('subjectChart').getContext('2d');
-        var subjectChart = new Chart(subjectCtx, {
-            type: 'line',
-            data: {
-                labels: parsedDates,
+</script>
 
-                datasets: [
-                    {
-                        label: '语文',
-                        data: examScores.map(function(score) { return score.chinese; }),
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '数学',
-                        data: examScores.map(function(score) { return score.math; }),
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '物理',
-                        data: examScores.map(function(score) { return score.physics; }),
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '化学',
-                        data: examScores.map(function(score) { return score.chemistry; }),
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '英语',
-                        data: examScores.map(function(score) { return score.english; }),
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '生物',
-                        data: examScores.map(function(score) { return score.biology; }),
-                        borderColor: 'rgba(255, 159, 64, 1)',
-                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '政治',
-                        data: examScores.map(function(score) { return score.politics; }),
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '历史',
-                        data: examScores.map(function(score) { return score.history; }),
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '地理',
-                        data: examScores.map(function(score) { return score.geography; }),
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                        tension: 0.1
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMax: 100 // 设置纵轴最大值为 100
-                    }
-                }
-            }
-        });
-
-    </script>
 
     <script>
-    // 等待文档加载完成
-    $(document).ready(function() {
-        // 当用户名被点击时
-        $('.username').click(function() {
-            // 切换下拉菜单的显示状态
-            $('.dropdown').toggle();
+        // 等待文档加载完成
+        $(document).ready(function() {
+            // 当用户名被点击时
+            $('.username').click(function() {
+                // 切换下拉菜单的显示状态
+                $('.dropdown').toggle();
+            });
         });
-    });
-</script>
+    </script>
 </body>
 </html>
-
-               

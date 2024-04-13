@@ -532,7 +532,7 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    {{ submission_info.answer }}
+                                    {{ submission_info.answer | safe }}
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -576,22 +576,6 @@
                 </tbody>
             </table>
         </div>
-    </div>
-
-    <div aria-label="分页导航" class="pagination">
-        <ul class="pagination">
-            {% if students_with_homework.has_previous %}
-                <li class="page-item"><a class="page-link" href="?class_id={{ selected_class_id }}&submission_status={{ selected_submission_status }}&page=1">首页</a></li>
-                <li class="page-item"><a class="page-link" href="?class_id={{ selected_class_id }}&submission_status={{ selected_submission_status }}&page={{ students_with_homework.previous_page_number }}">上一页</a></li>
-            {% endif %}
-            {% for i in students_with_homework.paginator.page_range %}
-                <li class="page-item {% if i == students_with_homework.number %}active{% endif %}"><a class="page-link" href="?class_id={{ selected_class_id }}&submission_status={{ selected_submission_status }}&page={{ i }}">{{ i }}</a></li>
-            {% endfor %}
-            {% if students_with_homework.has_next %}
-                <li class="page-item"><a class="page-link" href="?class_id={{ selected_class_id }}&submission_status={{ selected_submission_status }}&page={{ students_with_homework.next_page_number }}">下一页</a></li>
-                <li class="page-item"><a class="page-link" href="?class_id={{ selected_class_id }}&submission_status={{ selected_submission_status }}&page={{ students_with_homework.paginator.num_pages }}">末页</a></li>
-            {% endif %}
-        </ul>
     </div>
 
 

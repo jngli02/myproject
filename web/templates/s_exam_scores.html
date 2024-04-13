@@ -350,28 +350,42 @@
             </tbody>
         </table>
 
+        <label for="subjectSelect">选择要显示的学科：</label>
+        <select id="subjectSelect">
+            <option value="语文">语文</option>
+            <option value="数学">数学</option>
+            <option value="物理">物理</option>
+            <option value="化学">化学</option>
+            <option value="英语">英语</option>
+            <option value="生物">生物</option>
+            <option value="政治">政治</option>
+            <option value="历史">历史</option>
+            <option value="地理">地理</option>
+        </select>
+
         <!-- 图表显示历史成绩趋势 -->
         <h2>历史成绩趋势</h2>
         <canvas id="totalChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示总分图表 -->
         <canvas id="subjectChart" width="400" height="200"></canvas> <!-- Canvas 元素用于显示其他学科图表 -->
-    </div>
 
-    
+
+    </div>
+ 
 
     <script>
         // 获取历史考试成绩数据
         var examScores = [
             {% for exam_score in exam_scores %}
                 { 
-                    chinese: {{ exam_score.chinese }},
-                    math: {{ exam_score.math }},
-                    physics: {{ exam_score.physics }},
-                    chemistry: {{ exam_score.chemistry }},
-                    english: {{ exam_score.english }},
-                    biology: {{ exam_score.biology }},
-                    politics: {{ exam_score.politics }},
-                    history: {{ exam_score.history }},
-                    geography: {{ exam_score.geography }},
+                    语文: {{ exam_score.chinese }},
+                    数学: {{ exam_score.math }},
+                    物理: {{ exam_score.physics }},
+                    化学: {{ exam_score.chemistry }},
+                    英语: {{ exam_score.english }},
+                    生物: {{ exam_score.biology }},
+                    政治: {{ exam_score.politics }},
+                    历史: {{ exam_score.history }},
+                    地理: {{ exam_score.geography }},
                     total: {{ exam_score.total }},
                     examTime: '{{ exam_score.exam_time }}'
                 },
@@ -411,88 +425,49 @@
             }
         });
 
-        // 使用 Chart.js 创建其他学科图表
-        var subjectCtx = document.getElementById('subjectChart').getContext('2d');
-        var subjectChart = new Chart(subjectCtx, {
-            type: 'line',
-            data: {
-                labels: parsedDates,
+        // 添加选择框变化事件监听器
+        $('#subjectSelect').change(function() {
+            var selectedSubject = $(this).val(); // 获取用户选择的学科
+            updateSubjectChart(selectedSubject); // 更新学科图表
+        });
 
-                datasets: [
-                    {
-                        label: '语文',
-                        data: examScores.map(function(score) { return score.chinese; }),
+        // 全局变量，用于存储学科图表实例
+        var subjectChart;
+
+        // 更新学科图表
+        function updateSubjectChart(subject) {
+            var subjectCtx = document.getElementById('subjectChart').getContext('2d'); // 使用不同的 Canvas 元素
+            var subjectData = examScores.map(function(score) { return score[subject]; });
+
+            // 销毁现有的学科图表
+            if (subjectChart) {
+                subjectChart.destroy();
+            }
+
+            // 创建新的学科图表
+            subjectChart = new Chart(subjectCtx, {
+                type: 'line',
+                data: {
+                    labels: parsedDates,
+                    datasets: [{
+                        label: subject,
+                        data: subjectData,
                         borderColor: 'rgba(255, 99, 132, 1)',
                         backgroundColor: 'rgba(255, 99, 132, 0.2)',
                         tension: 0.1
-                    },
-                    {
-                        label: '数学',
-                        data: examScores.map(function(score) { return score.math; }),
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '物理',
-                        data: examScores.map(function(score) { return score.physics; }),
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '化学',
-                        data: examScores.map(function(score) { return score.chemistry; }),
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '英语',
-                        data: examScores.map(function(score) { return score.english; }),
-                        borderColor: 'rgba(153, 102, 255, 1)',
-                        backgroundColor: 'rgba(153, 102, 255, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '生物',
-                        data: examScores.map(function(score) { return score.biology; }),
-                        borderColor: 'rgba(255, 159, 64, 1)',
-                        backgroundColor: 'rgba(255, 159, 64, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '政治',
-                        data: examScores.map(function(score) { return score.politics; }),
-                        borderColor: 'rgba(54, 162, 235, 1)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '历史',
-                        data: examScores.map(function(score) { return score.history; }),
-                        borderColor: 'rgba(255, 99, 132, 1)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        tension: 0.1
-                    },
-                    {
-                        label: '地理',
-                        data: examScores.map(function(score) { return score.geography; }),
-                        borderColor: 'rgba(255, 206, 86, 1)',
-                        backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                        tension: 0.1
-                    }
-                ]
-            },
-            options: {
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        suggestedMax: 100 // 设置纵轴最大值为 100
+                    }]
+                },
+                options: {
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            suggestedMax: 100
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
+
     </script>
 
     <script>

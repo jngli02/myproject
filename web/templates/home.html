@@ -773,36 +773,62 @@
   </div>
 </div>
 
+<!-- 学生信息模态框 -->
+<div id="studentModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 class="modal-title">学生总量信息</h2>
+        <div class="modal-body">
+            <p><strong>学生总量：</strong>{{ total_students }}</p>
+            <p><strong>学生在线率：</strong>{{ in_school_rate }}%</p>
+            <p><strong>学生在线数：</strong>{{ in_school_students }}</p>
+            <p><strong>学生离线数：</strong>{{ leave_students }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- 课程信息模态框 -->
+<div id="courseModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2 class="modal-title">课程总量信息</h2>
+        <div class="modal-body">
+            <p><strong>课程总量：</strong>{{ total_classes }}</p>
+            <p><strong>开设课程数：</strong>{{ classes_in_session }}</p>
+            <p><strong>已结课程数：</strong>{{ classes_not_started }}</p>
+            <p><strong>进行中课程数：</strong>{{ completion_rate }}</p>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
-    let menu = document.querySelector('.menu')
-    let sidebar = document.querySelector('.sidebar')
-    let mainContent = document.querySelector('.main--content')
- 
-    menu.onclick = function () {
-        sidebar.classList.toggle('active')
-        mainContent.classList.toggle('active')
-    }
-
-    // 获取模态框和关闭按钮
-    var modal = document.getElementById("myModal");
-    var span = document.getElementsByClassName("close")[0];
-
-    // 点击card-1时显示模态框
-    document.querySelector('.card-1').addEventListener('click', function() {
-    modal.style.display = "block";
+$(document).ready(function(){
+    // 当卡片被点击时显示相应的模态框
+    $('.card-1').click(function(){
+        $('#myModal').css('display', 'block');
+    });
+    
+    $('.card-2').click(function(){
+        $('#studentModal').css('display', 'block');
+    });
+    
+    $('.card-3').click(function(){
+        $('#courseModal').css('display', 'block');
     });
 
-    // 点击关闭按钮时隐藏模态框
-    span.onclick = function() {
-    modal.style.display = "none";
-    };
+    // 当用户点击模态框之外的区域时，关闭模态框
+    $('.modal').click(function(event){
+        if(event.target == this){
+            $(this).css('display', 'none');
+        }
+    });
 
-    // 当用户点击模态框外部区域时，关闭模态框
-    window.onclick = function(event) {
-    if (event.target == modal) {
-        modal.style.display = "none";
-    }
-    };
+    // 当用户点击关闭按钮时，关闭模态框
+    $('.close').click(function(){
+        $(this).closest('.modal').css('display', 'none');
+    });
+});
 </script>
+
 </body>
 </html>

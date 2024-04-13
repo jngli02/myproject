@@ -208,10 +208,14 @@
     <div class="chat-container" id="chat-container">
         <!-- 历史聊天消息将在此处显示 -->
         {% for message in messages %}
-             <div class="message {% if message.sender == user %}own-message{% else %}other-message{% endif %}">
-                 <p><strong>{{ message.sender }}</strong>: {{ message.content }}</p>
+            <div class="message {% if message.sender == user %}own-message{% else %}other-message{% endif %}">
+                <p><strong>{{ message.sender }}</strong>: {{ message.content }}</p>
+                {% if message.image %}
+                    <img src="{{ message.image.url }}" alt="Image" style="max-width: 100px; max-height: 100px;">
+                {% endif %}
             </div>
         {% endfor %}
+
     </div>
 
 
@@ -236,6 +240,45 @@
         var file = event.target.files[0];
         // 在此处处理上传图片的逻辑，例如显示预览图等
     });
+
+    // 创建定时器，每隔一定时间发送 AJAX 请求以获取最新消息
+    setInterval(function() {
+        // 发送 AJAX 请求
+        var xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === XMLHttpRequest.DONE) {
+                if (xhr.status === 200) {
+                    // 成功获取到新消息后，解析 JSON 数据
+                    var newMessages = JSON.parse(xhr.responseText);
+
+                    // 添加新消息到聊天框
+                    var chatContainer = document.getElementById('chat-container');
+                    newMessages.forEach(function(message) {
+                        var messageDiv = document.createElement('div');
+                        messageDiv.classList.add('message');
+                        messageDiv.classList.add(message.sender === user ? 'own-message' : 'other-message');
+                        messageDiv.innerHTML = '<p><strong>' + message.sender + '</strong>: ' + message.content + '</p>';
+                        chatContainer.appendChild(messageDiv);
+                    });
+
+                    // 将滚动位置滚动到底部
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                } else {
+                    // 处理请求失败的情况
+                    console.error('Failed to retrieve messages.');
+                }
+            }
+        };
+        xhr.open('GET', window.location.href, true);
+        xhr.send();
+    }, 5000); // 每5秒钟执行一次
+
+
+
+
+
     </script>
+
+
 </body>
 </html>

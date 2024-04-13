@@ -91,7 +91,7 @@ urlpatterns = [
     path('direct_chat/<int:user_id>/<int:class_id>/', views.direct_chat, name='direct_chat'),
     
     path('submit_homework/<int:homework_id>/<int:student_id>/', views.submit_homework, name='submit_homework'),
-    path('view_submissions/<int:homework_id>/', views.view_submissions, name='view_submissions'),
+    path('view_submissions/<int:homework_id>/<int:student_id>/', views.view_submissions, name='view_submissions'),
 
     path('t_user_detail/<int:user_id>/', views.t_user_detail, name='t_user_detail'),
     path('p_user_detail/<int:user_id>/', views.p_user_detail, name='p_user_detail'),
