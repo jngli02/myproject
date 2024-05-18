@@ -8,7 +8,6 @@
     <style>
         /* 样式 */
         /* 群成员下拉菜单样式 */
-
         .member-dropdown-container {
             position: fixed;
             top: 10px;
@@ -41,7 +40,8 @@
         .member-dropdown:hover .member-dropdown-content {
             display: block;
         }
-            /* 头像样式 */
+
+        /* 头像样式 */
         .avatar {
             width: 30px;
             height: 30px;
@@ -84,23 +84,38 @@
             font-size: 12px; /* 按钮字体大小 */
         }
 
-
         /* 聊天区域样式 */
         .chat-container {
             position: fixed;
-            bottom: 20px;
+            bottom: 70px;
             right: 20px;
             width: 500px;
             height: 500px;
             border: 1px solid #ccc;
+            border-radius: 10px; /* 圆角边框 */
             overflow-y: auto; /* 添加垂直滚动条 */
-            background-color: #f9f9f9;
+            background-color: #ffffff; /* 背景颜色 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 添加阴影 */
+        }
+
+        .chat-header {
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            background-color: #f5f5f5; /* 背景颜色 */
+            border-top-left-radius: 10px; /* 圆角边框 */
+            border-top-right-radius: 10px; /* 圆角边框 */
+        }
+
+        /* 聊天对象样式 */
+        .chat-header h2 {
+            margin: 0;
+            font-size: 18px;
         }
 
         .message {
             padding: 10px;
-            margin: 5px;
-            border-radius: 5px;
+            margin: 5px 10px;
+            border-radius: 10px;
             max-width: 70%; /* 控制消息框最大宽度 */
         }
 
@@ -121,59 +136,137 @@
         /* 输入框样式 */
         .input-container {
             position: fixed;
-            bottom: 0;
+            bottom: 20px;
             right: 20px;
-            width: 300px;
+            width: 500px;
+            display: flex; /* 使用弹性布局 */
+            align-items: center; /* 垂直居中对齐 */
+            border: 1px solid #ccc;
+            border-radius: 10px; /* 圆角边框 */
+            background-color: #f5f5f5; /* 背景颜色 */
+            padding: 10px; /* 内边距 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 添加阴影 */
         }
 
         .input-box {
-            width: calc(100% - 60px); /* 输入框宽度减去发送按钮宽度 */
+            flex-grow: 1; /* 填满剩余空间 */
+            border: none; /* 去掉边框 */
+            padding: 10px; /* 内边距 */
+            border-radius: 5px; /* 圆角边框 */
+            margin-right: 10px; /* 右侧外边距 */
+        }
+
+        .input-box:focus {
+            outline: none; /* 去掉焦点时的外边框 */
         }
 
         .send-button {
             width: 50px;
-        }
-        .chat-header {
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
+            height: 50px; /* 按钮高度 */
+            border: none; /* 去掉边框 */
+            border-radius: 50%; /* 圆形按钮 */
+            background-color: #007bff; /* 按钮背景颜色 */
+            color: white; /* 按钮文字颜色 */
+            display: flex; /* 使用弹性布局 */
+            align-items: center; /* 垂直居中对齐 */
+            justify-content: center; /* 水平居中对齐 */
+            font-size: 18px; /* 字体大小 */
         }
 
-        /* 聊天对象样式 */
-        .chat-header h2 {
-            margin: 0;
+        .send-button:hover {
+            background-color: #0056b3; /* 鼠标悬停时的背景颜色 */
+        }
+
+        .send-button:focus {
+            outline: none; /* 去掉焦点时的外边框 */
+        }
+
+        /* 图片上传按钮样式 */
+        #image-upload {
+            display: none; /* 隐藏默认文件输入按钮 */
+        }
+
+        .upload-label {
+            cursor: pointer; /* 鼠标悬停时变为手形 */
+            display: inline-block; /* 行内块元素 */
+            margin-right: 10px; /* 右侧外边距 */
+        }
+
+        .upload-icon {
+            width: 30px; /* 图标宽度 */
+            height: 30px; /* 图标高度 */
         }
 
         /* 表情按钮样式 */
-        #emoji-button {
+        .emoji-button {
             cursor: pointer; /* 鼠标悬停时变为手形 */
-            /* 在这里添加更多样式 */
+            display: inline-block; /* 行内块元素 */
+            margin-right: 10px; /* 右侧外边距 */
         }
 
         /* 表情选择面板样式 */
-        #emoji-panel {
+        #emoji-list {
             display: none; /* 默认隐藏 */
             position: absolute; /* 使用绝对定位 */
+            bottom: 60px; /* 距离底部位置 */
+            right: 20px; /* 距离右侧位置 */
             width: 200px; /* 宽度 */
             height: 200px; /* 高度 */
             overflow-y: auto; /* 如果内容超出高度，则显示滚动条 */
-            /* 在这里添加更多样式 */
+            background-color: white; /* 背景颜色 */
+            border: 1px solid #ccc; /* 边框 */
+            border-radius: 10px; /* 圆角边框 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 添加阴影 */
+            z-index: 1000; /* 确保在最上层 */
         }
 
         /* 表情样式 */
         .emoji {
             cursor: pointer; /* 鼠标悬停时变为手形 */
-            /* 在这里添加更多样式 */
+            display: inline-block; /* 行内块元素 */
+            margin: 5px; /* 外边距 */
+        }
+
+        .emoji img {
+            width: 30px; /* 图片宽度 */
+            height: 30px; /* 图片高度 */
+        }
+
+        /* 预览图样式 */
+        #image-preview img {
+            max-width: 100px; /* 最大宽度 */
+            max-height: 100px; /* 最大高度 */
+            margin-top: 10px; /* 顶部外边距 */
+            border-radius: 5px; /* 圆角边框 */
+        }
+        /* 返回按钮样式 */
+        .return-button {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .return-button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <h1>Private Chat</h1>
+    <h1>私聊</h1>
+    <!-- 返回按钮 -->
+    <button class="return-button" onclick="goBack()">返回</button>
 
     <!-- 聊天区域 -->
     <div class="chat-container" id="chat-container">
         <!-- 聊天头部，只显示聊天对象的一行 -->
         <div class="chat-header">
-            <h2>Private Chat with {{ chat_partner }}</h2>
+            <h2>和{{ chat_partner }}的私聊</h2>
         </div>
         <!-- 历史聊天消息将在此处显示 -->
         {% for message in messages %}
@@ -190,24 +283,30 @@
     <!-- 输入框 -->
     <form id="message-form" class="input-container" method="POST" action="/direct_chat/{{ chat_partner.id }}/{{ class_id }}/" enctype="multipart/form-data">
         {% csrf_token %}
-        <input type="file" id="image-upload" accept="image/*"> <!-- 添加图片按钮 -->
+        <label for="image-upload" class="upload-label"><img src="{% static 'upload_icon.png' %}" class="upload-icon" alt="Upload"></label> <!-- 添加图片按钮 -->
+        <input type="file" id="image-upload" accept="image/*"> <!-- 隐藏的文件输入框 -->
         <input type="hidden" id="image-data" name="image_data"> <!-- 用于存储图片数据的隐藏字段 -->
         <input type="text" class="input-box" id="message-input" name="content" placeholder="Type your message here...">
-        <!-- 预览框 -->
-        <div id="image-preview"></div>
         <button type="button" id="emoji-button" class="emoji-button" onclick="toggleEmojiPicker()">😊</button> <!-- 表情选择按钮 -->
         <!-- 表情选择器 -->
-        <div id="emoji-list" style="display: none;">
-            <button onclick="addEmoji(':苦笑:')"><img src="/static/emojis/苦笑.png" alt="苦笑"></button>
-            <button onclick="addEmoji(':得意:')"><img src="/static/emojis/得意.png" alt="得意"></button>
-            <button onclick="addEmoji(':放声大哭:')"><img src="/static/emojis/放声大哭.png" alt="放声大哭"></button>
+        <div id="emoji-list">
+            <button type="button" onclick="addEmoji(':苦笑:')"><img src="/static/emojis/苦笑.png" alt="苦笑" class="emoji"></button>
+            <button type="button" onclick="addEmoji(':得意:')"><img src="/static/emojis/得意.png" alt="得意" class="emoji"></button>
+            <button type="button" onclick="addEmoji(':放声大哭:')"><img src="/static/emojis/放声大哭.png" alt="放声大哭" class="emoji"></button>
             <!-- 添加更多表情按钮 -->
         </div>
         <input type="submit" class="send-button" value="Send">
+        <!-- 预览框 -->
+        <div id="image-preview"></div>
     </form>
 
     <!-- JavaScript -->
     <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            scrollToBottom();
+        });    
+
         // 显示或隐藏表情选择器
         function toggleEmojiPicker() {
             var emojiList = document.getElementById("emoji-list");
@@ -249,7 +348,60 @@
             // 读取图片数据
             reader.readAsDataURL(file);
         });
-    </script>
 
+        // 返回按钮点击事件处理程序
+        function goBack() {
+            // 判断用户类型，根据用户类型跳转到对应的首页
+            {% if is_teacher %}
+                window.location.href = "{% url 't_home' %}"; // 教师回到t_home界面
+            {% else %}
+                window.location.href = "{% url 'p_home' %}"; // 家长回到p_home界面
+            {% endif %}
+        }
+
+        document.getElementById('message-form').addEventListener('submit', function() {
+            // 这里可以假设表单提交后会刷新页面，
+            // 所以在表单提交前调用 scrollToBottom()。
+            setTimeout(scrollToBottom, 100);
+        });
+
+
+
+        // 创建定时器，每隔一定时间发送 AJAX 请求以获取最新消息
+        setInterval(function() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var newMessages = JSON.parse(xhr.responseText);
+                        var chatContainer = document.getElementById('chat-container');
+                        newMessages.forEach(function(message) {
+                            var messageDiv = document.createElement('div');
+                            messageDiv.classList.add('message');
+                            messageDiv.classList.add(message.sender === user ? 'own-message' : 'other-message');
+                            messageDiv.innerHTML = '<p><strong>' + message.sender + '</strong>: ' + message.content + '</p>';
+                            if (message.image) {
+                                messageDiv.innerHTML += '<img src="' + message.image.url + '" alt="Image" style="max-width: 100px; max-height: 100px;">';
+                            }
+                            chatContainer.appendChild(messageDiv);
+                        });
+
+                        // 在这里调用滚动到底部函数
+                        scrollToBottom();
+                    } else {
+                        console.error('Failed to retrieve messages.');
+                    }
+                }
+            };
+            xhr.open('GET', window.location.href, true);
+            xhr.send();
+        }, 5000);
+
+        //添加一个 scrollToBottom 函数，确保滚动位置正确
+        function scrollToBottom() {
+            var chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    </script>
 </body>
 </html>

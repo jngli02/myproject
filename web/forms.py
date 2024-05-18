@@ -33,8 +33,7 @@ class NewsForm(forms.ModelForm):
 class EvaluationForm(forms.ModelForm):
     class Meta:
         model = Evaluation
-        
-        fields = '__all__'  # 或者你可以列出你想要包含在表单中的字段
+        exclude = ['teacher']  # 排除教师字段
        
         
 class SubmittedEvaluationForm(forms.ModelForm):

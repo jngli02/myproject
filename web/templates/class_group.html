@@ -3,10 +3,10 @@
 <html>
 <head>
     <title>{{ class_group }}</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
     <style>
         /* 样式 */
         /* 群成员下拉菜单样式 */
-
         .member-dropdown-container {
             position: fixed;
             top: 10px;
@@ -18,6 +18,20 @@
             display: inline-block;
         }
 
+        .member-dropdown-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .member-dropdown-btn:hover {
+            background-color: #0056b3;
+        }
+
         .member-dropdown-content {
             display: none;
             position: absolute;
@@ -27,6 +41,7 @@
             overflow-y: auto; /* 添加垂直滚动条 */
             box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
             z-index: 1;
+            border-radius: 5px;
         }
 
         .member-dropdown-content a {
@@ -36,10 +51,15 @@
             display: block;
         }
 
+        .member-dropdown-content a:hover {
+            background-color: #f1f1f1;
+        }
+
         .member-dropdown:hover .member-dropdown-content {
             display: block;
         }
-            /* 头像样式 */
+
+        /* 头像样式 */
         .avatar {
             width: 30px;
             height: 30px;
@@ -73,32 +93,42 @@
         /* 按钮组样式 */
         .btn-group {
             display: inline-block; /* 设置为行内块元素 */
-            margin-left: 10px; /* 设置按钮之间的间距 */
+            margin-left: 5px; /* 设置按钮之间的间距 */
         }
 
         /* 按钮样式 */
         .btn-detail, .btn-chat {
-            padding: 5px 10px; /* 按钮内边距 */
+            padding: 5px 5px; /* 按钮内边距 */
             font-size: 12px; /* 按钮字体大小 */
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
         }
 
+        .btn-detail:hover, .btn-chat:hover {
+            background-color: #0056b3;
+        }
 
         /* 聊天区域样式 */
         .chat-container {
             position: fixed;
-            bottom: 20px;
+            bottom: 70px;
             right: 20px;
             width: 1400px;
-            height: 500px;
+            height: 450px;
             border: 1px solid #ccc;
+            border-radius: 10px; /* 圆角边框 */
             overflow-y: auto; /* 添加垂直滚动条 */
-            background-color: #f9f9f9;
+            background-color: #ffffff; /* 背景颜色 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 添加阴影 */
         }
 
         .message {
             padding: 10px;
-            margin: 5px;
-            border-radius: 5px;
+            margin: 5px 10px;
+            border-radius: 10px;
             max-width: 70%; /* 控制消息框最大宽度 */
         }
 
@@ -119,45 +149,132 @@
         /* 输入框样式 */
         .input-container {
             position: fixed;
-            bottom: 0;
+            bottom: 20px;
             right: 20px;
-            width: 300px;
+            width: 1400px;
+            display: flex; /* 使用弹性布局 */
+            align-items: center; /* 垂直居中对齐 */
+            border: 1px solid #ccc;
+            border-radius: 10px; /* 圆角边框 */
+            background-color: #f5f5f5; /* 背景颜色 */
+            padding: 10px; /* 内边距 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 添加阴影 */
         }
 
         .input-box {
-            width: calc(100% - 60px); /* 输入框宽度减去发送按钮宽度 */
+            flex-grow: 1; /* 填满剩余空间 */
+            border: none; /* 去掉边框 */
+            padding: 10px; /* 内边距 */
+            border-radius: 5px; /* 圆角边框 */
+            margin-right: 10px; /* 右侧外边距 */
+        }
+
+        .input-box:focus {
+            outline: none; /* 去掉焦点时的外边框 */
         }
 
         .send-button {
             width: 50px;
+            height: 50px; /* 按钮高度 */
+            border: none; /* 去掉边框 */
+            border-radius: 50%; /* 圆形按钮 */
+            background-color: #007bff; /* 按钮背景颜色 */
+            color: white; /* 按钮文字颜色 */
+            display: flex; /* 使用弹性布局 */
+            align-items: center; /* 垂直居中对齐 */
+            justify-content: center; /* 水平居中对齐 */
+            font-size: 18px; /* 字体大小 */
+        }
+
+        .send-button:hover {
+            background-color: #0056b3; /* 鼠标悬停时的背景颜色 */
+        }
+
+        .send-button:focus {
+            outline: none; /* 去掉焦点时的外边框 */
+        }
+
+        /* 图片上传按钮样式 */
+        #image-upload {
+            display: none; /* 隐藏默认文件输入按钮 */
+        }
+
+        .upload-label {
+            cursor: pointer; /* 鼠标悬停时变为手形 */
+            display: inline-block; /* 行内块元素 */
+            margin-right: 10px; /* 右侧外边距 */
+        }
+
+        .upload-icon {
+            width: 30px; /* 图标宽度 */
+            height: 30px; /* 图标高度 */
         }
 
         /* 表情按钮样式 */
-    #emoji-button {
-        cursor: pointer; /* 鼠标悬停时变为手形 */
-        /* 在这里添加更多样式 */
-    }
+        .emoji-button {
+            cursor: pointer; /* 鼠标悬停时变为手形 */
+            display: inline-block; /* 行内块元素 */
+            margin-right: 10px; /* 右侧外边距 */
+        }
 
-    /* 表情选择面板样式 */
-    #emoji-panel {
-        display: none; /* 默认隐藏 */
-        position: absolute; /* 使用绝对定位 */
-        width: 200px; /* 宽度 */
-        height: 200px; /* 高度 */
-        overflow-y: auto; /* 如果内容超出高度，则显示滚动条 */
-        /* 在这里添加更多样式 */
-    }
+        /* 表情选择面板样式 */
+        #emoji-list {
+            display: none; /* 默认隐藏 */
+            position: absolute; /* 使用绝对定位 */
+            bottom: 60px; /* 距离底部位置 */
+            right: 20px; /* 距离右侧位置 */
+            width: 200px; /* 宽度 */
+            height: 200px; /* 高度 */
+            overflow-y: auto; /* 如果内容超出高度，则显示滚动条 */
+            background-color: white; /* 背景颜色 */
+            border: 1px solid #ccc; /* 边框 */
+            border-radius: 10px; /* 圆角边框 */
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1); /* 添加阴影 */
+            z-index: 1000; /* 确保在最上层 */
+        }
 
-    /* 表情样式 */
-    .emoji {
-        cursor: pointer; /* 鼠标悬停时变为手形 */
-        /* 在这里添加更多样式 */
-    }
+        /* 表情样式 */
+        .emoji {
+            cursor: pointer; /* 鼠标悬停时变为手形 */
+            display: inline-block; /* 行内块元素 */
+            margin: 5px; /* 外边距 */
+        }
+
+        .emoji img {
+            width: 30px; /* 图片宽度 */
+            height: 30px; /* 图片高度 */
+        }
+
+        /* 预览图样式 */
+        #image-preview img {
+            max-width: 100px; /* 最大宽度 */
+            max-height: 100px; /* 最大高度 */
+            margin-top: 10px; /* 顶部外边距 */
+            border-radius: 5px; /* 圆角边框 */
+        }
+        /* 返回按钮样式 */
+        .return-button {
+            position: fixed;
+            top: 10px;
+            right: 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            cursor: pointer;
+        }
+
+        .return-button:hover {
+            background-color: #0056b3;
+        }
+        
     </style>
 </head>
 <body>
-    <h1>{{ class_group }}
-    </h1>
+    <h1>{{ class_group }}</h1>
+    <!-- 返回按钮 -->
+    <button class="return-button" onclick="goBack()">返回</button>
 
     <!-- 群成员按钮 -->
     <div class="member-dropdown-container">
@@ -169,34 +286,30 @@
                     <div class="user-info">
                         <img src="{{ teacher_info_all.avatar_url }}" class="avatar"> <!-- 头像 -->
                         <span class="username">{{ teacher_info_all.name }}（{{ teacher_info_all.subject }}）</span> <!-- 用户名 -->
-                        <!-- 检查用户是否在线，并设置相应的样式 -->
-                        
                         {% if teacher_info_all.is_online %}
                             <span class="status online"></span>
                         {% else %}
                             <span class="status offline"></span>
                         {% endif %}
                         <span class="btn-group">
-                            <a href="{% url 't_user_detail' user_id=teacher_info_all.id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
-                            
+                            <a href="{% url 't_user_detail' user_id=teacher_info_all.user_id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
                             <a href="{% url 'direct_chat' user_id=teacher_info_all.id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a><!-- 发起私聊链接 -->
                         </span>
                     </div>
                 {% endfor %}
                 <h2>家长</h2>
-                {% for parent_info_all in parents_info_all %}
+                {% for parent_info in output_data.parents_info_all %}
                     <div class="user-info">
-                        <img src="{{ parent_info_all.avatar_url }}" class="avatar"> <!-- 头像 -->
-                        <span class="username">{{ parent_info_all.username }}（{{ parent_info_all.children|safe }}家长）</span> <!-- 用户名 -->
-                        <!-- 检查用户是否在线，并设置相应的样式 -->
-                        {% if parent_info_all.is_online %}
+                        <img src="{{ parent_info.avatar_url }}" class="avatar"> <!-- 头像 -->
+                        <span class="username">{{ parent_info.username }}（{{ parent_info.children }}家长）</span> <!-- 用户名 -->
+                        {% if parent_info.is_online %}
                             <span class="status online"></span>
                         {% else %}
                             <span class="status offline"></span>
                         {% endif %}
                         <span class="btn-group">
-                            <a href="{% url 'p_user_detail' user_id=parent_info_all.id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
-                            <a href="{% url 'direct_chat' user_id=parent_info_all.id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a> <!-- 发起私聊链接 -->
+                            <a href="{% url 'p_user_detail' user_id=parent_info.id %}" class="btn-detail" style="display: inline">详细信息</a> <!-- 查看详细信息链接 -->
+                            <a href="{% url 'direct_chat' user_id=parent_info.user_id class_id=class_id %}" class="btn-chat" style="display: inline">私聊</a> <!-- 发起私聊链接 -->
                         </span>
                     </div>
                 {% endfor %}
@@ -215,70 +328,128 @@
                 {% endif %}
             </div>
         {% endfor %}
-
     </div>
 
-
     <!-- 输入框 -->
-    <form id="message-form" class="input-container" method="POST" action="/class_group/{{ class_id }}/"> <!-- 将 action 属性指定为后端处理函数的URL -->
+    <form id="message-form" class="input-container" method="POST" action="/class_group/{{ class_id }}/" enctype="multipart/form-data"> <!-- 将 action 属性指定为后端处理函数的URL -->
         {% csrf_token %}
-        <input type="file" id="image-upload" accept="image/*"> <!-- 添加图片按钮 -->
+        <label for="image-upload" class="upload-label">
+            <img src="{% static 'upload_icon.png' %}" class="upload-icon" alt="Upload">
+        </label> <!-- 添加图片按钮 -->
+        <input type="file" id="image-upload" name="image_data" accept="image/*"> <!-- 文件上传输入框 -->
+        <input type="hidden" id="image-data" name="image_data"> <!-- 用于存储图片数据的隐藏字段 -->
+
+
         <input type="text" class="input-box" id="message-input" name="content" placeholder="Type your message here...">
         <button type="button" id="emoji-button" class="emoji-button">😊</button> <!-- 表情选择按钮 -->
         <input type="submit" class="send-button" value="Send">
+        <!-- 预览框 -->
+        <div id="image-preview"></div>
     </form>
 
     <!-- JavaScript -->
     <script>
-    // 表情选择按钮点击事件处理程序
-    document.getElementById('emoji-button').addEventListener('click', function() {
-        // 在此处显示表情选择面板或调用相应的表情选择工具库
-    });
 
-    // 图片上传按钮变化事件处理程序
-    document.getElementById('image-upload').addEventListener('change', function(event) {
-        var file = event.target.files[0];
-        // 在此处处理上传图片的逻辑，例如显示预览图等
-    });
-
-    // 创建定时器，每隔一定时间发送 AJAX 请求以获取最新消息
-    setInterval(function() {
-        // 发送 AJAX 请求
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    // 成功获取到新消息后，解析 JSON 数据
-                    var newMessages = JSON.parse(xhr.responseText);
-
-                    // 添加新消息到聊天框
-                    var chatContainer = document.getElementById('chat-container');
-                    newMessages.forEach(function(message) {
-                        var messageDiv = document.createElement('div');
-                        messageDiv.classList.add('message');
-                        messageDiv.classList.add(message.sender === user ? 'own-message' : 'other-message');
-                        messageDiv.innerHTML = '<p><strong>' + message.sender + '</strong>: ' + message.content + '</p>';
-                        chatContainer.appendChild(messageDiv);
-                    });
-
-                    // 将滚动位置滚动到底部
-                    chatContainer.scrollTop = chatContainer.scrollHeight;
-                } else {
-                    // 处理请求失败的情况
-                    console.error('Failed to retrieve messages.');
-                }
+        document.addEventListener('DOMContentLoaded', function() {
+            scrollToBottom();
+        });
+    
+        // 显示或隐藏表情选择器
+        function toggleEmojiPicker() {
+            var emojiList = document.getElementById("emoji-list");
+            if (emojiList.style.display === "none") {
+                emojiList.style.display = "block";
+            } else {
+                emojiList.style.display = "none";
             }
-        };
-        xhr.open('GET', window.location.href, true);
-        xhr.send();
-    }, 5000); // 每5秒钟执行一次
+        }
+
+        // 将点击的表情添加到消息输入框中
+        function addEmoji(emoji) {
+            var messageInput = document.getElementById("message-input");
+            var content = messageInput.value;
+            var cursorPosition = messageInput.selectionStart;
+            var newContent = content.slice(0, cursorPosition) + emoji + content.slice(cursorPosition);
+            messageInput.value = newContent; // 将表情代码插入到输入框光标位置
+            messageInput.focus(); // 使输入框获取焦点
+            toggleEmojiPicker(); // 添加后隐藏表情选择器
+        }
+
+        // 图片上传按钮变化事件处理程序
+        document.getElementById('image-upload').addEventListener('change', function(event) {
+            var file = event.target.files[0];
+            var reader = new FileReader();
+        
+            // 当读取完成后触发该事件
+            reader.onload = function(e) {
+                // 将图片数据转换为 base64 编码
+                var imageData = e.target.result;
+                // 将 base64 编码的图片数据放入隐藏字段中
+                document.getElementById('image-data').value = imageData;
+
+                // 显示预览图
+                var imagePreview = document.getElementById('image-preview');
+                imagePreview.innerHTML = '<img src="' + imageData + '" alt="Image Preview" style="max-width: 100px; max-height: 100px;">'; // 限制预览图的大小
+            };
+        
+            // 读取图片数据
+            reader.readAsDataURL(file);
+        });
+
+        // 返回按钮点击事件处理程序
+        function goBack() {
+            // 判断用户类型，根据用户类型跳转到对应的首页
+            {% if is_teacher %}
+                window.location.href = "{% url 't_home' %}"; // 教师回到t_home界面
+            {% else %}
+                window.location.href = "{% url 'p_home' %}"; // 家长回到p_home界面
+            {% endif %}
+        }
+
+        document.getElementById('message-form').addEventListener('submit', function() {
+            // 这里可以假设表单提交后会刷新页面，
+            // 所以在表单提交前调用 scrollToBottom()。
+            setTimeout(scrollToBottom, 100);
+        });
 
 
 
+        // 创建定时器，每隔一定时间发送 AJAX 请求以获取最新消息
+        setInterval(function() {
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE) {
+                    if (xhr.status === 200) {
+                        var newMessages = JSON.parse(xhr.responseText);
+                        var chatContainer = document.getElementById('chat-container');
+                        newMessages.forEach(function(message) {
+                            var messageDiv = document.createElement('div');
+                            messageDiv.classList.add('message');
+                            messageDiv.classList.add(message.sender === user ? 'own-message' : 'other-message');
+                            messageDiv.innerHTML = '<p><strong>' + message.sender + '</strong>: ' + message.content + '</p>';
+                            if (message.image) {
+                                messageDiv.innerHTML += '<img src="' + message.image.url + '" alt="Image" style="max-width: 100px; max-height: 100px;">';
+                            }
+                            chatContainer.appendChild(messageDiv);
+                        });
 
+                        // 在这里调用滚动到底部函数
+                        scrollToBottom();
+                    } else {
+                        console.error('Failed to retrieve messages.');
+                    }
+                }
+            };
+            xhr.open('GET', window.location.href, true);
+            xhr.send();
+        }, 5000);
+
+        //添加一个 scrollToBottom 函数，确保滚动位置正确
+        function scrollToBottom() {
+            var chatContainer = document.getElementById('chat-container');
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
 
     </script>
-
-
 </body>
 </html>

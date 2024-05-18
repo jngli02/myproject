@@ -276,7 +276,6 @@ def login_view(request):
 
     return render(request, 'login.html')
 
-@login_required
 def register(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -445,7 +444,7 @@ def upload_holiday_schedule(request):
         form = HolidayScheduleForm()
     return render(request, 'upload_holiday_schedule.html', {'form': form})
 
-@login_required
+
 def calendar(request):
     # 获取当前时间
     current_time = timezone.now()
@@ -617,14 +616,12 @@ def update_student(request, student_id):
     # 渲染模板并传递表单和学生对象
     return render(request, 'update_student.html', {'form': form, 'student': student})
 
-
-@login_required
 def news_list(request):
     news_added = request.GET.get('added') == 'true'
     news = News.objects.all().order_by('-add_time')
     return render(request, 'news_list.html', {'news': news, 'news_added': news_added})
 
-@login_required
+
 def news_detail(request, news_id):
     news = get_object_or_404(News, id=news_id)
     return render(request, 'news_detail.html', {'news': news})
@@ -820,13 +817,20 @@ def is_user_online(user):
 def class_group(request, class_id):
     # 获取班级对象
     class_group = get_object_or_404(Class, id=class_id)
+    
+    user = request.user
+    
+     # 判断用户是否在教师表中
+    is_teacher = Teacher.objects.filter(user=user).exists()
+    print(is_teacher)
+    
 
     # 获取班级的所有教师
     teachers = class_group.teachers.all()
     t = {}
     for teacher in teachers:
         t[teacher.user.id] = is_user_online(teacher.user)
-    teachers_info_all = [{'id': teacher.id, 'name': teacher.name, 'subject': teacher.subject, 'user_id': teacher.user_id, 'is_online': t[teacher.user.id]} for teacher in teachers]
+    teachers_info_all = [{'id': teacher.user.id, 'name': teacher.name, 'subject': teacher.subject, 'user_id': teacher.id, 'is_online': t[teacher.user.id]} for teacher in teachers]
 
     # 获取班级的所有学生
     students = Student.objects.filter(class_group=class_group)
@@ -854,49 +858,59 @@ def class_group(request, class_id):
             'user_id': parent.user_id,
             'is_online': user_online_status.get(parent.user.id, False)  # 获取对应用户ID的在线状态，如果不存在则默认为False
         })
+        
+    # 将 parent_user_ids 作为额外的字段添加到最终的输出数据中
+    output_data = {
+        'parents_info_all': parents_info_all,
+        'parent_user_ids': parent_user_ids,
+    }
 
     # 获取历史消息
     messages = GroupMessage.objects.filter(class_group_id=class_id)
 
     if request.method == 'GET':
         # 渲染页面并传递教师和家长信息以及班级ID和消息列表
-        return render(request, 'class_group.html', {'class_group': class_group, 'class_id': class_id, 'messages': messages, 'teachers_info_all': teachers_info_all, 'parents_info_all': parents_info_all})
+        return render(request, 'class_group.html', {'class_group': class_group, 'class_id': class_id, 'messages': messages, 'teachers_info_all': teachers_info_all, 'output_data': output_data,'is_teacher': is_teacher})
 
     elif request.method == 'POST':
         sender = request.user
         class_group_id = class_id
         content = request.POST.get('content')
-        image = request.FILES.get('image')  # 获取上传的图片文件
+        image_data = request.POST.get('image_data', None)  # 获取上传的图片文件           
 
-        # 保存图片到服务器上的指定路径
-        if image:
-            image_name = image.name
-            image_path = os.path.join(settings.MEDIA_ROOT, 'images', image_name)
-            with open(image_path, 'wb') as f:
-                for chunk in image.chunks():
-                    f.write(chunk)
+       # 处理上传的图片
+        if image_data:
+            print(1)
+            # 从base64编码的数据中获取图片数据
+            format, imgstr = image_data.split(';base64,') 
+            ext = format.split('/')[-1] 
 
-            # 构造图片的HTML标签
-            image_tag = f'<img src="/media/images/{image_name}" alt="{image_name}">'
-            content += f'<br>{image_tag}'
-            
-        # 替换消息内容中的表情代码为表情图片标签
-        content = replace_emoji(content)
+            # 创建一个新的图片文件
+            image = ContentFile(base64.b64decode(imgstr), name='temp.' + ext)
 
-        # 保存消息到数据库
-        GroupMessage.objects.create(sender=sender, class_group_id=class_group_id, content=content)
+            # 创建 GroupMessage 实例并保存到数据库
+            GroupMessage.objects.create(sender = sender, class_group_id=class_group_id, image=image)
 
-        # 获取历史消息
-        messages = GroupMessage.objects.filter(class_group_id=class_id)
+        # 处理表情
+        if content:
+            # 替换消息内容中的表情代码为表情图片标签
+            content = replace_emoji(content)
+
+            # 创建 GroupMessage 实例并保存到数据库
+            GroupMessage.objects.create(sender=sender, class_group_id=class_group_id, content=content)
 
         # 返回渲染后的页面，包括教师和家长信息以及班级ID和消息列表
-        return render(request, 'class_group.html', {'class_group': class_group, 'class_id': class_id, 'messages': messages, 'teachers_info_all': teachers_info_all, 'parents_info_all': parents_info_all})
+        return render(request, 'class_group.html', {'class_group': class_group, 'class_id': class_id, 'messages': messages, 'teachers_info_all': teachers_info_all,'output_data': output_data,'is_teacher': is_teacher})
     else:
         return JsonResponse({'error': 'Invalid request method'})
+
 
 def direct_chat(request, user_id, class_id):
     user = request.user
     chat_partner = get_object_or_404(User, id=user_id) #对话者
+    
+     # 判断用户是否在教师表中
+    is_teacher = Teacher.objects.filter(user=user).exists()
     
     # 检查是否是同一个用户
     if user == chat_partner:
@@ -933,7 +947,7 @@ def direct_chat(request, user_id, class_id):
 
     messages = DirectMessage.objects.filter(sender=user, receiver=chat_partner) | DirectMessage.objects.filter(sender=chat_partner, receiver=user)
     
-    return render(request, 'direct_chat.html', {'chat_partner': chat_partner, 'messages': messages, 'user_id': user_id, 'class_id': class_id})
+    return render(request, 'direct_chat.html', {'chat_partner': chat_partner, 'messages': messages, 'user_id': user_id, 'class_id': class_id, 'is_teacher': is_teacher})
 
 @login_required
 def homework_info(request):
@@ -1238,8 +1252,7 @@ def evaluation_history(request, student_id):
         #家长获取学生综合评价信息
         student = Student.objects.get(student_id=student_id)
         evaluations = SubmittedEvaluation.objects.filter(student=student)
-        print(student)
-        print(student_id)
+
     except:
         # 教师获取该学生的所有提交的综合评价信息
         evaluations = SubmittedEvaluation.objects.filter(student_id=student_id)
@@ -1260,22 +1273,19 @@ def evaluation(request, student_id):
     # 获取当前的日期和时间
     current_time = timezone.now()
 
-    # 获取当前月份的评价
-    evaluation = Evaluation.objects.filter(student=student).first()
+    # 获取当前月份的评价，针对当前教师
+    evaluation = Evaluation.objects.filter(student=student, teacher=teacher, date__month=current_time.month, date__year=current_time.year).first()
 
     # 如果评价不存在，创建一个新的评价
     if not evaluation:
-        evaluation = Evaluation(student=student)
+        evaluation = Evaluation(student=student, teacher=teacher, date=current_time)
         evaluation.save()
 
-    # 检查是否在web_submittedevaluation表中存在学生的信息
-    submitted_evaluation_exists = SubmittedEvaluation.objects.filter(student=student).exists()
-
-    # 获取当前教师的授课科目
-    subject = request.user.teacher.subject
+    # 检查当前学生和当前老师是否提交过评价
+    submitted_evaluation_exists = SubmittedEvaluation.objects.filter(student=student, teacher=teacher).exists()
 
     # 实例化表单时，传递学生和日期信息
-    form = EvaluationForm(instance=evaluation, initial={'student': student, 'date': current_time})
+    form = EvaluationForm(instance=evaluation, initial={'student': student, 'date': current_time, 'teacher': teacher})
 
     if request.method == 'POST':
         form = EvaluationForm(request.POST, instance=evaluation)
@@ -1291,9 +1301,10 @@ def evaluation(request, student_id):
                     # 使用SubmittedEvaluationForm来创建一个新的SubmittedEvaluation对象
                     submitted_evaluation_form = SubmittedEvaluationForm(request.POST)
                     if submitted_evaluation_form.is_valid():
-                        # 将表单的数据保存到SubmittedEvaluation对象中
+                        # 将表单的数据保存到SubmittedEvaluation对象中，并设置教师字段
                         submitted_evaluation = submitted_evaluation_form.save(commit=False)
                         submitted_evaluation.student = student
+                        submitted_evaluation.teacher = teacher  # 设置教师字段为当前教师
                         submitted_evaluation.save()
                         # 更改原来的Evaluation对象的状态为已提交
                         evaluation.status = 'submitted'
@@ -1309,13 +1320,13 @@ def evaluation(request, student_id):
             form = EvaluationForm(instance=evaluation, initial={'student': student, 'date': current_time})
 
     # 如果当前教师的授课科目不是心理或体育，移除"心理健康"和"身体素质"这两个字段
-    if subject not in ['心理', '体育']:
+    if teacher.subject not in ['心理', '体育']:
         del form.fields['mental_health']
         del form.fields['mental_health_notes']
         del form.fields['physical_fitness']
         del form.fields['physical_fitness_notes']
 
-    return render(request, 'evaluation.html', {'form': form, 'student': student, 'current_time': current_time, 'submitted_evaluation_exists': submitted_evaluation_exists,'teacher': teacher})
+    return render(request, 'evaluation.html', {'form': form, 'student': student, 'current_time': current_time, 'submitted_evaluation_exists': submitted_evaluation_exists, 'teacher': teacher})
 
 @login_required
 def t_add_grades(request):

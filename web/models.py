@@ -135,6 +135,7 @@ class Evaluation(models.Model):
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='draft', verbose_name='状态')
     student = models.ForeignKey(Student, on_delete=models.CASCADE, verbose_name='学生')
     date = models.DateField(default=timezone.now, verbose_name='日期')
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name='教师', default=None)
 
     class_performance = models.CharField(max_length=2, choices=PERFORMANCE_CHOICES, verbose_name='课堂表现')
     class_performance_notes = models.TextField(blank=True, verbose_name='课堂表现备注')
@@ -172,6 +173,7 @@ class SubmittedEvaluation(models.Model):
     date = models.DateTimeField(default=timezone.now, verbose_name='日期')
     class_performance = models.CharField(max_length=2, choices=PERFORMANCE_CHOICES, verbose_name='课堂表现')
     class_performance_notes = models.TextField(blank=True, verbose_name='课堂表现备注')
+    teacher = models.ForeignKey(Teacher, on_delete=models.CASCADE, verbose_name='教师', default=None)
 
     homework_completion = models.CharField(max_length=2, choices=PERFORMANCE_CHOICES, verbose_name='作业完成情况')
     homework_completion_notes = models.TextField(blank=True, verbose_name='作业完成情况备注')

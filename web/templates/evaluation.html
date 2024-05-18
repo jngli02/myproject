@@ -408,6 +408,7 @@
             {% csrf_token %}
             <!-- 显示表单的内容 -->
             {{ form.as_p }}
+
             <button type="submit" name="save" id="saveButton">保存</button>
             <button type="submit" name="submit" id="submitButton" onclick="showAlert()">提交</button>
         </form>
